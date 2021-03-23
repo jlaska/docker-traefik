@@ -1,0 +1,16 @@
+# Ignore everything, unless explicitly included
+*
+*/
+
+!.gitignore
+!LICENSE
+!.env.example
+
+!docker-compose.yml
+
+!secrets
+secrets/*
+
+!appdata
+appdata/*
+
