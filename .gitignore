@@ -14,3 +14,10 @@ secrets/*
 !appdata
 appdata/*
 
+!appdata/traefik
+appdata/traefik/*
+!appdata/traefik/*.example
+!appdata/traefik/rules
+appdata/traefik/rules/*
+!appdata/traefik/rules/*.example
+!appdata/traefik/rules/tls-opts.yml
