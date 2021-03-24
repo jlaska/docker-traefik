@@ -75,8 +75,6 @@ services:
       # - /dev/ttyUSB1:/dev/ttyUSB1
       # - /dev/ttyACM0:/dev/ttyACM0
     network_mode: "host"
-    # networks:
-    #   - traefik
     ports:
       - "$HOMEASSISTANT_PORT:8123/tcp"
     environment:
@@ -84,22 +82,15 @@ services:
     labels:
       ## Auto-update
       com.centurylinklabs.watchtower.enable: false
-
+      ## Traefik
       # traefik.enable: true
       # traefik.docker.network: traefik
-
-      ## HTTP Routers
       # traefik.http.routers.homeassistant-rtr.entrypoints: https
       # traefik.http.routers.homeassistant-rtr.rule: Host(`homeassistant.$DOMAINNAME`)
-      # traefik.http.routers.homeassistant-rtr.tls: true
       # traefik.http.routers.homeassistant-rtr.tls.certresolver: dns-cloudflare
-
-      ## Middlewares
       # traefik.http.routers.homeassistant-rtr.middlewares: chain-oauth@file
-
-      ## HTTP Services
       # traefik.http.routers.homeassistant-rtr.service: homeassistant-svc
-      # traefik.http.services.homeassistant-svc.loadbalancer.server.port: $HOMEASSISTANT_PORT
+      # traefik.http.services.homeassistant-svc.loadbalancer.server.port: 8123
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8123"]
       interval: 30s
@@ -352,19 +343,13 @@ services:
     labels:
       ## Auto-update
       com.centurylinklabs.watchtower.enable: true
-
+      ## Traefik
       traefik.enable: true
       traefik.docker.network: traefik
-
-      ## router
       traefik.http.routers.sonarr-rtr.entrypoints: https
       traefik.http.routers.sonarr-rtr.rule: Host(`sonarr.$DOMAINNAME`)
       traefik.http.routers.sonarr-rtr.tls.certresolver: dns-cloudflare
-
-      ## middlewares
       traefik.http.routers.sonarr-rtr.middlewares: chain-oauth@file
-
-      ## http services
       traefik.http.routers.sonarr-rtr.service: sonarr-svc
       traefik.http.services.sonarr-svc.loadbalancer.server.port: $SONARR_PORT
     healthcheck:
@@ -399,19 +384,13 @@ services:
     labels:
       ## Auto-update
       com.centurylinklabs.watchtower.enable: true
-
+      ## Traefik
       traefik.enable: true
       traefik.docker.network: traefik
-
-      ## router
       traefik.http.routers.lidarr-rtr.entrypoints: https
       traefik.http.routers.lidarr-rtr.rule: Host(`lidarr.$DOMAINNAME`)
       traefik.http.routers.lidarr-rtr.tls.certresolver: dns-cloudflare
-
-      ## middlewares
       traefik.http.routers.lidarr-rtr.middlewares: chain-oauth@file
-
-      ## http services
       traefik.http.routers.lidarr-rtr.service: lidarr-svc
       traefik.http.services.lidarr-svc.loadbalancer.server.port: $LIDARR_PORT
     healthcheck:
@@ -443,48 +422,39 @@ services:
       - $DOCKERDIR/bitwarden:/data
     working_dir: /
     labels:
-      # Auto-update
+      ## Auto-update
       com.centurylinklabs.watchtower.enable: true
-
+      ## Traefik
       traefik.enable: true
       traefik.docker.network: traefik
-
-      ## UI Routers
+      # UI
       traefik.http.routers.bitwarden-ui-http.entrypoints: http
       traefik.http.routers.bitwarden-ui-http.middlewares: redirect-https
       traefik.http.routers.bitwarden-ui-http.rule: Host(`bitwarden.$DOMAINNAME`)
       traefik.http.routers.bitwarden-ui-http.service: bitwarden-ui-svc
-
       traefik.http.routers.bitwarden-ui-https.entrypoints: https
       traefik.http.routers.bitwarden-ui-https.rule: Host(`bitwarden.$DOMAINNAME`)
       traefik.http.routers.bitwarden-ui-https.service: bitwarden-ui-svc
       traefik.http.routers.bitwarden-ui-https.tls.certresolver: dns-cloudflare
-
       traefik.http.services.bitwarden-ui-svc.loadbalancer.server.port: 80
-
       # Enable OAuth
       traefik.http.routers.bitwarden-ui-https.middlewares: chain-oauth@file
       # Disable OAuth
       # traefik.http.routers.bitwarden-ui-https.middlewares: chain-no-auth@file
-
-      ## Websocket Routers
+      # Websocket
       traefik.http.routers.bitwarden-websocket-http.entrypoints: http
       traefik.http.routers.bitwarden-websocket-http.middlewares: redirect-https
       traefik.http.routers.bitwarden-websocket-http.service: bitwarden-websocket-svc
       traefik.http.routers.bitwarden-websocket-http.rule: Host(`bitwarden.$DOMAINNAME`) && PathPrefix(`/notifications/hub`)
-
       traefik.http.routers.bitwarden-websocket-https.entrypoints: https
       traefik.http.routers.bitwarden-websocket-https.rule: Host(`bitwarden.$DOMAINNAME`) && PathPrefix(`/notifications/hub`)
       traefik.http.routers.bitwarden-websocket-https.service: bitwarden-websocket-svc
       traefik.http.routers.bitwarden-websocket-https.tls.certresolver: dns-cloudflare
-
       traefik.http.services.bitwarden-websocket-svc.loadbalancer.server.port: 3012
-
-      ## Redirect
+      # Redirect
       traefik.http.middlewares.redirect-https.redirectScheme.permanent: true
       traefik.http.middlewares.redirect-https.redirectScheme.scheme: https
-
-      ## OAuth Bypass
+      # OAuth Bypass
       traefik.http.routers.bitwarden-rtr-bypass.entrypoints: https
       traefik.http.routers.bitwarden-rtr-bypass.rule: "Host(`bitwarden.$DOMAINNAME`) && (HeadersRegexp(`Origin`, `safari-web-extension://.*`) || HeadersRegexp(`Origin`, `moz-extension://.*`) || HeadersRegexp(`User-Agent`, `Bitwarden_Mobile.*`))"
       traefik.http.routers.bitwarden-rtr-bypass.priority: 100
@@ -536,22 +506,15 @@ services:
     volumes:
       - $DOCKERDIR/portainer:/data:rw
     labels:
-      # Auto-update
+      ## Auto-update
       com.centurylinklabs.watchtower.enable: true
-
-      # Traefik
+      ## Traefik
       traefik.enable: true
       traefik.docker.network: traefik
-
-      # HTTP Routers
       traefik.http.routers.portainer-rtr.entrypoints: https
       traefik.http.routers.portainer-rtr.rule: Host(`portainer.$DOMAINNAME`)
       traefik.http.routers.portainer-rtr.tls.certresolver: dns-cloudflare
-
-      ## Middlewares
       traefik.http.routers.portainer-rtr.middlewares: chain-oauth@file # Google OAuth 2.0
-
-      ## HTTP Services
       traefik.http.routers.portainer-rtr.service: portainer-svc
       traefik.http.services.portainer-svc.loadbalancer.server.port: $PORTAINER_PORT
 
@@ -790,6 +753,7 @@ services:
   watchtower:
     container_name: watchtower
     image: containrrr/watchtower
+    restart: unless-stopped
     environment:
       TZ: $TZ
       WATCHTOWER_SCHEDULE: 0 0 2 * * *
@@ -797,7 +761,6 @@ services:
       DOCKER_HOST: tcp://socket-proxy:$SOCKET_PROXY_PORT
     networks:
       - socket_proxy
-    restart: unless-stopped
 
   rsync-home:
     container_name: rsync-home
@@ -1153,20 +1116,15 @@ services:
     labels:
       ## Auto-update
       com.centurylinklabs.watchtower.enable: true
-
+      ## Traefik
       traefik.enable: true
       traefik.docker.network: traefik
-
       traefik.http.routers.error-handler-rtr.entrypoints: https
       traefik.http.routers.error-handler-rtr.rule: HostRegexp(`{catchall:.*}`)
       traefik.http.routers.error-handler-rtr.tls: true
       traefik.http.routers.error-handler-rtr.priority: 1
       traefik.http.routers.error-handler-rtr.tls.certresolver: dns-cloudflare
-
-      ## Middlewares
       traefik.http.routers.error-handler-rtr.middlewares: chain-no-auth@file
-
-      ## HTTP Services
       traefik.http.routers.error-handler-rtr.service: error-handler-svc
       traefik.http.services.error-handler-svc.loadbalancer.server.port: 80
 
