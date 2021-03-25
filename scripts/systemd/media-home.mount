@@ -1,0 +1,10 @@
+[Unit]
+Description=Home Directory
+
+[Mount]
+What=synology.local:/volume1/homes
+Where=/media/home
+Type=nfs
+
+[Install]
+WantedBy=multi-user.target

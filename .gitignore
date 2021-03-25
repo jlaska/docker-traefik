@@ -21,3 +21,12 @@ appdata/traefik/*
 appdata/traefik/rules/*
 !appdata/traefik/rules/*.example
 !appdata/traefik/rules/tls-opts.yml
+
+!scripts
+scripts/*
+!scripts/systemd
+scripts/systemd/*
+!scripts/systemd/media-home.automount
+!scripts/systemd/media-home.mount
+!scripts/systemd/media-PLEX.automount
+!scripts/systemd/media-PLEX.mount

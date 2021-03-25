@@ -1,0 +1,8 @@
+[Unit]
+Description=Automount PLEX Directory
+
+[Automount]
+Where=/media/PLEX
+
+[Install]
+WantedBy=multi-user.target
