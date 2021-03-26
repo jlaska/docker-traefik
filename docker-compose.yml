@@ -546,9 +546,9 @@ services:
       - --accessLog=true
       - --accessLog.filePath=/logs/access.log
       - --accessLog.bufferingSize=100
-      - --accessLog.format=json
-      - --accessLog.fields.defaultMode=keep
-      - --accessLog.fields.headers.defaultMode=keep
+      # - --accessLog.format=json
+      # - --accessLog.fields.defaultMode=keep
+      # - --accessLog.fields.headers.defaultMode=keep
       # - --accessLog.filters.statusCodes=400-499
       - --providers.docker=true
       # - --providers.docker.endpoint=unix:///var/run/docker.sock # Use Docker Socket Proxy instead for improved security
