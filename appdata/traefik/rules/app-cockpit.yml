@@ -1,0 +1,24 @@
+http:
+  middlewares:
+    cockpit-add-system:
+      addPrefix:
+        prefix: "/system"
+
+  routers:
+    cockpit-rtr:
+      entryPoints:
+        - https
+      middlewares:
+        - chain-oauth@file
+        # - cockpit-add-system
+      service: cockpit-svc
+      rule: 'Host(`cockpit.{{env "DOMAINNAME"}}`)'
+      tls:
+        certresolver: dns-cloudflare
+
+  services:
+    cockpit-svc:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: 'https://{{env "SERVER_IP"}}:9090'

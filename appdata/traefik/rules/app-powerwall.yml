@@ -1,0 +1,18 @@
+http:
+  routers:
+    powerwall-rtr:
+      entryPoints:
+        - https
+      middlewares:
+        - chain-oauth@file
+      service: powerwall-svc
+      rule: 'Host(`powerwall.{{env "DOMAINNAME"}}`)'
+      tls:
+        certresolver: dns-cloudflare
+
+  services:
+    powerwall-svc:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: 'https://{{env "POWERWALL_IP"}}'

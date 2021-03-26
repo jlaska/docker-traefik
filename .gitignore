@@ -16,11 +16,20 @@ appdata/*
 
 !appdata/traefik
 appdata/traefik/*
-!appdata/traefik/*.example
 !appdata/traefik/rules
 appdata/traefik/rules/*
-!appdata/traefik/rules/*.example
+!appdata/traefik/rules/middlewares.yml
+!appdata/traefik/rules/middlewares-chains.yml
 !appdata/traefik/rules/tls-opts.yml
+!appdata/traefik/rules/app-cockpit.yml
+!appdata/traefik/rules/app-homeassistant.yml
+!appdata/traefik/rules/app-homebridge.yml
+!appdata/traefik/rules/app-powerwall.yml
+!appdata/traefik/rules/app-printer.yml
+!appdata/traefik/rules/app-synology.yml
+!appdata/traefik/rules/app-unifi-cloudkey.yml
+!appdata/traefik/rules/app-unifi-protect.yml
+!appdata/traefik/rules/app-unifi-usg.yml
 
 !scripts
 scripts/*

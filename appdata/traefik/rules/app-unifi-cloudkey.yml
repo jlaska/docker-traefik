@@ -1,0 +1,17 @@
+http:
+  routers:
+    unifi-cloudkey-rtr:
+      entryPoints:
+        - https
+      middlewares:
+        - chain-oauth@file
+      service: unifi-cloudkey-svc
+      rule: 'Host(`cloudkey.{{env "DOMAINNAME"}}`)'
+      tls:
+        certresolver: dns-cloudflare
+
+  services:
+    unifi-cloudkey-svc:
+      loadBalancer:
+        servers:
+          - url: 'https://{{env "CLOUDKEY_IP"}}'
