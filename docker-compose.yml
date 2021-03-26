@@ -51,7 +51,7 @@ services:
       - HOMEBRIDGE_INSECURE=1
       - HOMEBRIDGE_DEBUG=0
       - HOMEBRIDGE_CONFIG_UI=1
-      - HOMEBRIDGE_CONFIG_UI_PORT=$HOMEBRIDGE_UI_PORT
+      - HOMEBRIDGE_CONFIG_UI_PORT=$HOMEBRIDGE_PORT
     hostname: flatline.localdomain
     network_mode: "host"
     restart: unless-stopped
@@ -59,7 +59,7 @@ services:
       - $DOCKERDIR/homebridge:/homebridge
     working_dir: /homebridge
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:$HOMEBRIDGE_UI_PORT"]
+      test: ["CMD", "curl", "-f", "http://localhost:$HOMEBRIDGE_PORT"]
       interval: 120s
       timeout: 10s
       retries: 4
@@ -620,6 +620,8 @@ services:
       COCKPIT_PORT: $COCKPIT_PORT
       HOMEASSISTANT_IP: $HOMEASSISTANT_IP
       HOMEASSISTANT_PORT: $HOMEASSISTANT_PORT
+      HOMEBRIDGE_IP: $HOMEBRIDGE_IP
+      HOMEBRIDGE_PORT: $HOMEBRIDGE_PORT
     labels:
       # Auto-update
       com.centurylinklabs.watchtower.enable: false
