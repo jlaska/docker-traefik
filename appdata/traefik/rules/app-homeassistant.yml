@@ -25,4 +25,4 @@ http:
     homeassistant-svc:
       loadBalancer:
         servers:
-          - url: 'http://{{env "SERVER_IP"}}:8123'
+          - url: 'http://{{env "HOMEASSISTANT_IP"}}:{{env "HOMEASSISTANT_PORT"}}'
