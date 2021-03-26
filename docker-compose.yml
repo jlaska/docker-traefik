@@ -616,6 +616,8 @@ services:
       SYNOLOGY_IP: $SYNOLOGY_IP
       USG_IP: $USG_IP
       POWERWALL_IP: $POWERWALL_IP
+      HOMEASSISTANT_IP: $HOMEASSISTANT_IP
+      HOMEASSISTANT_PORT: $HOMEASSISTANT_PORT
     labels:
       # Auto-update
       com.centurylinklabs.watchtower.enable: false
