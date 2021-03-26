@@ -1,0 +1,17 @@
+http:
+  routers:
+    unifi-usg-rtr:
+      entryPoints:
+        - https
+      middlewares:
+        - chain-oauth@file
+      service: unifi-usg-svc
+      rule: 'Host(`usg.{{env "DOMAINNAME"}}`)'
+      tls:
+        certresolver: dns-cloudflare
+
+  services:
+    unifi-usg-svc:
+      loadBalancer:
+        servers:
+          - url: 'https://{{env "USG_IP"}}'

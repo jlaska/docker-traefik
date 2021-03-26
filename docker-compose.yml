@@ -609,6 +609,13 @@ services:
       # CF_API_KEY_FILE: /run/secrets/cloudflare_global_api_key
       CF_ZONE_API_TOKEN_FILE: /run/secrets/cloudflare_zone_api_key
       CF_DNS_API_TOKEN_FILE: /run/secrets/cloudflare_dns_api_key
+      DOMAINNAME: $DOMAINNAME
+      SERVER_IP: $SERVER_IP
+      CLOUDKEY_IP: $CLOUDKEY_IP
+      PRINTER_IP: $PRINTER_IP
+      SYNOLOGY_IP: $SYNOLOGY_IP
+      USG_IP: $USG_IP
+      POWERWALL_IP: $POWERWALL_IP
     labels:
       # Auto-update
       com.centurylinklabs.watchtower.enable: false

@@ -1,0 +1,17 @@
+http:
+  routers:
+    synology-rtr:
+      entryPoints:
+        - https
+      middlewares:
+        - chain-oauth@file
+      service: synology-svc
+      rule: 'Host(`synology.{{env "DOMAINNAME"}}`)'
+      tls:
+        certresolver: dns-cloudflare
+
+  services:
+    synology-svc:
+      loadBalancer:
+        servers:
+          - url: 'https://{{env "SYNOLOGY_IP"}}:5051'
