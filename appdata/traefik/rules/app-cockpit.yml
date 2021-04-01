@@ -21,4 +21,4 @@ http:
       loadBalancer:
         passHostHeader: true
         servers:
-          - url: 'https://{{env "COCKPIT_IP"}}:{{env "COCKPIT_PORT"}}'
+          - url: 'http://{{env "COCKPIT_IP"}}:{{env "COCKPIT_PORT"}}'
