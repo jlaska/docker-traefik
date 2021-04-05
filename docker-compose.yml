@@ -70,9 +70,9 @@ services:
     restart: unless-stopped
     volumes:
       - $DOCKERDIR/homeassistant:/config
-    # devices:
-      # - /dev/ttyUSB0:/dev/ttyUSB0
-      # - /dev/ttyUSB1:/dev/ttyUSB1
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
+      - /dev/ttyUSB1:/dev/ttyUSB1
       # - /dev/ttyACM0:/dev/ttyACM0
     network_mode: "host"
     ports:
