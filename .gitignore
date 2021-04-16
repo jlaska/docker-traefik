@@ -31,6 +31,10 @@ appdata/traefik/rules/*
 !appdata/traefik/rules/app-unifi-protect.yml
 !appdata/traefik/rules/app-unifi-usg.yml
 
+!appdata/homeassistant
+appdata/homeassistant/*
+!appdata/homeassistant/configuration.yaml
+
 !scripts
 scripts/*
 !scripts/systemd
