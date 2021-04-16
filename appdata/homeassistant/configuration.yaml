@@ -1,0 +1,96 @@
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+homeassistant:
+  customize: !include customize.yaml
+
+# Example configuration.yaml entry
+logger:
+  default: debug
+
+# LFX UDP broadcast isn't working on my network
+lifx:
+  light:
+    - broadcast: 10.0.10.231
+    - broadcast: 10.0.10.23
+    - broadcast: 10.0.10.167
+
+# Create a virtual lux sensor
+sensor:
+  - platform: template
+    sensors:
+      solar_luminance:
+        friendly_name: "Solar Luminance"
+        icon_template: "mdi:brightness-auto"
+        unit_of_measurement: lx
+        value_template: "{{ states('sensor.solaredge_current_power') }}"
+        device_class: illuminance
+
+# Create a light group
+light:
+  - platform: group
+    name: Living Room Bookshelf
+    entities:
+      - light.living_room_bookshelf_left
+      - light.living_room_bookshelf_right
+
+  # Convert switches to a light
+  - platform: switch
+    name: Henry's Room Fan Light
+    entity_id: switch.henrys_room_fan_light_switch
+
+# Fix GE dimmer switch polling
+zwave:
+  usb_path: /dev/ttyUSB0                                                                                                           
+  network_key: !secret zwave_network_key
+  device_config:
+    light.master_bedroom_light_level:
+      refresh_value: true
+      polling_intensity: 1
+      delay: 4
+    light.dining_room_light_level:
+      refresh_value: true
+      polling_intensity: 1
+      delay: 4
+    light.kitchen_cabinet_light_level:
+      refresh_value: true
+      polling_intensity: 1
+      delay: 4
+    light.kitchen_island_light_level:
+      refresh_value: true
+      polling_intensity: 1
+      delay: 4
+    light.kitchen_light_level:
+      refresh_value: true
+      polling_intensity: 1
+      delay: 4
+    light.living_room_light_level:
+      refresh_value: true
+      polling_intensity: 1
+      delay: 4
+    light.williams_room_light_level:
+      refresh_value: true
+      polling_intensity: 1
+      delay: 4
+
+# Example configuration.yaml entry
+nest:
+  client_id: !secret google_client_id
+  client_secret: !secret google_client_secret
+  project_id: !secret google_project_id
+  subscriber_id: !secret google_subscriber_id
+
+camera:
+  - platform: generic
+    still_image_url: 'http://dig.abclocal.go.com/wtvd/WSI_Weather_maps/Wake1_1280.jpg'
+    name: Doplar Radar
