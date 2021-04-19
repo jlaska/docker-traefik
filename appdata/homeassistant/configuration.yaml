@@ -48,6 +48,30 @@ light:
   - platform: switch
     name: Henry's Room Fan Light
     entity_id: switch.henrys_room_fan_light_switch
+  - platform: switch
+    name: Williams Room Fan Light
+    entity_id: switch.williams_room_fan_light_switch
+  - platform: switch
+    name: Master Bedroom Nightstand
+    entity_id: switch.master_bedroom_nightstand_switch
+  - platform: switch
+    name: Master Bedroom Fan Light
+    entity_id: switch.master_bedroom_fan_light_switch
+  - platform: switch
+    name: Guest Room Fan Light
+    entity_id: switch.guest_room_fan_light_switch
+  - platform: switch
+    name: Guest Room Nightstand
+    entity_id: switch.guest_room_nightstand_switch
+  - platform: switch
+    name: Master Bathroom Light
+    entity_id: switch.master_bathroom_light_switch
+  - platform: switch
+    name: Master Bathroom Shower Light
+    entity_id: switch.master_bathroom_shower_light_switch
+  - platform: switch
+    name: Kids Bathroom Light
+    entity_id: switch.kids_bathroom_light_switch
 
 # Fix GE dimmer switch polling
 zwave:
