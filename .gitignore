@@ -34,6 +34,7 @@ appdata/traefik/rules/*
 !appdata/homeassistant
 appdata/homeassistant/*
 !appdata/homeassistant/configuration.yaml
+!appdata/homeassistant/scenes.yaml
 
 !scripts
 scripts/*
