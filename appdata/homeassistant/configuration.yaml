@@ -16,7 +16,7 @@ homeassistant:
 
 # Example configuration.yaml entry
 logger:
-  default: debug
+  default: warn
 
 # LFX UDP broadcast isn't working on my network
 lifx:
