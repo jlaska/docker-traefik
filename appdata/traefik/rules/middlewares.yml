@@ -3,7 +3,7 @@ http:
     middlewares-error-handler:
       errors:
         status:
-          - "400-599"
+          - "401-599"
         service: error-handler-svc@docker
         query: "/{status}.html"
 
