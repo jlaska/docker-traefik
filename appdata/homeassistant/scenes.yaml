@@ -2,10 +2,10 @@
   name: Sunset
   icon: mdi:weather-sunset
   entities:
-    switch.master_bedroom_nightstand_switch: on
-    switch.front_door_light_switch: on
-    switch.back_door_light_switch: on
-    switch.garage_exterior_light_switch: on
+    switch.master_bedroom_nightstand_switch: true
+    switch.front_door_light_switch: true
+    switch.back_door_light_switch: true
+    switch.garage_exterior_light_switch: true
     light.living_room_bookshelf:
       min_mireds: 111
       max_mireds: 400
@@ -18,7 +18,7 @@
       brightness: 255
       color_temp: 285
       state: 'on'
-    switch.guest_room_nightstand_switch: on
+    switch.guest_room_nightstand_switch: true
     light.henrys_room_floor_lamp:
       brightness: 254
       state: 'on'
@@ -34,30 +34,30 @@
 - id: '1617753584822'
   name: Exterior Lights Off
   entities:
-    switch.front_door_light_switch: off
-    switch.back_door_light_switch: off
-    switch.garage_exterior_light_switch: off
-    switch.front_spot_light_switch: off
-    switch.back_spot_light_switch: off
+    switch.front_door_light_switch: false
+    switch.back_door_light_switch: false
+    switch.garage_exterior_light_switch: false
+    switch.front_spot_light_switch: false
+    switch.back_spot_light_switch: false
 - id: '1617754868738'
   name: Kids Bedtime
   icon: mdi:bed
   entities:
-    light.master_bedroom_light_level: off
-    switch.master_bedroom_nightstand_switch: off
-    switch.guest_room_fan_light_switch: off
-    switch.guest_room_nightstand_switch: off
-    light.living_room_light_level: off
-    switch.living_room_fan_light_switch: off
-    light.kitchen_light_level: off
-    light.williams_room_lamps_zha_group_0x0003: off
-    light.kitchen_island_light_level: off
-    light.kitchen_cabinet_light_level: off
-    switch.henrys_room_fan_light_switch: off
-    switch.williams_room_fan_light_switch: off
-    light.williams_room_light_level: off
-    light.henrys_room_floor_lamp: off
-    light.henrys_room_table_lamp: off
+    light.master_bedroom_light_level: false
+    switch.master_bedroom_nightstand_switch: false
+    switch.guest_room_fan_light_switch: false
+    switch.guest_room_nightstand_switch: false
+    light.living_room_light_level: false
+    switch.living_room_fan_light_switch: false
+    light.kitchen_light_level: false
+    light.williams_room_lamps_zha_group_0x0003: false
+    light.kitchen_island_light_level: false
+    light.kitchen_cabinet_light_level: false
+    switch.henrys_room_fan_light_switch: false
+    switch.williams_room_fan_light_switch: false
+    light.williams_room_light_level: false
+    light.henrys_room_floor_lamp: false
+    light.henrys_room_table_lamp: false
 - id: '1617837408158'
   name: Downstairs Activity
   entities:
@@ -91,12 +91,15 @@
 - id: '1617838113817'
   name: Downstairs Inactivity
   entities:
-    light.kitchen_end_table_light_1level_on_off: off
-    light.kitchen_end_table_light_2level_on_off: off
-    light.living_room_bookshelf_left: off
-    light.living_room_bookshelf_right: off
-    light.living_room_table_lamp: off
-    light.kitchen_cabinet_light_level: off
+    light.kitchen_end_table_light_1level_on_off: false
+    light.kitchen_end_table_light_2level_on_off: false
+    light.living_room_bookshelf_left: false
+    light.living_room_bookshelf_right: false
+    light.living_room_table_lamp: false
+    light.kitchen_cabinet_light_level: false
+    light.kitchen_light_level: false
+    switch.kitchen_table_light_switch: false
+    light.kitchen_island_light_level: false
 - id: '1618704370608'
   name: Roomba Start
   icon: mdi:robot-vacuum
@@ -110,4 +113,13 @@
     light.kitchen_light_level:
       brightness: 255
       state: 'on'
-    switch.kitchen_table_light_switch: on
+    switch.kitchen_table_light_switch: true
+- id: '1619302411141'
+  name: Piano Time
+  entities:
+    light.dining_room_light_level:
+      brightness: 255
+      state: 'on'
+    switch.entryway_door_light_switch: true
+    switch.entryway_hall_light_switch: true
+  icon: mdi:piano
