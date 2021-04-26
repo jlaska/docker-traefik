@@ -634,6 +634,7 @@ services:
       traefik.http.routers.http-catchall.entrypoints: http
       traefik.http.routers.http-catchall.rule: HostRegexp(`{host:.+}`)
       traefik.http.routers.http-catchall.middlewares: redirect-to-https
+      traefik.http.routers.http-catchall.service: noop@internal
       traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
       # Dashboard
       traefik.http.routers.traefik-rtr.entrypoints: https
