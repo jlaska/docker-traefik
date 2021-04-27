@@ -14,6 +14,10 @@ scene: !include scenes.yaml
 homeassistant:
   customize: !include customize.yaml
 
+# Include themes directory
+frontend:
+  themes: !include_dir_merge_named themes
+
 # Example configuration.yaml entry
 logger:
   default: warn
@@ -164,5 +168,8 @@ nest:
 
 camera:
   - platform: generic
-    still_image_url: 'http://dig.abclocal.go.com/wtvd/WSI_Weather_maps/Wake1_1280.jpg'
-    name: Doplar Radar
+    still_image_url: !secret weather_doplar_url
+    name: Weather Doplar Radar
+  - platform: generic
+    still_image_url: !secret weather_forecast_url
+    name: Weather 7 Day Forecast
