@@ -25,9 +25,9 @@ logger:
 # LFX UDP broadcast isn't working on my network
 lifx:
   light:
-    - broadcast: 10.0.10.231
-    - broadcast: 10.0.10.23
-    - broadcast: 10.0.10.167
+    - broadcast: !secret lifx_mini_ip
+    - broadcast: !secret lifx_z_1_ip
+    - broadcast: !secret lifx_z_2_ip
 
 # Create a virtual lux sensor
 sensor:
