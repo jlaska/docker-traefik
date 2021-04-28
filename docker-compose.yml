@@ -676,7 +676,8 @@ services:
       # FIXME
       # traefik.http.routers.unifi-rtr.middlewares: chain-oauth@file
       traefik.http.routers.unifi-rtr.service: unifi-svc
-      traefik.tcp.routers.unifi-rtr.tls.passthrough: true
+      # FIXME - I don't believe the following is necesary
+      # traefik.tcp.routers.unifi-rtr.tls.passthrough: true
       traefik.http.services.unifi-svc.loadbalancer.server.port: $UNIFI_PORT
       traefik.http.services.unifi-svc.loadbalancer.server.scheme: https
       traefik.http.services.unifi-svc.loadbalancer.server.url: https://$SERVER_IP
