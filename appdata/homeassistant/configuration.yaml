@@ -47,6 +47,12 @@ sensor:
         friendly_name: "Date (friendly)"
         icon_template: mdi:calendar
         value_template: "{{ as_timestamp(states('sensor.date_time_iso')) | timestamp_custom('%A, %B %d') }}"
+      # https://community.home-assistant.io/t/automation-shower-detection-trigger-when-humidity-increases-in-10-minutes/162250/2
+      master_bathroom_humidity_delta:
+        friendly_name: "Master Bathroom Humidity Delta"
+        value_template: "{{ '%0.2f'| format(((states.sensor.lumi_lumi_weather_humidity.state|float - states.sensor.upstairs_humidity.state|float) / states.sensor.upstairs_humidity.state|float) * 100) }}"
+        device_class: "humidity"
+        unit_of_measurement: '%'
 
   # Create time sensors
   - platform: time_date
@@ -56,6 +62,17 @@ sensor:
       - 'date_time'
       - 'date_time_iso'
       - 'time_date'
+
+binary_sensor:
+  # Create Hygrostat for humidity sensor (https://github.com/basschipper/homeassistant-generic-hygrostat)
+  - platform: generic_hygrostat
+    name: Master Bathroom Hygrostat
+    sensor: sensor.lumi_lumi_weather_humidity
+    delta_trigger: 3 # Optional humidity swing to detect. Default = 3
+    target_offset: 3 # Optional dehumidification target offset. Default = 3
+    max_on_time: 7200 # Optional safety max on time in seconds. Default = 7200 seconds
+    sample_interval: 300 # Optional time between taking humidity samples in seconds, default 300 seconds
+    min_humidity: 30 # Optional minimum humidity to enable dehumidification. Default = 0
 
 # Create a light group
 light:
