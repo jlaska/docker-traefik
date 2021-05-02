@@ -405,8 +405,6 @@ services:
     image: bitwardenrs/server:latest
     container_name: bitwarden
     restart: unless-stopped
-    command:
-      - /bitwarden_rs
     environment:
       - ADMIN_TOKEN_FILE=/run/secrets/bitwarden_admin_token
       - ROCKET_ENV=staging
