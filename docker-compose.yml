@@ -454,7 +454,8 @@ services:
       traefik.http.middlewares.redirect-https.redirectScheme.scheme: https
       # OAuth Bypass
       traefik.http.routers.bitwarden-rtr-bypass.entrypoints: https
-      traefik.http.routers.bitwarden-rtr-bypass.rule: "Host(`bitwarden.$DOMAINNAME`) && (HeadersRegexp(`Origin`, `safari-web-extension://.*`) || HeadersRegexp(`Origin`, `moz-extension://.*`) || HeadersRegexp(`User-Agent`, `Bitwarden_Mobile.*`))"
+      # FIXME - May also need PathPrefix(`/api/accounts/prelogin`)
+      traefik.http.routers.bitwarden-rtr-bypass.rule: "Host(`bitwarden.$DOMAINNAME`) && (HeadersRegexp(`Origin`, `^(moz|safari-web|chrome)-extension://.*`) || HeadersRegexp(`User-Agent`, `Bitwarden_Mobile.*`) || PathPrefix(`/api/sync`))"
       traefik.http.routers.bitwarden-rtr-bypass.priority: 100
       traefik.http.routers.bitwarden-rtr-bypass.service: bitwarden-ui-svc
       traefik.http.routers.bitwarden-rtr-bypass.middlewares: chain-no-auth@file
@@ -544,9 +545,9 @@ services:
       - --accessLog=true
       - --accessLog.filePath=/logs/access.log
       - --accessLog.bufferingSize=100
-      # - --accessLog.format=json
-      # - --accessLog.fields.defaultMode=keep
-      # - --accessLog.fields.headers.defaultMode=keep
+      - --accessLog.format=json
+      - --accessLog.fields.defaultMode=keep
+      - --accessLog.fields.headers.defaultMode=keep
       # - --accessLog.filters.statusCodes=400-499
       - --providers.docker=true
       # - --providers.docker.endpoint=unix:///var/run/docker.sock # Use Docker Socket Proxy instead for improved security
