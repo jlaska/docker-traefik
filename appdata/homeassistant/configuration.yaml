@@ -18,7 +18,6 @@ homeassistant:
 frontend:
   themes: !include_dir_merge_named themes
 
-# Example configuration.yaml entry
 logger:
   default: warn
 
@@ -29,16 +28,17 @@ lifx:
     - broadcast: !secret lifx_z_1_ip
     - broadcast: !secret lifx_z_2_ip
 
-# Create a virtual lux sensor
 sensor:
   - platform: template
     sensors:
+      # Create a virtual lux sensor
       solar_luminance:
         friendly_name: "Solar Luminance"
         icon_template: "mdi:brightness-auto"
         unit_of_measurement: lx
         value_template: "{{ states('sensor.solaredge_current_power') }}"
         device_class: illuminance
+      # Create several time/date sensors for use in dashboards
       time_hhmm:
         friendly_name: "Time (hh:mm)"
         icon_template: mdi:calendar-clock
@@ -64,7 +64,7 @@ sensor:
       - 'time_date'
 
 binary_sensor:
-  # Create Hygrostat for humidity sensor (https://github.com/basschipper/homeassistant-generic-hygrostat)
+  # Create humidistat sensors (https://github.com/basschipper/homeassistant-generic-hygrostat)
   - platform: generic_hygrostat
     name: Master Bathroom Hygrostat
     sensor: sensor.lumi_lumi_weather_humidity
@@ -74,8 +74,8 @@ binary_sensor:
     sample_interval: 300 # Optional time between taking humidity samples in seconds, default 300 seconds
     min_humidity: 30 # Optional minimum humidity to enable dehumidification. Default = 0
 
-# Create a light group
 light:
+  # Combine multiple lights into one
   - platform: group
     name: Living Room Bookshelf
     entities:
@@ -193,13 +193,14 @@ zwave:
       polling_intensity: 1
       delay: 4
 
-# Example configuration.yaml entry
+# Google Nest Integration
 nest:
   client_id: !secret google_client_id
   client_secret: !secret google_client_secret
   project_id: !secret google_project_id
   subscriber_id: !secret google_subscriber_id
 
+# Use camera plugin for forcast/doplar images
 camera:
   - platform: generic
     still_image_url: !secret weather_doplar_url
