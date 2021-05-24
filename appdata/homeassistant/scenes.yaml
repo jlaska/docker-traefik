@@ -43,6 +43,7 @@
   name: Kids Bedtime
   icon: mdi:bed
   entities:
+    light.guest_bathroom_light: false
     light.guest_room_fan_light: false
     light.guest_room_nightstand: false
     light.henrys_room_fan_light: false
@@ -54,9 +55,12 @@
     light.living_room_light_level: false
     light.master_bedroom_light_level: false
     light.master_bedroom_nightstand: false
+    light.master_bedroom_fan_light: false
     light.williams_room_fan_light: false
     light.williams_room_lamps_zha_group_0x0003: false
     light.williams_room_light_level: false
+    light.master_bathroom_light: false
+    light.master_bathroom_shower_light: false
 - id: '1617837408158'
   name: Downstairs Activity
   entities:
