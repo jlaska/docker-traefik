@@ -255,3 +255,16 @@ camera:
   - platform: generic
     still_image_url: !secret weather_forecast_url
     name: Weather 7 Day Forecast
+
+homekit:
+  - filter:
+      include_domains:
+        - light
+      include_entity_globs:
+        - switch.*_fan_switch
+        - switch.*_on_off
+        - binary_sensor.*_ias_zone
+      exclude_entities:
+        - light.living_room_table_lamp
+      exclude_entity_globs:
+        - light.living_room_bookshelf*
