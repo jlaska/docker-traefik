@@ -205,6 +205,9 @@ light:
   - platform: switch
     name: William's Room Fan Light
     entity_id: switch.williams_room_fan_light_switch
+  - platform: switch
+    name: Shannon's Closet Light
+    entity_id: switch.shannons_closet_light_switch
 
 # Fix GE dimmer switch polling
 zwave:
