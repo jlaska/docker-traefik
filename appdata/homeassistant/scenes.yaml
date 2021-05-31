@@ -3,20 +3,17 @@
   icon: mdi:weather-sunset
   entities:
     light.master_bedroom_nightstand: true
-    light.front_door_light: true
-    light.back_door_light: true
-    light.garage_exterior_light: true
     light.living_room_bookshelf:
       min_mireds: 111
       max_mireds: 400
-      brightness: 126
-      color_temp: 300
+      brightness: 128
+      color_temp: 301
       state: 'on'
     light.living_room_table_lamp:
       min_mireds: 111
       max_mireds: 400
-      brightness: 255
-      color_temp: 285
+      brightness: 128
+      color_temp: 301
       state: 'on'
     light.guest_room_nightstand: true
     light.henrys_room_floor_lamp:
@@ -32,7 +29,8 @@
       brightness: 254
       state: 'on'
 - id: '1617753584822'
-  name: Exterior Lights Off
+  name: Dawn
+  icon: mdi:weather-sunset-up
   entities:
     light.front_door_light: false
     light.back_door_light: false
@@ -61,8 +59,10 @@
     light.williams_room_light_level: false
     light.master_bathroom_light: false
     light.master_bathroom_shower_light: false
+    light.shannon_s_closet_light: false
 - id: '1617837408158'
   name: Downstairs Activity
+  icon: mdi:motion-sensor
   entities:
     light.living_room_bookshelf:
       min_mireds: 111
@@ -84,6 +84,7 @@
       state: 'on'
 - id: '1617838113817'
   name: Downstairs Inactivity
+  icon: mdi:motion-sensor-off
   entities:
     light.kitchen_end_table_light_zha_group_0x0004: false
     light.living_room_bookshelf: false
@@ -110,10 +111,19 @@
     light.kitchen_table_light: true
 - id: '1619302411141'
   name: Piano Time
+  icon: mdi:piano
   entities:
     light.dining_room_light_level:
       brightness: 255
       state: 'on'
     light.entryway_door_light: true
     light.entryway_hall_light: true
-  icon: mdi:piano
+- id: '1622419078893'
+  name: Dusk
+  icon: mdi:weather-sunset-down
+  entities:
+    light.garage_exterior_light: true
+    light.front_door_light: true
+    light.back_door_light: true
+    light.front_spot_light: false
+    light.back_spot_light: false
