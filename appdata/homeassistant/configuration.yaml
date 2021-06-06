@@ -208,6 +208,9 @@ light:
   - platform: switch
     name: Shannon's Closet Light
     entity_id: switch.shannons_closet_light_switch
+  - platform: switch
+    name: Master Bathroom Toilet Light
+    entity_id: switch.master_bathroom_toilet_light_switch
 
 # Fix GE dimmer switch polling
 zwave:
