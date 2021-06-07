@@ -1,0 +1,49 @@
+ge_switch_led_light:
+  alias: Configure GE Switch LED Light
+  mode: single
+  icon: hass:switch
+  variables:
+    node_parameter: 3
+    node_size: 1
+    node_ids:
+    - 2
+    - 3
+    - 49
+    - 50
+    - 51
+  fields:
+    node_value:
+      description: The config value used (0=on_without_power, 1==on_with_power, 2==always_off,
+        3==always_on)
+      example: 2
+  sequence:
+  - service: zwave.set_config_parameter
+    data:
+      node_id: 2
+      parameter: '{{node_parameter|int}}'
+      size: '{{node_size|int}}'
+      value: '{{node_value|int}}'
+  - service: zwave.set_config_parameter
+    data:
+      node_id: 3
+      parameter: '{{node_parameter|int}}'
+      size: '{{node_size|int}}'
+      value: '{{node_value|int}}'
+  - service: zwave.set_config_parameter
+    data:
+      node_id: 49
+      parameter: '{{node_parameter|int}}'
+      size: '{{node_size|int}}'
+      value: '{{node_value|int}}'
+  - service: zwave.set_config_parameter
+    data:
+      node_id: 50
+      parameter: '{{node_parameter|int}}'
+      size: '{{node_size|int}}'
+      value: '{{node_value|int}}'
+  - service: zwave.set_config_parameter
+    data:
+      node_id: 51
+      parameter: '{{node_parameter|int}}'
+      size: '{{node_size|int}}'
+      value: '{{node_value|int}}'
