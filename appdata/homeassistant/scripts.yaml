@@ -8,6 +8,8 @@ ge_switch_led_light:
     node_ids:
     - 2
     - 3
+    - 40
+    - 41
     - 49
     - 50
     - 51
@@ -26,6 +28,18 @@ ge_switch_led_light:
   - service: zwave.set_config_parameter
     data:
       node_id: 3
+      parameter: '{{node_parameter|int}}'
+      size: '{{node_size|int}}'
+      value: '{{node_value|int}}'
+  - service: zwave.set_config_parameter
+    data:
+      node_id: 40
+      parameter: '{{node_parameter|int}}'
+      size: '{{node_size|int}}'
+      value: '{{node_value|int}}'
+  - service: zwave.set_config_parameter
+    data:
+      node_id: 41
       parameter: '{{node_parameter|int}}'
       size: '{{node_size|int}}'
       value: '{{node_value|int}}'
