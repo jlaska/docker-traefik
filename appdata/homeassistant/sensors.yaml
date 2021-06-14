@@ -1,0 +1,27 @@
+- platform: template
+  sensors:
+    # Create a virtual lux sensor
+    solar_luminance:
+      friendly_name: "Solar Luminance"
+      icon_template: "mdi:brightness-auto"
+      unit_of_measurement: lx
+      value_template: "{{ states('sensor.solaredge_current_power') }}"
+      device_class: illuminance
+    # Create several time/date sensors for use in dashboards
+    time_hhmm:
+      friendly_name: "Time (hh:mm)"
+      icon_template: mdi:calendar-clock
+      value_template: "{{ as_timestamp(states('sensor.date_time_iso')) | timestamp_custom('%-I:%M %p') }}"
+    my_date:
+      friendly_name: "Date (friendly)"
+      icon_template: mdi:calendar
+      value_template: "{{ as_timestamp(states('sensor.date_time_iso')) | timestamp_custom('%A, %B %d') }}"
+
+# Create time sensors
+- platform: time_date
+  display_options:
+    - 'time'
+    - 'date'
+    - 'date_time'
+    - 'date_time_iso'
+    - 'time_date'

@@ -1,0 +1,65 @@
+# Create humidistat sensors (https://github.com/basschipper/homeassistant-generic-hygrostat)
+- platform: generic_hygrostat
+  name: Master Bathroom Hygrostat
+  sensor: sensor.lumi_lumi_weather_humidity
+  delta_trigger: 3 # Optional humidity swing to detect. Default = 3
+  target_offset: 3 # Optional dehumidification target offset. Default = 3
+  max_on_time: 2700 # Optional safety max on time in seconds. Default = 7200 seconds
+  sample_interval: 300 # Optional time between taking humidity samples in seconds, default 300 seconds
+  min_humidity: 30 # Optional minimum humidity to enable dehumidification. Default = 0
+
+- platform: generic_hygrostat
+  name: Guest Bathroom Hygrostat
+  sensor: sensor.lumi_lumi_weather_30fe7b06_humidity
+  max_on_time: 2700
+
+- platform: generic_hygrostat
+  name: Kids Bathroom Hygrostat
+  sensor: sensor.lumi_lumi_weather_4c017c06_humidity
+  max_on_time: 2700
+
+# Consolidate motion sensors for rooms that have multiple sensors
+- platform: template
+  sensors:
+    garage_motion_any:
+      friendly_name: "Garage Motion (any)"
+      device_class: motion
+      unique_id: binary_sensor.garage_motion_any
+      value_template: >-
+        {{ is_state('binary_sensor.garage_motion_ias_zone', 'on')
+           or is_state('binary_sensor.motion_garage_protect', 'on') }}
+    living_room_motion_any:
+      friendly_name: "Living Room Motion (any)"
+      device_class: motion
+      unique_id: binary_sensor.living_room_motion_any
+      value_template: >-
+        {{ is_state('binary_sensor.living_room_motion_ias_zone', 'on')
+           or is_state('binary_sensor.motion_living_room_protect', 'on') }}
+    sunroom_motion_any:
+      friendly_name: "Sunroom Motion (any)"
+      device_class: motion
+      unique_id: binary_sensor.sunroom_motion_any
+      value_template: >-
+        {{ is_state('binary_sensor.motion_sunroom_protect', 'on')
+           or is_state('binary_sensor.sunroom_motion_ias_zone', 'on') }}
+    dining_room_motion_any:
+      friendly_name: "Dining Room Motion (any)"
+      device_class: motion
+      unique_id: binary_sensor.dining_room_motion_any
+      value_template: >-
+        {{ is_state('binary_sensor.dining_room_motion_ias_zone', 'on')
+           or is_state('binary_sensor.motion_dining_room_protect', 'on') }}
+    downstairs_motion_any:
+      friendly_name: "Downstairs Motion (any)"
+      device_class: motion
+      unique_id: binary_sensor.downstairs_motion_any
+      value_template: >-
+        {{ is_state('binary_sensor.dining_room_motion_ias_zone', 'on')
+           or is_state('binary_sensor.kitchen_motion_ias_zone', 'on')
+           or is_state('binary_sensor.living_room_motion_ias_zone', 'on')
+           or is_state('binary_sensor.motion_dining_room_protect', 'on')
+           or is_state('binary_sensor.motion_living_room_protect', 'on')
+           or is_state('binary_sensor.motion_sunroom_protect', 'on')
+           or is_state('binary_sensor.mudroom_motion_ias_zone', 'on')
+           or is_state('binary_sensor.sunroom_motion_ias_zone', 'on')
+           or is_state('binary_sensor.motion_dining_room_protect', 'on') }}
