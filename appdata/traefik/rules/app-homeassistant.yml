@@ -16,7 +16,7 @@ http:
       middlewares:
         - chain-no-auth@file
       service: homeassistant-svc
-      rule: 'Host(`homeassistant.{{env "DOMAINNAME"}}`) && (PathPrefix(`/api/webhook/`) || HeadersRegexp(`User-Agent`, `Home Assistant.*io.robbie.HomeAssistant.*`))'
+      rule: 'Host(`homeassistant.{{env "DOMAINNAME"}}`) && (PathPrefix(`/api/webhook/`) || Path(`/api/tts_proxy/{file:[a-z0-9A-Z_\-]+}.mp3`) || HeadersRegexp(`User-Agent`, `Home Assistant.*io.robbie.HomeAssistant.*`))'
       priority: 100
       tls:
         certresolver: dns-cloudflare

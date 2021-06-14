@@ -5,6 +5,7 @@ default_config:
 # Text to speech
 tts:
   - platform: google_translate
+    base_url: https://homeassistant.jlaska.com
 
 group: !include groups.yaml
 automation: !include automations.yaml
