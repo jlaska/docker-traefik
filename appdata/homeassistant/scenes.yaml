@@ -44,6 +44,7 @@
     light.guest_bathroom_light: false
     light.guest_room_fan_light: false
     light.guest_room_nightstand: false
+    light.henrys_room_light: false
     light.henrys_room_fan_light: false
     light.henrys_room_lamps_zha_group_0x0002: false
     light.kitchen_cabinet_light_level: false
