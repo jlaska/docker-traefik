@@ -99,3 +99,14 @@
       turn_off:
         service: 'switch.turn_off'
         entity_id: 'switch.williams_room_fan_switch'
+    powder_room_fan:
+      friendly_name: "Powder Room Fan"
+      unique_id: "fan.powder_room_fan"
+      value_template: "{{ states('switch.powder_room_fan_switch') }}"
+      speed_count: 1
+      turn_on:
+        service: 'switch.turn_on'
+        entity_id: 'switch.powder_room_fan_switch'
+      turn_off:
+        service: 'switch.turn_off'
+        entity_id: 'switch.powder_room_fan_switch'

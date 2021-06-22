@@ -87,3 +87,6 @@
 - platform: switch
   name: Master Bathroom Toilet Light
   entity_id: switch.master_bathroom_toilet_light_switch
+- platform: switch
+  name: Powder Room Light
+  entity_id: switch.powder_room_light_switch
