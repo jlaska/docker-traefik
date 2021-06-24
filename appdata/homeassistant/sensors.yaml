@@ -1,12 +1,5 @@
 - platform: template
   sensors:
-    # Create a virtual lux sensor
-    solar_luminance:
-      friendly_name: "Solar Luminance"
-      icon_template: "mdi:brightness-auto"
-      unit_of_measurement: lx
-      value_template: "{{ states('sensor.solaredge_current_power') }}"
-      device_class: illuminance
     # Create several time/date sensors for use in dashboards
     time_hhmm:
       friendly_name: "Time (hh:mm)"
