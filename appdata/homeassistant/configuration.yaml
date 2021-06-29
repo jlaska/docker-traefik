@@ -22,6 +22,11 @@ frontend:
 logger:
   default: warn
 
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - !secret reverse_proxy_ip
+
 # LFX UDP broadcast isn't working on my network
 lifx:
   light:
