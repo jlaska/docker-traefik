@@ -1,0 +1,11 @@
+# https://www.home-assistant.io/integrations/zha/#modifying-the-device-type
+device_config:
+  # Laundry
+  00:0d:6f:00:05:42:93:a1-1:
+    type: "outlet"
+  # Dining
+  00:0d:6f:00:05:90:77:16-1:
+    type: "outlet"
+  # Kitchen
+  28:6d:97:00:01:03:14:84-1:
+    type: "outlet"
