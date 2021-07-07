@@ -40,6 +40,8 @@ appdata/homeassistant/*
 !appdata/homeassistant/sensors.yaml
 !appdata/homeassistant/fans.yaml
 !appdata/homeassistant/lights.yaml
+!appdata/homeassistant/zwave.yaml
+!appdata/homeassistant/zha.yaml
 
 !scripts
 scripts/*

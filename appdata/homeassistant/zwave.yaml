@@ -1,0 +1,32 @@
+# Fix GE dimmer switch polling
+usb_path: /dev/ttyUSB0
+network_key: !secret zwave_network_key
+device_config:
+  light.master_bedroom_light_level:
+    refresh_value: true
+    polling_intensity: 1
+    delay: 4
+  light.dining_room_light_level:
+    refresh_value: true
+    polling_intensity: 1
+    delay: 4
+  light.kitchen_cabinet_light_level:
+    refresh_value: true
+    polling_intensity: 1
+    delay: 4
+  light.kitchen_island_light_level:
+    refresh_value: true
+    polling_intensity: 1
+    delay: 4
+  light.kitchen_light_level:
+    refresh_value: true
+    polling_intensity: 1
+    delay: 4
+  light.living_room_light_level:
+    refresh_value: true
+    polling_intensity: 1
+    delay: 4
+  light.williams_room_light_level:
+    refresh_value: true
+    polling_intensity: 1
+    delay: 4
