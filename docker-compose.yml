@@ -900,7 +900,7 @@ services:
       socket_proxy:
       metrics:
     extra_hosts:
-      - "powerwall:10.0.1.246"
+      - "powerwall:$POWERWALL_IP"
     volumes:
       - "$DOCKERDIR/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro"
       - "/proc:/rootfs/proc:ro"
@@ -930,7 +930,7 @@ services:
       - influxdb
       - prometheus
     extra_hosts:
-      - "powerwall:10.0.1.246"
+      - "powerwall:$POWERWALL_IP"
     user: "0"
     volumes:
       - $DOCKERDIR/grafana:/var/lib/grafana
