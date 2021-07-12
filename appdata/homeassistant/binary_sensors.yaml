@@ -59,3 +59,16 @@
            or is_state('binary_sensor.mudroom_motion_ias_zone', 'on')
            or is_state('binary_sensor.sunroom_motion_ias_zone', 'on')
            or is_state('binary_sensor.motion_dining_room_protect', 'on') }}
+    laundry_room_washing_machine:
+      friendly_name: "Laundry Room Washing Machine"
+      device_class: power
+      unique_id: binary_sensor.laundry_room_washing_machine
+      value_template: >-
+        {{ is_state('switch.centralite_4257050_rzhac_a1934205_on_off', 'on')
+           and states['sensor.laundry_washer_plug_electrical_measurement'].state|float > 0.0 }}
+    laundry_room_dryer:
+      friendly_name: "Laundry Room Dryer"
+      device_class: heat
+      unique_id: binary_sensor.laundry_room_dryer
+      value_template: >-
+        {{ is_state('binary_sensor.lumi_lumi_vibration_aq1_ias_zone', 'on') }}
