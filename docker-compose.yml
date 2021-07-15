@@ -52,7 +52,7 @@ services:
       - HOMEBRIDGE_DEBUG=0
       - HOMEBRIDGE_CONFIG_UI=1
       - HOMEBRIDGE_CONFIG_UI_PORT=$HOMEBRIDGE_PORT
-    hostname: flatline.localdomain
+    hostname: $SERVER_HOSTNAME
     network_mode: "host"
     restart: unless-stopped
     volumes:
