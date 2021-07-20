@@ -58,6 +58,7 @@
            or is_state('binary_sensor.motion_sunroom_protect', 'on')
            or is_state('binary_sensor.mudroom_motion_ias_zone', 'on')
            or is_state('binary_sensor.sunroom_motion_ias_zone', 'on')
+           or is_state('binary_sensor.lumi_lumi_sensor_motion_kitchen_ias_zone', 'on')
            or is_state('binary_sensor.motion_dining_room_protect', 'on') }}
     laundry_room_washing_machine:
       friendly_name: "Laundry Room Washing Machine"
