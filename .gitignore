@@ -22,6 +22,7 @@ appdata/traefik/rules/*
 !appdata/traefik/rules/middlewares-chains.yml
 !appdata/traefik/rules/tls-opts.yml
 !appdata/traefik/rules/app-cockpit.yml
+!appdata/traefik/rules/app-hdhomerun.yml
 !appdata/traefik/rules/app-homeassistant.yml
 !appdata/traefik/rules/app-homebridge.yml
 !appdata/traefik/rules/app-powerwall.yml
