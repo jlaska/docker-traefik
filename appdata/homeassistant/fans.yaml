@@ -110,3 +110,14 @@
       turn_off:
         service: 'switch.turn_off'
         entity_id: 'switch.powder_room_fan_switch'
+    kids_bathroom_fan:
+      friendly_name: "Kids Bathroom Fan"
+      unique_id: "fan.kids_bathroom_fan"
+      value_template: "{{ states('switch.kids_bathroom_fan_switch') }}"
+      speed_count: 1
+      turn_on:
+        service: 'switch.turn_on'
+        entity_id: 'switch.kids_bathroom_fan_switch'
+      turn_off:
+        service: 'switch.turn_off'
+        entity_id: 'switch.kids_bathroom_fan_switch'
