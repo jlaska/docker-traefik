@@ -137,3 +137,38 @@ zone_pulse_lights:
         color_name: homeassistant
         cycles: 20
         period: 4
+'1628974088097':
+  sequence:
+  - variables:
+      action_open: '{{ ''OPEN_'' ~ context.id }}'
+  - service: notify.mobile_app_james_iphone
+    data:
+      message: Welcome home
+      data:
+        action_data:
+          latitude: '35.783595'
+          longitude: '-78.776728'
+        actions:
+        - action: '{{ action_open }}'
+          title: Open Garage
+          authenticationRequired: true
+  - wait_for_trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: '{{ action_open }}'
+      context: {}
+    continue_on_timeout: false
+    timeout: 10
+  - alias: Perform the action
+    choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ wait.trigger.event.data.action == action_open }}'
+      sequence:
+      - service: cover.open_cover
+        target:
+          entity_id: cover.garage_door_opener
+  mode: single
+  alias: Garage Door Actionable Notification
+  icon: hass:garage
