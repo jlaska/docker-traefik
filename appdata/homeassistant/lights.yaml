@@ -90,3 +90,6 @@
 - platform: switch
   name: Powder Room Light
   entity_id: switch.powder_room_light_switch
+- platform: switch
+  name: Kids Bathroom Shower Light
+  entity_id: switch.kids_bathroom_fan_switch
