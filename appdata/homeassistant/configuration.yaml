@@ -24,8 +24,7 @@ logger:
 
 http:
   use_x_forwarded_for: true
-  trusted_proxies:
-    - !secret reverse_proxy_ip
+  trusted_proxies: !secret trusted_proxies
 
 # LFX UDP broadcast isn't working on my network
 lifx:
