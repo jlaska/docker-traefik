@@ -6,61 +6,48 @@ ge_switch_led_light:
     node_parameter: 3
     node_size: 1
     node_ids:
-    - 2
-    - 3
-    - 40
     - 41
-    - 49
-    - 50
+    - 40
+    - 39
+    - 37
+    - 38
+    - 9
+    - 48
+    - 46
+    - 54
+    - 30
+    - 35
+    - 3
+    - 4
+    - 2
     - 51
+    - 50
+    - 33
+    - 32
+    - 31
+    - 34
+    - 49
+    - 5
+    - 7
+    - 6
   fields:
     node_value:
       description: The config value used (0=on_without_power, 1==on_with_power, 2==always_off,
         3==always_on)
       example: 2
   sequence:
-  - service: zwave.set_config_parameter
-    data:
-      node_id: 2
-      parameter: '{{node_parameter|int}}'
-      size: '{{node_size|int}}'
-      value: '{{node_value|int}}'
-  - service: zwave.set_config_parameter
-    data:
-      node_id: 3
-      parameter: '{{node_parameter|int}}'
-      size: '{{node_size|int}}'
-      value: '{{node_value|int}}'
-  - service: zwave.set_config_parameter
-    data:
-      node_id: 40
-      parameter: '{{node_parameter|int}}'
-      size: '{{node_size|int}}'
-      value: '{{node_value|int}}'
-  - service: zwave.set_config_parameter
-    data:
-      node_id: 41
-      parameter: '{{node_parameter|int}}'
-      size: '{{node_size|int}}'
-      value: '{{node_value|int}}'
-  - service: zwave.set_config_parameter
-    data:
-      node_id: 49
-      parameter: '{{node_parameter|int}}'
-      size: '{{node_size|int}}'
-      value: '{{node_value|int}}'
-  - service: zwave.set_config_parameter
-    data:
-      node_id: 50
-      parameter: '{{node_parameter|int}}'
-      size: '{{node_size|int}}'
-      value: '{{node_value|int}}'
-  - service: zwave.set_config_parameter
-    data:
-      node_id: 51
-      parameter: '{{node_parameter|int}}'
-      size: '{{node_size|int}}'
-      value: '{{node_value|int}}'
+  - repeat:
+      while:
+      - alias: Loop through zwave nodes
+        condition: template
+        value_template: '{{ repeat.index <= node_ids|length }}'
+      sequence:
+      - service: zwave.set_config_parameter
+        data:
+          node_id: '{{ node_ids[repeat.index - 1] }}'
+          parameter: '{{node_parameter|int}}'
+          size: '{{node_size|int}}'
+          value: '{{node_value|int}}'
 zone_pulse_lights:
   mode: single
   alias: Zone Light Pulse
@@ -159,7 +146,7 @@ zone_pulse_lights:
         action: '{{ action_open }}'
       context: {}
     continue_on_timeout: false
-    timeout: 10
+    timeout: 60
   - alias: Perform the action
     choose:
     - conditions:
