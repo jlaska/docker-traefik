@@ -36,6 +36,7 @@ appdata/traefik/rules/*
 appdata/homeassistant/*
 !appdata/homeassistant/configuration.yaml
 !appdata/homeassistant/scenes.yaml
+!appdata/homeassistant/templates.yaml
 !appdata/homeassistant/scripts.yaml
 !appdata/homeassistant/binary_sensors.yaml
 !appdata/homeassistant/sensors.yaml
