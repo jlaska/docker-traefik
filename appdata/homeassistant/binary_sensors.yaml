@@ -51,6 +51,13 @@
       value_template: >-
         {{ is_state('binary_sensor.dining_room_motion_ias_zone', 'on')
            or is_state('binary_sensor.motion_dining_room_protect', 'on') }}
+    guest_room_motion_any:
+      friendly_name: "Guest Room Motion (any)"
+      device_class: motion
+      unique_id: binary_sensor.guest_room_motion_any
+      value_template: >-
+        {{ is_state('binary_sensor.guest_room_motion_ias_zone', 'on')
+           or is_state('binary_sensor.motion_guest_room_protect', 'on') }}
     downstairs_motion_any:
       friendly_name: "Downstairs Motion (any)"
       device_class: motion
