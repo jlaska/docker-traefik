@@ -57,6 +57,15 @@ camera:
   - platform: generic
     still_image_url: !secret weather_forecast_url
     name: Weather 7 Day Forecast
+  - platform: generic
+    name: US Atlantic Coast
+    still_image_url: !secret weather_noaa_us_east_coast
+  - platform: generic
+    name: US Southeast
+    still_image_url: !secret weather_noaa_us_southeast
+  - platform: generic
+    name: US Continent
+    still_image_url: !secret weather_noaa_us
 
 homekit:
   - filter:
