@@ -9,3 +9,8 @@ device_config:
   # Kitchen
   28:6d:97:00:01:03:14:84-1:
     type: "outlet"
+
+zigpy_config:
+  network:
+    channel: 15
+    channels: [15, 20, 25]
