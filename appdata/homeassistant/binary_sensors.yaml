@@ -13,6 +13,7 @@
   name: Guest Bathroom Hygrostat
   sensor: sensor.lumi_lumi_weather_30fe7b06_humidity
   max_on_time: 2700
+  delta_trigger: 6
 
 - platform: generic_hygrostat
   name: Kids Bathroom Hygrostat
