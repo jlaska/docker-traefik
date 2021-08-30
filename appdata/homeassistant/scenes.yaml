@@ -129,3 +129,12 @@
     light.back_door_light: true
     light.front_spot_light: false
     light.back_spot_light: false
+- id: '1626997515367'
+  name: "Henry's Room Inactivity"
+  icon: hass:walk
+  entities:
+    fan.henrys_room_fan: false
+    light.henrys_room_fan_light: false
+    light.henrys_room_floor_lamp: false
+    light.henrys_room_table_lamp: false
+    light.henrys_room_light_level: false
