@@ -76,11 +76,11 @@
       min_mireds: 111
       max_mireds: 400
       brightness: 255
-      color_temp: 285
+      color_temp: 300
       state: 'on'
     light.kitchen_end_table_light_zha_group_0x0004:
       brightness: 255
-      color_temp: 285
+      color_temp: 325
       state: 'on'
     light.kitchen_cabinet_light_level:
       brightness: 125
