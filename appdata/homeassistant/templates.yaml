@@ -16,8 +16,8 @@
       state: "{{ state_attr('weather.climacell_daily','wind_bearing') }}"
     - name: cc_wind_speed
       state: "{{ state_attr('weather.climacell_daily','wind_speed') }}"
-    - name: cc_O3
-      state: "{{ state_attr('weather.climacell_daily','ozone') }}"
+    - name: cc_o3
+      state: "{{ states('sensor.airnow_o3') }} {{ state_attr('sensor.airnow_o3', 'unit_of_measurement') }}"
     - name: cc_weather_condition_0d
       state: "{{ state_attr('weather.climacell_daily','forecast')[0].condition  }}"
     - name: cc_weather_condition_1d
@@ -70,3 +70,11 @@
       state: "{{ state_attr('weather.climacell_daily','forecast')[3].precipitation_probability }}"
     - name: cc_precipitation_probability_4d
       state: "{{ state_attr('weather.climacell_daily','forecast')[4].precipitation_probability }}"
+    - name: cc_particulate_matter_2_5_mm
+      state: "{{ states('sensor.airnow_pm2_5') }} {{ state_attr('sensor.airnow_pm2_5', 'unit_of_measurement') }} "
+    - name: cc_particulate_matter_10_mm
+      state: "{{ states('state.climacell_particulate_matter_10_mm')|float or states('sensor.airnow_pm10')|float }}"
+    - name: cc_us_epa_air_quality_index
+      state: "{{ states('sensor.climacell_us_epa_air_quality_index')|lower != 'unknown' and states('sensor.climacell_us_epa_air_quality_index') or states('sensor.airnow_aqi') }}"
+    - name: cc_us_epa_health_concern
+      state: "{{ states('sensor.climacell_us_epa_health_concern')|lower != 'unknown' and states('sensor.climacell_us_epa_health_concern') or states('sensor.u_s_air_pollution_level')|capitalize }}"
