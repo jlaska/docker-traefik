@@ -76,7 +76,3 @@ homekit:
       include_entity_globs:
         - switch.*_on_off
         - binary_sensor.*_ias_zone
-      exclude_entities:
-        - light.living_room_table_lamp
-      exclude_entity_globs:
-        - light.living_room_bookshelf*
