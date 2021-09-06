@@ -89,13 +89,15 @@
   name: Downstairs Inactivity
   icon: mdi:motion-sensor-off
   entities:
-    light.kitchen_end_table_light_zha_group_0x0004: false
     light.living_room_bookshelf: false
     light.living_room_table_lamp: false
+    light.living_room_fan_light: false
+    light.living_room_light_level: false
     light.kitchen_cabinet_light_level: false
     light.kitchen_light_level: false
     light.kitchen_table_light: false
     light.kitchen_island_light_level: false
+    light.kitchen_end_table_light_zha_group_0x0004: false
     light.entryway_hall_light: false
     light.entryway_door_light: false
 - id: '1618704370608'
