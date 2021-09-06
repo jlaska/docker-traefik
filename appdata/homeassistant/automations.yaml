@@ -1,0 +1,1678 @@
+- id: '1617751546799'
+  alias: Sunset (interior)
+  description: Turn on interior lights when getting dark inside
+  trigger:
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    below: '12.5'
+  - platform: numeric_state
+    below: '50'
+    for: 0:05:00
+    entity_id: sensor.kitchen_illuminance
+  condition:
+  - condition: time
+    after: input_datetime.time_when_lights_can_come_on_if_dark_inside
+    before: input_datetime.time_of_day_automation_stop
+  action:
+  - scene: scene.sunset
+  - service: frontend.set_theme
+    data:
+      name: ios-dark-mode-light-blue
+  - service: script.ge_switch_led_light
+    data:
+      node_value: 3
+  mode: single
+- id: '1617753489001'
+  alias: Dawn (exterior)
+  description: Turn off exterior lights before dawn
+  trigger:
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    above: '-34.0'
+  condition: []
+  action:
+  - scene: scene.dawn
+  mode: single
+- id: '1617754756338'
+  alias: Good Night (kids)
+  description: Kids bedtime
+  trigger:
+  - platform: time
+    at: input_datetime.lights_out_kids
+  condition: []
+  action:
+  - scene: scene.kids_bedtime
+  mode: single
+- id: '1617838004557'
+  alias: Downstairs Activity
+  description: 'Downstairs activity triggers when the movie automation is enabled
+    and not watching a movie '
+  trigger:
+  - type: motion
+    platform: device
+    device_id: 4730e6c001209ad6704136353b3ff8f1
+    entity_id: binary_sensor.living_room_motion_ias_zone
+    domain: binary_sensor
+  - type: motion
+    platform: device
+    device_id: 62f4e5988da089c749d84a512c932b90
+    entity_id: binary_sensor.sunroom_motion_ias_zone
+    domain: binary_sensor
+  - type: motion
+    platform: device
+    device_id: 8a6d52690d1c3c0121c9cf7e526a31a6
+    entity_id: binary_sensor.motion_sunroom_protect
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  - type: motion
+    platform: device
+    device_id: 1d4f49c0e8e1bb39d711f96f5f8b8472
+    entity_id: binary_sensor.dining_room_motion_ias_zone
+    domain: binary_sensor
+  - type: motion
+    platform: device
+    device_id: 0064f401138da744f8facb92fea365cc
+    entity_id: binary_sensor.mudroom_motion_ias_zone
+    domain: binary_sensor
+  - type: motion
+    platform: device
+    device_id: 2a5f8fecdec09e90b7bf94fc70d519c8
+    entity_id: binary_sensor.kitchen_motion_on_off
+    domain: binary_sensor
+  condition:
+  - condition: numeric_state
+    below: input_number.illumination_medium_cutoff_value
+    entity_id: sensor.kitchen_motion_illuminance
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: automation.watching_a_movie
+      state: 'off'
+    - condition: and
+      conditions:
+      - condition: state
+        entity_id: automation.watching_a_movie
+        state: 'on'
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: media_player.family_room_apple_tv
+          state: playing
+  action:
+  - scene: scene.downstairs_motion
+  - wait_for_trigger:
+    - platform: state
+      entity_id: binary_sensor.downstairs_motion_any
+      from: 'on'
+      to: 'off'
+      for: 0:{{states('input_number.time_automation_waits_to_turn_off_after_no_motion_long')|
+        int }}:00
+    continue_on_timeout: false
+  - scene: scene.downstairs_inactivity
+  mode: restart
+- id: '1617839297716'
+  alias: Master Bathroom Fan - Timer
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: fan.master_bathroom_fan
+    to: 'on'
+    for: 00:15:00
+  condition:
+  - condition: state
+    entity_id: binary_sensor.master_bathroom_hygrostat
+    state: 'off'
+  action:
+  - service: fan.turn_off
+    target:
+      entity_id: fan.master_bathroom_fan
+  mode: single
+- id: '1617839801545'
+  alias: Guest Bathroom Fan - Timer
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: fan.guest_bathroom_fan
+    to: 'on'
+    for: 00:15:00
+  condition:
+  - condition: state
+    entity_id: binary_sensor.guest_bathroom_hygrostat
+    state: 'off'
+  action:
+  - service: fan.turn_off
+    target:
+      entity_id: fan.guest_bathroom_fan
+  mode: single
+- id: '1617890462942'
+  alias: Aeon Minimote Remote Scene Control
+  description: ''
+  use_blueprint:
+    path: tribixbite/zwave-minimote.yaml
+    input:
+      zwave_entity: zwave.minimote
+      B1_Press:
+      - type: toggle
+        device_id: 230d38a3f58f599c6eaf0292ac3e6991
+        entity_id: light.master_bedroom_light_level
+        domain: light
+      B2_Press:
+      - type: toggle
+        device_id: 55d2ca8ea5f8c13b5d65ee7ed94216d9
+        entity_id: switch.master_bedroom_fan_light_switch
+        domain: switch
+      B3_Press:
+      - type: toggle
+        device_id: a4c9da50085db62728e73345b418ac70
+        entity_id: switch.master_bedroom_fan_switch
+        domain: switch
+      B4_Press:
+      - type: toggle
+        device_id: d00d60e89273f54f5f50f3bf404f3d8e
+        entity_id: switch.master_bedroom_nightstand_switch
+        domain: switch
+- id: '1617924990879'
+  alias: Laundry Room Light - Activity
+  description: ''
+  use_blueprint:
+    path: jlaska/on_off_with_motion_illuminance_timeout.yaml
+    input:
+      target_entity: light.laundry_room_light
+      illuminance_cutoff: input_number.illumination_high_cutoff_value
+      time_limit_after: input_datetime.time_of_day_automation_start
+      time_limit_before: input_datetime.time_of_day_automation_stop
+      no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
+      motion_sensor: binary_sensor.laundry_room_motion
+      illuminance_sensor: sensor.master_bedroom_motion_hue_illuminance
+- id: '1617925080161'
+  alias: Master Bathroom Light - Activity
+  description: ''
+  use_blueprint:
+    path: jlaska/on_off_with_motion_illuminance_timeout.yaml
+    input:
+      target_entity: light.master_bathroom_light
+      illuminance_cutoff: input_number.illumination_medium_cutoff_value
+      time_limit_after: input_datetime.time_of_day_automation_start
+      time_limit_before: input_datetime.time_of_day_automation_stop
+      no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
+      motion_sensor: binary_sensor.master_bathroom_motion
+      illuminance_sensor: sensor.master_bedroom_motion_hue_illuminance
+- id: '1617970121884'
+  alias: Garage Light - Activity
+  description: ''
+  trigger:
+  - type: motion
+    platform: device
+    device_id: db0494415da5d2811883cf44f60faf94
+    entity_id: binary_sensor.garage_motion_ias_zone
+    domain: binary_sensor
+  - type: opened
+    platform: device
+    device_id: 37469d7629aa92d508d96a4d1139ac15
+    entity_id: binary_sensor.garage_door_contact_ias_zone
+    domain: binary_sensor
+  - type: opened
+    platform: device
+    device_id: c2bd0018417d9382001ed77c17372f2d
+    entity_id: binary_sensor.mudroom_door_contact_ias_zone
+    domain: binary_sensor
+  - type: motion
+    platform: device
+    device_id: d417ae82a38795b7659c9e75ef829ede
+    entity_id: binary_sensor.motion_garage_protect
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+      milliseconds: 0
+  - platform: device
+    device_id: aca1fd076bac705db6d381d678fe5487
+    domain: cover
+    entity_id: cover.garage_door_opener
+    type: opening
+  - platform: device
+    device_id: aca1fd076bac705db6d381d678fe5487
+    domain: cover
+    entity_id: cover.garage_door_opener
+    type: opened
+  condition: []
+  action:
+  - service: light.turn_on
+    target:
+      area_id: mudroom
+      entity_id: light.garage_light
+  - delay:
+      minutes: "{{\n  states('input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion')|int(0)\n\
+        }}"
+  - wait_template: "{{ is_state('binary_sensor.garage_motion_any', 'off')\n   and\
+      \ is_state('binary_sensor.garage_door_contact_ias_zone', 'off')\n   and is_state('binary_sensor.mudroom_door_contact_ias_zone',\
+      \ 'off') \n}} "
+    continue_on_timeout: false
+  - service: light.turn_off
+    target:
+      entity_id: light.garage_light
+  - condition: state
+    entity_id: automation.mudroom_activity
+    state: '0'
+    attribute: current
+  - service: light.turn_off
+    target:
+      entity_id: light.mudroom_light
+  mode: restart
+- id: '1617970202207'
+  alias: Garage Light - Inactivity
+  description: ''
+  trigger:
+  - type: not_opened
+    platform: device
+    device_id: 37469d7629aa92d508d96a4d1139ac15
+    entity_id: binary_sensor.garage_door_contact_ias_zone
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+      milliseconds: 0
+  - type: not_opened
+    platform: device
+    device_id: c2bd0018417d9382001ed77c17372f2d
+    entity_id: binary_sensor.mudroom_door_contact_ias_zone
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+      milliseconds: 0
+  - platform: device
+    device_id: aca1fd076bac705db6d381d678fe5487
+    domain: cover
+    entity_id: cover.garage_door_opener
+    type: closed
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+      milliseconds: 0
+  - type: no_motion
+    platform: device
+    device_id: d417ae82a38795b7659c9e75ef829ede
+    entity_id: binary_sensor.motion_garage_protect
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+      milliseconds: 0
+  - type: no_motion
+    platform: device
+    device_id: db0494415da5d2811883cf44f60faf94
+    entity_id: binary_sensor.garage_motion_ias_zone
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+      milliseconds: 0
+  condition:
+  - type: is_not_open
+    condition: device
+    device_id: 37469d7629aa92d508d96a4d1139ac15
+    entity_id: binary_sensor.garage_door_contact_ias_zone
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+      milliseconds: 0
+  - type: is_not_open
+    condition: device
+    device_id: c2bd0018417d9382001ed77c17372f2d
+    entity_id: binary_sensor.mudroom_door_contact_ias_zone
+    domain: binary_sensor
+  - condition: device
+    device_id: aca1fd076bac705db6d381d678fe5487
+    domain: cover
+    entity_id: cover.garage_door_opener
+    type: is_closed
+  - type: is_no_motion
+    condition: device
+    device_id: db0494415da5d2811883cf44f60faf94
+    entity_id: binary_sensor.garage_motion_ias_zone
+    domain: binary_sensor
+  - type: is_no_motion
+    condition: device
+    device_id: d417ae82a38795b7659c9e75ef829ede
+    entity_id: binary_sensor.motion_garage_protect
+    domain: binary_sensor
+  action:
+  - service: light.turn_off
+    target:
+      entity_id:
+      - light.garage_light
+      - light.garage_work_light
+  - condition: state
+    entity_id: automation.mudroom_activity
+    state: '0'
+    attribute: current
+  - service: light.turn_off
+    target:
+      entity_id: light.mudroom_light
+  mode: single
+- id: '1617977378814'
+  alias: Downstairs Luminance Above Threshold
+  description: When it gets bright outside, turn certain lights off
+  trigger:
+  - platform: numeric_state
+    for: 00:20:00
+    entity_id: sensor.kitchen_motion_illuminance
+    above: input_number.illumination_medium_cutoff_value
+  condition:
+  - condition: time
+    after: input_datetime.time_of_day_automation_start
+    before: '15:00:00'
+  action:
+  - scene: scene.downstairs_inactivity
+  mode: restart
+- id: '1618002489309'
+  alias: Master Bathroom Button
+  description: Toggle lights based on button presses
+  use_blueprint:
+    path: johnny5w/zha-samsung-smartthings-button.yaml
+    input:
+      samsung_smartthings_button: 5a1b20b6fb2d9b92ec368d8bf89e08de
+      remote_button_short_press:
+      - type: toggle
+        device_id: e6c2123ca96cbf9681412299ebc01004
+        entity_id: switch.master_bathroom_light_switch
+        domain: switch
+      remote_button_double_press:
+      - type: toggle
+        device_id: 4968b4add250a9be2b4da84fa905267d
+        entity_id: switch.master_bathroom_shower_light_switch
+        domain: switch
+      remote_button_hold_press:
+      - type: toggle
+        device_id: 2389efdc42680b58791a0fc50fb48be6
+        entity_id: switch.master_bathroom_fan_switch
+        domain: switch
+- id: '1618002599661'
+  alias: William's Room Button
+  description: ''
+  use_blueprint:
+    path: johnny5w/zha-samsung-smartthings-button.yaml
+    input:
+      samsung_smartthings_button: 0b741d174283f2992ca4b64d9c1c8ff8
+      remote_button_short_press:
+      - service: light.toggle
+        data:
+          color_temp: 330
+          brightness_pct: 100
+        target:
+          entity_id: light.williams_room_lamps_zha_group_0x0003
+      remote_button_hold_press:
+      - service: fan.toggle
+        target:
+          entity_id: fan.williams_room_fan
+      remote_button_double_press:
+      - type: turn_off
+        device_id: a169086b6034eae6ddba79635befc90b
+        entity_id: switch.williams_room_fan_light_switch
+        domain: switch
+      - service: light.toggle
+        target:
+          entity_id: light.williams_room_light_level
+- id: '1618048885985'
+  alias: Spot Lights When Door Opens
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: 720f3a84bef7a7dd93aa773ab4767c2a
+    entity_id: binary_sensor.back_door_contact_ias_zone
+    domain: binary_sensor
+  - type: opened
+    platform: device
+    device_id: 6a4f4eccc9f68877d56de9d1750e2a78
+    entity_id: binary_sensor.front_door_contact_ias_zone
+    domain: binary_sensor
+  - platform: device
+    device_id: aca1fd076bac705db6d381d678fe5487
+    domain: cover
+    entity_id: cover.garage_door_opener
+    type: opened
+  - type: opened
+    platform: device
+    device_id: 37469d7629aa92d508d96a4d1139ac15
+    entity_id: binary_sensor.garage_door_contact_ias_zone
+    domain: binary_sensor
+  condition:
+  - condition: state
+    entity_id: sun.sun
+    state: below_horizon
+  action:
+  - service: light.turn_on
+    target:
+      entity_id:
+      - light.back_spot_light
+      - light.front_spot_light
+  - delay:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - service: light.turn_off
+    target:
+      entity_id:
+      - light.back_spot_light
+      - light.front_spot_light
+  mode: restart
+- id: '1618075117826'
+  alias: Goodbye
+  description: Everyone leaves home
+  trigger:
+  - platform: zone
+    entity_id: device_tracker.james_iphone
+    zone: zone.home
+    event: leave
+  - platform: zone
+    entity_id: device_tracker.shannons_iphone
+    zone: zone.home
+    event: leave
+  - platform: state
+    entity_id: person.kevin_kowalski
+    to: not_home
+  condition:
+  - condition: not
+    conditions:
+    - condition: or
+      conditions:
+      - condition: zone
+        entity_id: device_tracker.james_iphone
+        zone: zone.home
+      - condition: zone
+        entity_id: device_tracker.shannons_iphone
+        zone: zone.home
+      - condition: state
+        entity_id: device_tracker.kevins_iphone
+        state: home
+  action:
+  - type: turn_off
+    device_id: 5364ebdb1d63351833073f854e50a2b6
+    entity_id: remote.hubname
+    domain: remote
+  - service: light.turn_off
+    data: {}
+    entity_id: all
+  - service: fan.turn_off
+    target:
+      entity_id: all
+  mode: single
+- id: '1618088888089'
+  alias: Good Night
+  description: Lights out when quiet at night
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.downstairs_motion_any
+    to: 'off'
+    for: 0:45:00
+  - platform: time
+    at:
+    - '23:30:00'
+    - 00:00:00
+    - 00:30:00
+    - 01:00:00
+    - 01:30:00
+  condition:
+  - condition: time
+    after: input_datetime.goodnight_start_time
+    before: input_datetime.goodnight_stop_time
+  - condition: state
+    entity_id: binary_sensor.downstairs_motion_any
+    state: 'off'
+    for: 00:45:00
+  - condition: template
+    value_template: '{{ utcnow() - state_attr(''automation.bed_time'', ''last_triggered'')
+      > timedelta(hours=16) }}'
+  action:
+  - service: light.turn_off
+    data: {}
+    target:
+      area_id:
+      - dining_room
+      - entryway
+      - guest_bathroom
+      - guest_room
+      - henry_s_room
+      - kids_bathroom
+      - kitchen
+      - laundry_room
+      - living_room
+      - master_bathroom
+      - master_bedroom
+      - master_closet
+      - mudroom
+      - sunroom
+      - william_s_room
+  - service: fan.turn_off
+    target:
+      area_id:
+      - living_room
+      - sunroom
+  mode: single
+- id: '1618103078420'
+  alias: Watching A Movie
+  description: ''
+  trigger:
+  - platform: state
+    to: playing
+    entity_id: media_player.plex_plex_for_apple_tv_family_room
+  - platform: state
+    entity_id: automation.watching_a_movie
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: sun.sun
+    state: below_horizon
+  - condition: state
+    entity_id: media_player.family_room_apple_tv
+    state: playing
+  action:
+  - service: light.turn_off
+    data:
+      area_id: living_room
+  mode: single
+- id: '1618182733067'
+  alias: Sunroom Fan Timer
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: fan.sunroom_fan
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+      milliseconds: 0
+  - platform: state
+    entity_id: binary_sensor.sunroom_motion_any
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+      milliseconds: 0
+  condition:
+  - condition: state
+    entity_id: fan.sunroom_fan
+    state: 'on'
+  action:
+  - wait_for_trigger:
+      platform: state
+      entity_id: binary_sensor.sunroom_motion_any
+      from: 'on'
+      to: 'off'
+      for:
+        minutes: '{{ states(''input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion'')|int(0)
+          }}'
+    continue_on_timeout: false
+  - service: fan.turn_off
+    target:
+      entity_id: fan.sunroom_fan
+  mode: restart
+- id: '1618275517438'
+  alias: William’s Room - Daytime Inactivity
+  description: ''
+  trigger:
+  - type: no_motion
+    platform: device
+    device_id: cc8cea0e1b73302c304724df2e6a3ff5
+    entity_id: binary_sensor.motion_williams_protect
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
+      milliseconds: 0
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    above: '4.0'
+  - platform: time
+    at: input_datetime.time_of_day_automation_start
+  condition:
+  - condition: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    above: '4.0'
+  - condition: time
+    before: input_datetime.time_of_day_automation_stop
+  - condition: state
+    entity_id: binary_sensor.motion_williams_protect
+    state: 'off'
+    for: 00:20:00
+  action:
+  - service: light.turn_off
+    data: {}
+    target:
+      area_id: william_s_room
+  - service: fan.turn_off
+    target:
+      entity_id: fan.williams_room_fan
+  mode: single
+- id: '1618275716490'
+  alias: Henry’s Room - Daytime Inactivity
+  description: ''
+  trigger:
+  - type: no_motion
+    platform: device
+    device_id: 63cae940cd0fb6c810fd9accdd273f4b
+    entity_id: binary_sensor.motion_henrys_protect
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
+      milliseconds: 0
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    above: '4.0'
+  - platform: time
+    at: input_datetime.time_of_day_automation_start
+  condition:
+  - condition: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    above: '4.0'
+  - condition: time
+    before: input_datetime.time_of_day_automation_stop
+  - condition: state
+    entity_id: binary_sensor.motion_henrys_protect
+    state: 'off'
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
+      milliseconds: 0
+  action:
+  - service: light.turn_off
+    target:
+      area_id: henry_s_room
+  - service: fan.turn_off
+    target:
+      entity_id: fan.henrys_room_fan
+  mode: single
+- id: '1618704455944'
+  alias: Roomba Cycle
+  description: ''
+  trigger:
+  - platform: device
+    device_id: 44be43b11976ca9c53539e52847d7cb5
+    domain: vacuum
+    entity_id: vacuum.roomba
+    type: cleaning
+  condition:
+  - condition: state
+    entity_id: sun.sun
+    state: below_horizon
+  action:
+  - scene: scene.robot_start
+  - condition: numeric_state
+    entity_id: sensor.kitchen_motion_illuminance
+    below: '80'
+  - service: light.turn_on
+    target:
+      entity_id:
+      - light.living_room_light_level
+      - light.kitchen_light_level
+      - light.entryway_hall_light
+      - light.dining_room_light_level
+    data:
+      brightness_pct: 100
+  - wait_for_trigger: []
+    continue_on_timeout: false
+  - condition: state
+    entity_id: binary_sensor.downstairs_motion_any
+    state: 'off'
+  - scene: scene.downstairs_inactivity
+  mode: restart
+- id: '1618788683346'
+  alias: Roomba Stop
+  description: 'When Roomba stops at night, turn off lights off '
+  trigger:
+  - platform: device
+    device_id: 44be43b11976ca9c53539e52847d7cb5
+    domain: vacuum
+    entity_id: vacuum.roomba
+    type: docked
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+      milliseconds: 0
+  condition:
+  - condition: state
+    entity_id: sun.sun
+    state: below_horizon
+  - condition: state
+    entity_id: binary_sensor.downstairs_motion_any
+    state: 'off'
+    for: 0:00:00
+  - condition: state
+    entity_id: media_player.family_room_apple_tv
+    state:
+    - 'off'
+    - paused
+    - unavailable
+    - idle
+  - condition: state
+    entity_id: media_player.samsung_un55h7100_2
+    state:
+    - 'off'
+    - paused
+    - unavailable
+  action:
+  - scene: scene.downstairs_inactivity
+  - service: light.turn_off
+    target:
+      area_id:
+      - dining_room
+      - living_room
+      - kitchen
+  mode: restart
+- id: '1618877720683'
+  alias: Notify Garage Door Open at Sunset
+  description: ''
+  trigger:
+  - platform: sun
+    event: sunset
+  condition:
+  - condition: or
+    conditions:
+    - condition: device
+      device_id: aca1fd076bac705db6d381d678fe5487
+      domain: cover
+      entity_id: cover.garage_door_opener
+      type: is_open
+    - type: is_open
+      condition: device
+      device_id: 37469d7629aa92d508d96a4d1139ac15
+      entity_id: binary_sensor.garage_door_contact_ias_zone
+      domain: binary_sensor
+  action:
+  - service: notify.notify
+    data:
+      title: Garage Doorr Open
+      message: The garage door is open after sunset
+  mode: single
+- id: '1619438138688'
+  alias: Mudroom - Activity
+  description: Blueprint
+  use_blueprint:
+    path: freakshock88/motion_illuminance_activated_entity.yaml
+    input:
+      no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
+      target_entity: light.mudroom_light
+      turn_off_blocker_entity: light.garage_light
+      motion_sensor: binary_sensor.mudroom_motion_ias_zone
+- id: '1619438720780'
+  alias: Back Door - Activity
+  description: ''
+  use_blueprint:
+    path: jlaska/on_off_with_motion_illuminance_timeout.yaml
+    input:
+      illuminance_cutoff: input_number.illumination_low_cutoff_value
+      no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
+      illuminance_sensor: sensor.kitchen_motion_illuminance
+      motion_sensor: binary_sensor.back_door_contact_ias_zone
+      target_entity: light.sunroom_fan_light
+- id: '1619441985700'
+  alias: Front Door - Activity
+  description: ''
+  use_blueprint:
+    path: jlaska/on_off_with_motion_illuminance_timeout.yaml
+    input:
+      target_entity: switch.entryway_door_light_switch
+      illuminance_cutoff: input_number.illumination_low_cutoff_value
+      no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
+      motion_sensor: binary_sensor.front_door_contact_ias_zone
+      illuminance_sensor: sensor.kitchen_motion_illuminance
+- id: '1619447091981'
+  alias: Dining Room - Activity
+  description: ''
+  use_blueprint:
+    path: jlaska/on_off_with_motion_illuminance_timeout.yaml
+    input:
+      target_entity: light.dining_room_light_level
+      illuminance_cutoff: input_number.illumination_medium_cutoff_value
+      turn_off_blocker_entity: light.entryway_hall_light
+      no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
+      illuminance_sensor: sensor.kitchen_motion_illuminance
+      motion_sensor: binary_sensor.dining_room_motion_any
+- id: '1619530751693'
+  alias: Sunrise
+  description: ''
+  trigger:
+  - platform: sun
+    event: sunrise
+    offset: 00:00:00
+  condition: []
+  action:
+  - service: frontend.set_theme
+    data:
+      name: default
+  - service: light.turn_off
+    target:
+      area_id: outside
+  - service: script.ge_switch_led_light
+    data:
+      node_value: 2
+  mode: single
+- id: '1619800383522'
+  alias: Master Bathroom Fan - Humidity
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.master_bathroom_hygrostat
+    to: 'off'
+    from: 'on'
+  - platform: state
+    entity_id: binary_sensor.master_bathroom_hygrostat
+    to: 'on'
+    from: 'off'
+  condition:
+  - condition: template
+    value_template: '{{ trigger.to_state.state in [''on'', ''off''] }}'
+  action:
+  - service: fan.turn_{{ trigger.to_state.state }}
+    entity_id: fan.master_bathroom_fan
+  mode: single
+- id: '1619810016068'
+  alias: Kids Bathroom Light - Activity
+  description: ''
+  use_blueprint:
+    path: jlaska/on_off_with_motion_illuminance_timeout.yaml
+    input:
+      target_entity: light.kids_bathroom_light
+      illuminance_cutoff: input_number.illumination_medium_cutoff_value
+      time_limit_after: input_datetime.time_of_day_automation_start
+      time_limit_before: input_datetime.time_of_day_automation_stop
+      no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
+      motion_sensor: binary_sensor.kids_bathroom_motion
+      illuminance_sensor: sensor.kids_bathroom_illuminance
+- id: '1619984652322'
+  alias: Guest Bathroom Fan - Humidity
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.guest_bathroom_hygrostat
+    from: 'on'
+    to: 'off'
+  - platform: state
+    entity_id: binary_sensor.guest_bathroom_hygrostat
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: template
+    value_template: '{{ trigger.to_state.state in [''on'', ''off''] }}'
+  action:
+  - service: fan.turn_{{ trigger.to_state.state }}
+    entity_id: fan.guest_bathroom_fan
+  mode: single
+- id: '1620651897512'
+  alias: Notify If Any Door Left Open
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: a0351c213a881cdba22e93648849f2d1
+    entity_id: binary_sensor.attic_door_contact_ias_zone
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - type: opened
+    platform: device
+    device_id: 720f3a84bef7a7dd93aa773ab4767c2a
+    entity_id: binary_sensor.back_door_contact_ias_zone
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - type: opened
+    platform: device
+    device_id: 6a4f4eccc9f68877d56de9d1750e2a78
+    entity_id: binary_sensor.front_door_contact_ias_zone
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - type: opened
+    platform: device
+    device_id: 1f8145dafc16535dd280537d4b322811
+    entity_id: binary_sensor.garage_freezer_contact_on_off
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - type: opened
+    platform: device
+    device_id: 692324b1806aa6182682c9a0e7947140
+    entity_id: binary_sensor.kitchen_refrigerator_contact_on_off
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - type: opened
+    platform: device
+    device_id: c2bd0018417d9382001ed77c17372f2d
+    entity_id: binary_sensor.mudroom_door_contact_ias_zone
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  condition: []
+  action:
+  - service: notify.notify
+    data:
+      title: The {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} is
+        open
+      message: Please close the {{ state_attr(trigger.to_state.entity_id, 'friendly_name')
+        }}
+  - service: media_player.volume_set
+    target:
+      entity_id:
+      - media_player.all_speakers
+    data:
+      volume_level: 0.75
+  - service: tts.google_translate_say
+    data:
+      entity_id: media_player.all_speakers
+      message: The {{ state_attr(trigger.to_state.entity_id, 'friendly_name')|replace('Contact','')
+        }} is open
+  mode: parallel
+  max: 6
+- id: '1622157422281'
+  alias: Guest Bathroom Activity
+  description: ''
+  use_blueprint:
+    path: jlaska/on_off_with_motion_illuminance_timeout.yaml
+    input:
+      illuminance_cutoff: input_number.illumination_medium_cutoff_value
+      time_limit_after: input_datetime.time_of_day_automation_start
+      time_limit_before: input_datetime.goodnight_start_time
+      no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
+      target_entity: light.guest_bathroom_light
+      motion_sensor: binary_sensor.guest_bathroom_motion_on_off
+      illuminance_sensor: sensor.guest_bathroom_motion_illuminance
+- id: '1622206147425'
+  alias: Notify When Solaredge Offline
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.solaredge_solar_power
+    attribute: status
+    from: Active,Idle
+  - platform: state
+    entity_id: device_tracker.solaredge
+    to: not_home
+  condition:
+  - condition: state
+    entity_id: sun.sun
+    state: above_horizon
+  action:
+  - service: notify.mobile_app_james_iphone
+    data:
+      title: Solaredge Offline
+      message: The solaredge may be offline ({{trigger.entity_id}} now {{trigger.to_state.status}})
+  mode: single
+- id: '1622209187653'
+  alias: Guest Room Button
+  description: ''
+  use_blueprint:
+    path: SeanM/zha-aqara-wireless-mini-switch.yaml
+    input:
+      button_single_press:
+      - type: toggle
+        device_id: 868ea95e4d53e4452a6c7fe1239bece2
+        entity_id: switch.guest_room_nightstand_switch
+        domain: switch
+      button_double_press:
+      - type: toggle
+        device_id: 5fc3352b6526f25b744217275ab12df6
+        entity_id: switch.guest_room_fan_light_switch
+        domain: switch
+      button_long_press:
+      - type: toggle
+        device_id: 1dcf0d12de164a53d3040f7dd066e8c1
+        entity_id: switch.guest_room_fan_switch
+        domain: switch
+      aqara_mini_switch: 9dce489d377a856c545eb1ef5d12bc3e
+- id: '1622336796126'
+  alias: Shannon’s Closet Light - Timer
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: 6d52cd1e9cd58bccdde54252aee5458c
+    entity_id: switch.shannons_closet_light_switch
+    domain: switch
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 6d52cd1e9cd58bccdde54252aee5458c
+    entity_id: switch.shannons_closet_light_switch
+    domain: switch
+  mode: restart
+- id: '1622383389825'
+  alias: Dusk (exterior)
+  description: Turn on exterior lights at dusk
+  trigger:
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    below: '-2.5'
+  condition: []
+  action:
+  - scene: scene.dusk
+  mode: single
+- id: '1622918075973'
+  alias: Master Bathroom Toilet Fan - Timer
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: fan.master_bathroom_toilet_fan
+    to: 'on'
+    for: 00:10:00
+  condition: []
+  action:
+  - service: homeassistant.turn_off
+    target:
+      entity_id:
+      - fan.master_bathroom_toilet_fan
+      - light.master_bathroom_toilet_light
+  mode: single
+- id: '1623874543382'
+  alias: Notify Zone Geofence
+  description: Change the color of lights when someone arrives or leaves a zone
+  trigger:
+  - platform: zone
+    entity_id:
+    - person.james_laska
+    - person.shannon_laska
+    zone: zone.home
+    event: enter
+  - platform: zone
+    entity_id:
+    - person.james_laska
+    - person.shannon_laska
+    zone: zone.home
+    event: leave
+  - platform: zone
+    entity_id:
+    - person.shannon_laska
+    zone: zone.ncdg
+    event: leave
+  - platform: zone
+    entity_id:
+    - person.james_laska
+    zone: zone.rht
+    event: leave
+  condition: []
+  action:
+  - service: script.zone_pulse_lights
+    data:
+      trigger_event: '{{ trigger.event }}'
+      trigger_zone: '{{ trigger.zone.entity_id }}'
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event == ''enter'' }}'
+      - condition: template
+        value_template: '{{ trigger.entity_id == ''person.james_laska'' }}'
+      - condition: template
+        value_template: '{{ trigger.zone.entity_id == ''zone.home'' }}'
+      sequence:
+      - service: script.1628974088097
+    default:
+    - service: notify.mobile_app_james_iphone
+      data:
+        title: '{{ state_attr(trigger.to_state.entity_id, ''friendly_name'') }} is
+          {{ trigger.to_state.state }}'
+        message: '{{ trigger.entity_id }} triggered {{ trigger.event }} for {{ state_attr(trigger.zone.entity_id,
+          ''friendly_name'') }}'
+        data:
+          tag: zone_notify
+          group: zone
+  mode: restart
+- id: '1624216187992'
+  alias: Master Bedroom - Daytime Inactivity
+  description: Turn off lights and fan when no occupancy detected
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.master_bedroom_motion_any
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
+      milliseconds: 0
+  condition:
+  - condition: state
+    entity_id: sun.sun
+    state: above_horizon
+  - condition: time
+    after: input_datetime.time_of_day_automation_start
+    before: input_datetime.time_of_day_automation_stop
+  action:
+  - service: light.turn_off
+    data: {}
+    target:
+      area_id: master_bedroom
+  - service: fan.turn_off
+    target:
+      entity_id: fan.master_bedroom_fan
+  mode: restart
+- id: '1624216292589'
+  alias: Guest Room - Daytime Inactivity
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.guest_room_motion_any
+    to: 'off'
+    for: 00:30:00
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    above: '4.0'
+  - platform: time
+    at: input_datetime.time_of_day_automation_start
+  condition:
+  - condition: state
+    entity_id: binary_sensor.guest_room_motion_any
+    state: 'off'
+    for: 00:30:00
+  - condition: time
+    before: input_datetime.time_of_day_automation_stop
+  - condition: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    above: '4.0'
+  action:
+  - service: light.turn_off
+    data: {}
+    target:
+      area_id:
+      - guest_room
+      - guest_bathroom
+  - service: fan.turn_off
+    target:
+      area_id: guest_room
+  mode: single
+- id: '1624222738706'
+  alias: Bathroom Fan/Light Timer
+  description: Turn off bathroom lights/fans after a period of time
+  trigger:
+  - platform: state
+    entity_id: fan.powder_room_fan
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+      milliseconds: 0
+    id: powder_room_fan
+  - platform: state
+    entity_id: light.powder_room_light
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+      milliseconds: 0
+    id: powder_room_light
+  - platform: state
+    entity_id: light.master_bathroom_toilet_light
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+      milliseconds: 0
+    to: 'on'
+    id: master_bathroom_toilet_light
+  - platform: state
+    entity_id: fan.master_bathroom_toilet_fan
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+      milliseconds: 0
+    id: master_bathroom_toilet_fan
+  - platform: state
+    entity_id: fan.guest_bathroom_fan
+    id: guest_bathroom_fan
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+      milliseconds: 0
+  - platform: state
+    id: kids_bathroom_fan
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+      milliseconds: 0
+    entity_id: fan.kids_bathroom_fan
+  - platform: state
+    entity_id: fan.master_bathroom_fan
+    id: master_bathroom_fan
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+      milliseconds: 0
+  - platform: state
+    entity_id: fan.sunroom_fan
+    to: 'on'
+    for:
+      hours: 1
+      minutes: 0
+      seconds: 0
+      milliseconds: 0
+    id: sunroom_fan
+  condition:
+  - condition: or
+    conditions:
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: master_bathroom_fan
+      - condition: state
+        entity_id: binary_sensor.master_bathroom_hygrostat
+        state: 'off'
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: guest_bathroom_fan
+      - condition: state
+        entity_id: binary_sensor.guest_bathroom_hygrostat
+        state: 'off'
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: kids_bathroom_fan
+      - condition: state
+        entity_id: binary_sensor.kids_bathroom_hygrostat
+        state: 'off'
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: sunroom_fan
+      - condition: state
+        state: 'off'
+        entity_id: binary_sensor.sunroom_motion_any
+    - condition: trigger
+      id:
+      - master_bathroom_toilet_fan
+      - master_bathroom_toilet_light
+      - powder_room_fan
+      - powder_room_light
+  action:
+  - service: homeassistant.turn_off
+    target:
+      entity_id: '{{ trigger.to_state.entity_id }}'
+  mode: parallel
+  max: 6
+- id: '1624750206254'
+  alias: Master Bathroom Shower Light - Activity (jlaska)
+  description: Turn on Shower light during shower time in the evening
+  use_blueprint:
+    path: jlaska/on_off_with_motion_illuminance_timeout.yaml
+    input:
+      motion_sensor: binary_sensor.master_bathroom_motion
+      target_entity: light.master_bathroom_shower_light
+      time_limit_after: input_datetime.time_of_day_shower_automation_start
+      time_limit_before: input_datetime.time_of_day_automation_stop
+      no_motion_wait: input_number.time_automation_waits_to_turn_off_after_no_motion_medium
+- id: '1625665304293'
+  alias: Laundry Cycle Finished
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.laundry_room_washing_machine
+    to: 'on'
+    for: 00:05:00
+    from: 'off'
+  - platform: state
+    entity_id: binary_sensor.laundry_room_dryer
+    from: 'off'
+    to: 'on'
+    for: 00:10:00
+  condition: []
+  action:
+  - wait_template: '{{ is_state(trigger.entity_id, ''off'') }}'
+    timeout: '1:00:00'
+  - service: media_player.volume_set
+    target:
+      entity_id:
+      - media_player.all_speakers
+    data:
+      volume_level: 0.7
+  - service: tts.google_translate_say
+    data:
+      message: The {{ state_attr(trigger.to_state.entity_id, 'friendly_name')}} has
+        finished
+      entity_id: media_player.all_speakers
+  mode: parallel
+  max: 2
+- id: '1625752603984'
+  alias: Leak Detected
+  description: ''
+  trigger:
+  - type: moist
+    platform: device
+    device_id: c67de1a0a4a1cdcc6b89e18a1479cfa3
+    entity_id: binary_sensor.laundry_room_leak_ias_zone
+    domain: binary_sensor
+  condition: []
+  action:
+  - service: notify.mobile_app_james_iphone
+    data:
+      message: A leak was detected by {{ state_attr(trigger.to_state.entity_id, 'friendly_name')
+        }}
+      title: Leak Detected
+      data:
+        push:
+          sound:
+            name: default
+            critical: 1
+            volume: 1
+  - type: turn_off
+    device_id: b9bea195719b7e53a8ae66a04660c655
+    entity_id: switch.centralite_4257050_rzhac_a1934205_on_off
+    domain: switch
+  mode: single
+- id: '1628526357140'
+  alias: Notify When Person Detected
+  description: Notify when everyone is away and a person is detected
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.motion_front_door_protect
+    attribute: event_object
+    to: person,vehicle
+  condition:
+  - condition: template
+    value_template: '{{ utcnow() - state_attr(''automation.person_notification_when_away'',
+      ''last_triggered'') > timedelta(minutes=1) }}'
+  action:
+  - service: camera.record
+    target:
+      entity_id: camera.front_door_protect
+    data:
+      lookback: 10
+      duration: 15
+      filename: /config/www/recording.{{ trigger.entity_id }}.mp4
+  - service: camera.snapshot
+    target:
+      entity_id: camera.front_door_protect
+    data:
+      filename: /config/www/snapshot.{{ trigger.entity_id }}.jpg
+  - service: notify.mobile_app_james_iphone
+    data:
+      title: '{{ state_attr(trigger.to_state.entity_id, ''event_object'')|capitalize
+        }} Detected'
+      message: '{{ state_attr(trigger.to_state.entity_id, ''friendly_name'') }}'
+      data:
+        tag: person_detected
+        entity_id: camera.front_door_protect
+        image: /local/snapshot.{{ trigger.entity_id }}.jpg
+        __video: /local/recording.{{ trigger.entity_id }}.mp4
+        actions:
+        - action: LIVE
+          title: Recorded Event
+          uri: /local/recording.{{ trigger.entity_id }}.mp4
+  mode: single
+- id: '1629036563405'
+  alias: Kids Bathroom Fan - Timer
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: fan.kids_bathroom_fan
+    to: 'on'
+    for: 00:15:00
+  condition:
+  - condition: state
+    entity_id: binary_sensor.kids_bathroom_hygrostat
+    state: 'off'
+  action:
+  - service: fan.turn_off
+    target:
+      entity_id: fan.kids_bathroom_fan
+  mode: single
+- id: '1629036614716'
+  alias: Kids Bathroom Fan - Humidity
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.kids_bathroom_hygrostat
+  condition:
+  - condition: template
+    value_template: '{{ trigger.to_state.state != trigger.from_state.state }}'
+  action:
+  - service: fan.turn_{{ trigger.to_state.state }}
+    entity_id: fan.kids_bathroom_fan
+  mode: single
+- id: '1629366808660'
+  alias: Update Available Notification
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.updater
+    from: 'off'
+    to: 'on'
+  action:
+  - service: notify.notify
+    data:
+      message: Home Assistant {{ state_attr('binary_sensor.updater', 'newest_version')
+        }} is available.
+  - service: notify.persistent_notification
+    data:
+      message: Home Assistant {{ state_attr('binary_sensor.updater', 'newest_version')
+        }} is available.
+  mode: single
+- id: '1629751377188'
+  alias: Notify if device unavailable or dead
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - zwave.holiday_light_switch
+    - zwave.jasco_products_12727_in_wall_smart_switch_toggle
+    - zwave.jasco_products_12727_in_wall_smart_switch_toggle_2
+    - zwave.jasco_products_12727_in_wall_smart_switch_toggle_3
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_10
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_11
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_12
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_13
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_14
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_15
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_16
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_18
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_19
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_2
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_20
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_3
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_5
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_6
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_7
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_8
+    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_9
+    - zwave.jasco_products_14295_in_wall_smart_toggle_dimmer
+    - zwave.jasco_products_14295_in_wall_smart_toggle_dimmer_2
+    - zwave.jasco_products_14295_in_wall_smart_toggle_dimmer_3
+    - zwave.jasco_products_14295_in_wall_smart_toggle_dimmer_4
+    - zwave.jasco_products_14295_in_wall_smart_toggle_dimmer_5
+    - zwave.jasco_products_14295_in_wall_smart_toggle_dimmer_6
+    - zwave.jasco_products_14295_in_wall_smart_toggle_dimmer_7
+    - zwave.jasco_products_unknown_type_4944_id_3237
+    - zwave.jasco_products_unknown_type_4952_id_3137
+    - zwave.jasco_products_unknown_type_4952_id_3137_10
+    - zwave.jasco_products_unknown_type_4952_id_3137_11
+    - zwave.jasco_products_unknown_type_4952_id_3137_12
+    - zwave.jasco_products_unknown_type_4952_id_3137_13
+    - zwave.jasco_products_unknown_type_4952_id_3137_14
+    - zwave.jasco_products_unknown_type_4952_id_3137_15
+    - zwave.jasco_products_unknown_type_4952_id_3137_2
+    - zwave.jasco_products_unknown_type_4952_id_3137_3
+    - zwave.jasco_products_unknown_type_4952_id_3137_4
+    - zwave.jasco_products_unknown_type_4952_id_3137_5
+    - zwave.jasco_products_unknown_type_4952_id_3137_6
+    - zwave.jasco_products_unknown_type_4952_id_3137_7
+    - zwave.jasco_products_unknown_type_4952_id_3137_8
+    - zwave.jasco_products_unknown_type_4952_id_3137_9
+    - zwave.master_bedroom_nightstand_4
+    - zwave.minimote
+    - zwave.powder_room_fan_4
+    - zwave.z_wave_sigma_designs_uzb_z_wave_usb_adapter
+    to: dead, unavailable
+  condition: []
+  action:
+  - service: notify.mobile_app_james_iphone
+    data:
+      title: A device is unavailable
+      message: '{{ state_attr(trigger.to_state.entity_id, ''friendly_name'') }} is
+        reporting as {{ trigger.to_state.state }}'
+  mode: single
+- id: '1629811616934'
+  alias: Master Bedroom Automation Ceiling Fan
+  description: Turn on/off fan automatically based on temperature and time of day
+  trigger:
+  - type: occupied
+    platform: device
+    device_id: 40807edd8c0c365a96b2b4525d40cdda
+    entity_id: binary_sensor.master_bedroom_motion_hue_occupancy
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+      milliseconds: 0
+  condition:
+  - condition: state
+    entity_id: sun.sun
+    state: above_horizon
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+      milliseconds: 0
+  - condition: numeric_state
+    above: '78.0'
+    entity_id: sensor.master_bedroom_motion_hue_temperature
+  - condition: time
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    after: input_datetime.time_of_day_automation_start
+    before: input_datetime.time_of_day_automation_stop
+  action:
+  - service: fan.turn_on
+    target:
+      entity_id: fan.master_bedroom_fan
+  mode: single
+- id: '1630371041263'
+  alias: Henry’s Room Button
+  description: 'Toggle devices based on button presses '
+  use_blueprint:
+    path: johnny5w/zha-samsung-smartthings-button.yaml
+    input:
+      samsung_smartthings_button: 7f88427974214e8526fc827070a0a795
+      remote_button_short_press:
+      - service: light.toggle
+        data:
+          color_temp: 325
+          brightness_pct: 100
+        target:
+          entity_id: light.henrys_room_lamps_zha_group_0x0002
+      remote_button_double_press:
+      - service: light.toggle
+        target:
+          entity_id: light.henrys_room_light_level
+      - service: light.turn_off
+        target:
+          entity_id: light.henrys_room_fan_light
+      remote_button_hold_press:
+      - service: fan.toggle
+        target:
+          entity_id: fan.henrys_room_fan
+- id: '1630755323301'
+  alias: Piano Time
+  description: Turn or/off lights when playing piano
+  trigger:
+  - type: power
+    platform: device
+    device_id: 3a590d149622d6333f61fcff22283d9f
+    entity_id: sensor.dining_room_plug_samjin_electrical_measurement
+    domain: sensor
+    above: 0.5
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+    id: piano_on
+  condition: []
+  action:
+  - scene: scene.piano_time
+  - wait_for_trigger:
+    - type: power
+      platform: device
+      device_id: 3a590d149622d6333f61fcff22283d9f
+      entity_id: sensor.dining_room_plug_samjin_electrical_measurement
+      domain: sensor
+      below: 0.5
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 5
+        milliseconds: 0
+    continue_on_timeout: false
+  - service: light.turn_off
+    target:
+      area_id:
+      - dining_room
+      - entryway
+  mode: restart

@@ -34,16 +34,17 @@ appdata/traefik/rules/*
 
 !appdata/homeassistant
 appdata/homeassistant/*
-!appdata/homeassistant/configuration.yaml
-!appdata/homeassistant/scenes.yaml
-!appdata/homeassistant/templates.yaml
-!appdata/homeassistant/scripts.yaml
+!appdata/homeassistant/automations.yaml
 !appdata/homeassistant/binary_sensors.yaml
-!appdata/homeassistant/sensors.yaml
+!appdata/homeassistant/configuration.yaml
 !appdata/homeassistant/fans.yaml
 !appdata/homeassistant/lights.yaml
-!appdata/homeassistant/zwave.yaml
+!appdata/homeassistant/scenes.yaml
+!appdata/homeassistant/scripts.yaml
+!appdata/homeassistant/sensors.yaml
+!appdata/homeassistant/templates.yaml
 !appdata/homeassistant/zha.yaml
+!appdata/homeassistant/zwave.yaml
 
 !scripts
 scripts/*
