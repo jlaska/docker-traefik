@@ -132,6 +132,8 @@ zone_pulse_lights:
     data:
       message: Welcome home
       data:
+        group: zone-geofence
+        tag: zone-geofence-james-home
         action_data:
           latitude: '35.783595'
           longitude: '-78.776728'
@@ -146,7 +148,7 @@ zone_pulse_lights:
         action: '{{ action_open }}'
       context: {}
     continue_on_timeout: false
-    timeout: 60
+    timeout: 120
   - alias: Perform the action
     choose:
     - conditions:
