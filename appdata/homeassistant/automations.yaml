@@ -9,7 +9,7 @@
   - platform: numeric_state
     below: '50'
     for: 0:05:00
-    entity_id: sensor.kitchen_illuminance
+    entity_id: sensor.kitchen_motion_illuminance
   condition:
   - condition: time
     after: input_datetime.time_when_lights_can_come_on_if_dark_inside
