@@ -1577,11 +1577,11 @@
   alias: Master Bedroom Automation Ceiling Fan
   description: Turn on/off fan automatically based on temperature and time of day
   trigger:
-  - type: occupied
-    platform: device
-    device_id: 40807edd8c0c365a96b2b4525d40cdda
-    entity_id: binary_sensor.master_bedroom_motion_hue_occupancy
-    domain: binary_sensor
+  - platform: state
+    entity_id:
+    - binary_sensor.master_bedroom_motion_aqara_occupancy
+    - binary_sensor.master_bedroom_motion_hue_occupancy
+    to: 'on'
     for:
       hours: 0
       minutes: 2
@@ -1596,9 +1596,14 @@
       minutes: 0
       seconds: 0
       milliseconds: 0
-  - condition: numeric_state
-    above: '78.0'
-    entity_id: sensor.master_bedroom_motion_hue_temperature
+  - condition: or
+    conditions:
+    - condition: numeric_state
+      above: '76.0'
+      entity_id: sensor.master_bedroom_motion_hue_temperature
+    - condition: numeric_state
+      above: '76.0'
+      entity_id: sensor.master_bathroom_temperature
   - condition: time
     weekday:
     - mon
