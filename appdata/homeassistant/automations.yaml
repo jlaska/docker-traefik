@@ -1681,3 +1681,41 @@
       - dining_room
       - entryway
   mode: restart
+- id: '1631050114594'
+  alias: Bathroom Humidity Automation
+  description: Turn on/off bathroom fans based on humidity sensor state
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.master_bathroom_hygrostat
+    from:
+    - 'off'
+    - 'on'
+    to:
+    - 'off'
+    - 'on'
+    id: fan.master_bathroom_fan
+  - platform: state
+    entity_id: binary_sensor.kids_bathroom_hygrostat
+    from:
+    - 'off'
+    - 'on'
+    to:
+    - 'off'
+    - 'on'
+    id: fan.kids_bathroom_fan
+  - platform: state
+    entity_id: binary_sensor.guest_bathroom_hygrostat
+    from:
+    - 'off'
+    - 'on'
+    to: off,on
+    id: fan.guest_bathroom_fan
+  condition:
+  - condition: template
+    value_template: '{{ trigger.to_state.state != trigger.from_state.state }}'
+  action:
+  - service: fan.turn_{{ trigger.to_state.state }}
+    target:
+      entity_id: '{{ trigger.id }}'
+  mode: parallel
+  max: 3
