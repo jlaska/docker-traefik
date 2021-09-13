@@ -45,10 +45,10 @@ zha: !include zha.yaml
 
 # Google Nest Integration
 nest:
-  client_id: !secret google_client_id
-  client_secret: !secret google_client_secret
-  project_id: !secret google_project_id
-  subscriber_id: !secret google_subscriber_id
+  client_id: !secret google_nest_client_id
+  client_secret: !secret google_nest_client_secret
+  project_id: !secret google_nest_project_id
+  subscriber_id: !secret google_nest_subscriber_id
 
 # Use camera plugin for forcast/doplar images
 camera:
@@ -76,3 +76,8 @@ homekit:
       include_entity_globs:
         - switch.*_on_off
         - binary_sensor.*_ias_zone
+
+google:
+  client_id: !secret google_calendar_client_id
+  client_secret: !secret google_calendar_client_secret
+  calendar_access: read_only
