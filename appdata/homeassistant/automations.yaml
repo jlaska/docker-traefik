@@ -1117,7 +1117,7 @@
       - light.master_bathroom_toilet_light
   mode: single
 - id: '1623874543382'
-  alias: Notify Zone Geofence
+  alias: Notify Zone Geofence (old)
   description: Change the color of lights when someone arrives or leaves a zone
   trigger:
   - platform: zone
@@ -1157,7 +1157,7 @@
       - condition: template
         value_template: '{{ trigger.zone.entity_id == ''zone.home'' }}'
       sequence:
-      - service: script.1628974088097
+      - service: script.zone_geofence_notification
     default:
     - service: notify.mobile_app_james_iphone
       data:
@@ -1718,4 +1718,38 @@
     target:
       entity_id: '{{ trigger.id }}'
   mode: parallel
-  max: 3
+  max: 4
+- id: '1631220675733'
+  alias: Notify Zone Geofence
+  description: Notify based on who enters and leaves a zone
+  trigger:
+  - platform: zone
+    entity_id:
+    - person.james_laska
+    - person.shannon_laska
+    zone: zone.home
+    event: enter
+  - platform: zone
+    entity_id:
+    - person.james_laska
+    - person.shannon_laska
+    zone: zone.home
+    event: leave
+  - platform: zone
+    entity_id:
+    - person.shannon_laska
+    zone: zone.ncdg
+    event: leave
+  - platform: zone
+    entity_id:
+    - person.james_laska
+    zone: zone.rht
+    event: leave
+  condition: []
+  action:
+  - service: script.zone_geofence_handler
+    data:
+      trigger_event: '{{ trigger.event }}'
+      trigger_zone: '{{ trigger.zone.entity_id }}'
+      trigger_person: '{{ trigger.entity_id }}'
+  mode: restart
