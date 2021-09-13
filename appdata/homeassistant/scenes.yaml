@@ -17,17 +17,21 @@
       state: 'on'
     light.guest_room_nightstand: true
     light.henrys_room_floor_lamp:
-      brightness: 254
       state: 'on'
+      brightness: 255
+      color_temp: 330
     light.henrys_room_table_lamp:
-      brightness: 254
       state: 'on'
+      brightness: 255
+      color_temp: 330
     light.williams_room_floor_lamp:
-      brightness: 254
       state: 'on'
+      brightness: 255
+      color_temp: 330
     light.williams_room_table_lamp:
-      brightness: 254
       state: 'on'
+      brightness: 255
+      color_temp: 330
 - id: '1617753584822'
   name: Dawn
   icon: mdi:weather-sunset-up
