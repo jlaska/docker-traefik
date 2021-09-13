@@ -260,7 +260,7 @@
       entity_id: light.garage_light
   - condition: state
     entity_id: automation.mudroom_activity
-    state: '0'
+    state: 0
     attribute: current
   - service: light.turn_off
     target:
@@ -736,12 +736,26 @@
       - light.dining_room_light_level
     data:
       brightness_pct: 100
-  - wait_for_trigger: []
+  - wait_for_trigger:
+    - platform: state
+      entity_id: vacuum.roomba
+      to: docked
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 5
+        milliseconds: 0
     continue_on_timeout: false
   - condition: state
     entity_id: binary_sensor.downstairs_motion_any
     state: 'off'
-  - scene: scene.downstairs_inactivity
+  - service: light.turn_off
+    target:
+      entity_id:
+      - light.dining_room_light_level
+      - light.living_room_light_level
+      - light.kitchen_light_level
+      - light.entryway_hall_light
   mode: restart
 - id: '1618788683346'
   alias: Roomba Stop
@@ -851,11 +865,11 @@
     path: jlaska/on_off_with_motion_illuminance_timeout.yaml
     input:
       target_entity: light.dining_room_light_level
-      illuminance_cutoff: input_number.illumination_medium_cutoff_value
       turn_off_blocker_entity: light.entryway_hall_light
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
       illuminance_sensor: sensor.kitchen_motion_illuminance
       motion_sensor: binary_sensor.dining_room_motion_any
+      illuminance_cutoff: input_number.illumination_low_cutoff_value
 - id: '1619530751693'
   alias: Sunrise
   description: ''
@@ -994,9 +1008,8 @@
   action:
   - service: notify.notify
     data:
-      title: The {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} is
-        open
-      message: Please close the {{ state_attr(trigger.to_state.entity_id, 'friendly_name')
+      title: The {{ state_attr(trigger.entity_id, 'friendly_name') }} is open
+      message: Please close the {{ state_attr(trigger.entity_id, 'friendly_name')
         }}
   - service: media_player.volume_set
     target:
@@ -1007,7 +1020,7 @@
   - service: tts.google_translate_say
     data:
       entity_id: media_player.all_speakers
-      message: The {{ state_attr(trigger.to_state.entity_id, 'friendly_name')|replace('Contact','')
+      message: The {{ state_attr(trigger.entity_id, 'friendly_name')|replace(' Contact','')
         }} is open
   mode: parallel
   max: 6
@@ -1188,6 +1201,9 @@
   - condition: time
     after: input_datetime.time_of_day_automation_start
     before: input_datetime.time_of_day_automation_stop
+  - condition: state
+    entity_id: calendar.jlaska_redhat_com
+    state: 'off'
   action:
   - service: light.turn_off
     data: {}
@@ -1222,6 +1238,28 @@
     entity_id: sun.sun
     attribute: elevation
     above: '4.0'
+  - condition: or
+    conditions:
+    - condition: device
+      type: is_on
+      device_id: 1dcf0d12de164a53d3040f7dd066e8c1
+      entity_id: switch.guest_room_fan_switch
+      domain: switch
+    - condition: device
+      type: is_on
+      device_id: 5fc3352b6526f25b744217275ab12df6
+      entity_id: switch.guest_room_fan_light_switch
+      domain: switch
+    - condition: device
+      type: is_on
+      device_id: 868ea95e4d53e4452a6c7fe1239bece2
+      entity_id: switch.guest_room_nightstand_switch
+      domain: switch
+    - condition: device
+      type: is_on
+      device_id: 3de25e8eccf6f04e11789d3a46c461af
+      entity_id: switch.guest_bathroom_light_switch
+      domain: switch
   action:
   - service: light.turn_off
     data: {}
@@ -1418,7 +1456,7 @@
             volume: 1
   - type: turn_off
     device_id: b9bea195719b7e53a8ae66a04660c655
-    entity_id: switch.centralite_4257050_rzhac_a1934205_on_off
+    entity_id: switch.laundry_washer_plug_centralite_on_off
     domain: switch
   mode: single
 - id: '1628526357140'
@@ -1428,7 +1466,7 @@
   - platform: state
     entity_id: binary_sensor.motion_front_door_protect
     attribute: event_object
-    to: person,vehicle
+    to: person
   condition:
   - condition: template
     value_template: '{{ utcnow() - state_attr(''automation.person_notification_when_away'',
@@ -1574,13 +1612,19 @@
         reporting as {{ trigger.to_state.state }}'
   mode: single
 - id: '1629811616934'
-  alias: Master Bedroom Automation Ceiling Fan
+  alias: Master Bedroom Ceiling Fan
   description: Turn on/off fan automatically based on temperature and time of day
   trigger:
   - platform: state
-    entity_id:
-    - binary_sensor.master_bedroom_motion_aqara_occupancy
-    - binary_sensor.master_bedroom_motion_hue_occupancy
+    entity_id: binary_sensor.master_bedroom_motion_hue_occupancy
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+      milliseconds: 0
+  - platform: state
+    entity_id: binary_sensor.master_bedroom_motion_aqara_occupancy
     to: 'on'
     for:
       hours: 0
@@ -1599,10 +1643,10 @@
   - condition: or
     conditions:
     - condition: numeric_state
-      above: '76.0'
+      above: '74.0'
       entity_id: sensor.master_bedroom_motion_hue_temperature
     - condition: numeric_state
-      above: '76.0'
+      above: '77.0'
       entity_id: sensor.master_bathroom_temperature
   - condition: time
     weekday:
@@ -1611,8 +1655,10 @@
     - wed
     - thu
     - fri
+    - sat
+    - sun
+    before: '17:00:00'
     after: input_datetime.time_of_day_automation_start
-    before: input_datetime.time_of_day_automation_stop
   action:
   - service: fan.turn_on
     target:
@@ -1708,7 +1754,9 @@
     from:
     - 'off'
     - 'on'
-    to: off,on
+    to:
+    - 'off'
+    - 'on'
     id: fan.guest_bathroom_fan
   condition:
   - condition: template
