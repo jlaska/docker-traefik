@@ -48,116 +48,261 @@ ge_switch_led_light:
           parameter: '{{node_parameter|int}}'
           size: '{{node_size|int}}'
           value: '{{node_value|int}}'
-zone_pulse_lights:
-  mode: single
-  alias: Zone Light Pulse
-  icon: hass:led-strip
-  variables:
-    lifx_mode: breathe
-    lifx_brightness: 255
+zone_geofence_notification:
   fields:
     trigger_event:
       description: Trigger event ('enter' or 'leave')
       required: true
+    trigger_person:
+      description: Trigger entity_id (e.g. 'person.john_smith')
+      required: true
     trigger_zone:
       description: Trigger zone entity_id (e.g. 'zone.home')
-      required: false
+      required: true
   sequence:
-  - choose:
+  - variables:
+      action_open: '{{ ''OPEN_'' ~ context.id }}'
+  - alias: Determine how to notify
+    choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger_zone == "zone.home" and trigger_event == "enter"
+          and trigger_person == "person.james_laska" }}'
+      sequence:
+      - service: notify.mobile_app_james_iphone
+        data:
+          message: Welcome home {{ state_attr(trigger_person, 'friendly_name') }}
+          data:
+            group: zone-geofence
+            tag: zone-geofence-{{ trigger_person }}
+            action_data:
+              latitude: '35.783595'
+              longitude: '-78.776728'
+            actions:
+            - action: '{{ action_open }}'
+              title: Open Garage
+              authenticationRequired: true
+      - wait_for_trigger:
+        - platform: event
+          event_type: mobile_app_notification_action
+          event_data:
+            action: '{{ action_open }}'
+          context: {}
+        continue_on_timeout: false
+        timeout: 120
+      - alias: Perform the action
+        choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ wait.trigger.event.data.action == action_open }}'
+          sequence:
+          - service: cover.open_cover
+            target:
+              entity_id: cover.garage_door_opener
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger_person != "person.james_laska" }}'
+      sequence:
+      - service: notify.mobile_app_james_iphone
+        data:
+          title: Zone change for {{ state_attr(trigger_person, 'friendly_name') }}
+          message: '{{ state_attr(trigger_person, ''friendly_name'') }} {{ trigger_event
+            == ''enter'' and ''arrived at'' or ''left'' }} {{ state_attr(trigger_zone,
+            ''friendly_name'') }}'
+          data:
+            group: zone-geofence
+            tag: zone-geofence-{{ trigger_person }}
+            action_data:
+              latitude: '35.783595'
+              longitude: '-78.776728'
+  mode: restart
+  alias: Zone Geofence Notification
+  icon: hass:garage
+zone_geofence_handler:
+  alias: Zone Geofence Handler
+  mode: restart
+  icon: hass:map-marker
+  fields:
+    trigger_event:
+      description: Trigger Event ('enter' or 'leave')
+      required: true
+    trigger_person:
+      description: Trigger entity_id (e.g. 'person.john_smith')
+      required: true
+    trigger_zone:
+      description: Trigger Zone entity_id (e.g. 'zone.home')
+      required: true
+  sequence:
+  - alias: Send notifications
+    service: script.zone_geofence_notification
+    data:
+      trigger_event: '{{ trigger_event }}'
+      trigger_person: '{{ trigger_person }}'
+      trigger_zone: '{{ trigger_zone }}'
+  - alias: Pulse lights
+    service: script.zone_geofence_light_pulse
+    data:
+      trigger_event: '{{ trigger_event }}'
+      trigger_person: '{{ trigger_person }}'
+      trigger_zone: '{{ trigger_zone }}'
+zone_geofence_light_pulse:
+  mode: restart
+  alias: Zone Geofence Light Pulse
+  icon: hass:led-strip
+  variables:
+    lifx_mode: breathe
+    light_brightness: 255
+    light_period: 4
+    light_cycles: 20
+    lifx_entities:
+    - light.living_room_bookshelf_left
+    - light.living_room_bookshelf_right
+    - light.living_room_table_lamp
+    sengled_entities:
+    - light.kitchen_end_table_light_zha_group_0x0004
+    - light.henrys_room_floor_lamp
+    - light.henrys_room_table_lamp
+    - light.williams_room_floor_lamp
+    - light.williams_room_table_lamp
+  fields:
+    trigger_event:
+      description: Trigger event ('enter' or 'leave')
+      required: true
+    trigger_person:
+      description: Trigger entity_id (e.g. 'person.john_smith')
+      required: true
+    trigger_zone:
+      description: Trigger zone entity_id (e.g. 'zone.home')
+      required: true
+  sequence:
+  - service: scene.create
+    data:
+      scene_id: snapshot_zone_pulse
+      snapshot_entities: '{{ sengled_entities|list }}'
+  - delay:
+      seconds: 1
+  - alias: Determine the light pulse color
+    choose:
     - conditions:
       - condition: template
         value_template: '{{ trigger_zone == "zone.home" and trigger_event == "enter"
           }}'
       sequence:
-      - service: lifx.effect_pulse
-        target:
-          entity_id:
-          - light.living_room_bookshelf_left
-          - light.living_room_bookshelf_right
+      - service: input_text.set_value
         data:
-          mode: '{{ lifx_mode }}'
-          brightness: '{{ lifx_brightness|int }}'
-          color_name: darkred
-          cycles: 20
-          period: 4
+          value: darkred
+        target:
+          entity_id: input_text.zone_pulse_color
     - conditions:
       - condition: template
         value_template: '{{ trigger_zone == "zone.home" and trigger_event == "leave"
           }}'
       sequence:
-      - service: lifx.effect_pulse
-        target:
-          entity_id:
-          - light.living_room_bookshelf_left
-          - light.living_room_bookshelf_right
+      - service: input_text.set_value
         data:
-          mode: '{{ lifx_mode }}'
-          brightness: '{{ lifx_brightness|int }}'
-          color_name: darkgreen
-          cycles: 20
-          period: 4
+          value: darkgreen
+        target:
+          entity_id: input_text.zone_pulse_color
     - conditions:
       - condition: template
         value_template: '{{ trigger_zone in ["zone.rht", "zone.ncdg"] and trigger_event
           == "leave" }}'
       sequence:
-      - service: lifx.effect_pulse
-        target:
-          entity_id:
-          - light.living_room_bookshelf_left
-          - light.living_room_bookshelf_right
+      - service: input_text.set_value
         data:
-          mode: '{{ lifx_mode }}'
-          brightness: '{{ lifx_brightness|int }}'
-          color_name: yellow
-          cycles: 20
-          period: 4
-    default:
-    - service: lifx.effect_pulse
-      target:
-        entity_id:
-        - light.living_room_bookshelf_left
-        - light.living_room_bookshelf_right
-      data:
-        mode: '{{ lifx_mode }}'
-        brightness: '{{ lifx_brightness|int }}'
-        color_name: homeassistant
-        cycles: 20
-        period: 4
-'1628974088097':
-  sequence:
-  - variables:
-      action_open: '{{ ''OPEN_'' ~ context.id }}'
-  - service: notify.mobile_app_james_iphone
-    data:
-      message: Welcome home
-      data:
-        group: zone-geofence
-        tag: zone-geofence-james-home
-        action_data:
-          latitude: '35.783595'
-          longitude: '-78.776728'
-        actions:
-        - action: '{{ action_open }}'
-          title: Open Garage
-          authenticationRequired: true
-  - wait_for_trigger:
-    - platform: event
-      event_type: mobile_app_notification_action
-      event_data:
-        action: '{{ action_open }}'
-      context: {}
-    continue_on_timeout: false
-    timeout: 120
-  - alias: Perform the action
-    choose:
-    - conditions:
-      - condition: template
-        value_template: '{{ wait.trigger.event.data.action == action_open }}'
-      sequence:
-      - service: cover.open_cover
+          value: yellow
         target:
-          entity_id: cover.garage_door_opener
-  mode: single
-  alias: Garage Door Actionable Notification
-  icon: hass:garage
+          entity_id: input_text.zone_pulse_color
+    default:
+    - service: input_text.set_value
+      data:
+        value: homeassistant
+      target:
+        entity_id: input_text.zone_pulse_color
+  - service: lifx.effect_pulse
+    target:
+      entity_id: '{{ lifx_entities }}'
+    data:
+      mode: '{{ lifx_mode }}'
+      brightness: '{{ light_brightness|int }}'
+      cycles: '{{ light_cycles|int }}'
+      period: '{{ light_period|int }}'
+      color_name: '{{ states(''input_text.zone_pulse_color'') }}'
+  - service: light.turn_on
+    target:
+      entity_id: '{{ sengled_entities|list }}'
+    data:
+      brightness: '{{ light_brightness|int }}'
+      transition: 1
+      color_name: '{{ states(''input_text.zone_pulse_color'') }}'
+  - repeat:
+      while:
+      - condition: template
+        value_template: '{{ repeat.index < light_cycles|int / 2 }}'
+      sequence:
+      - delay:
+          seconds: '{{ light_period|int / 2 }}'
+      - service: light.toggle
+        target:
+          entity_id: '{{ sengled_entities|list }}'
+        data:
+          brightness: '{{ light_brightness|int }}'
+          transition: 1
+          color_name: '{{ states(''input_text.zone_pulse_color'') }}'
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 15
+      milliseconds: 0
+  - service: scene.turn_on
+    target:
+      entity_id: scene.snapshot_zone_pulse
+sengled_light_pulse_test:
+  alias: Sengled Light Pulse Test
+  mode: restart
+  icon: hass:lamps
+  variables:
+    lifx_mode: breathe
+    light_brightness: 255
+    light_period: 2
+    light_cycles: 10
+    sengled_entities:
+    - light.kitchen_end_table_light_zha_group_0x0004
+    - light.henrys_room_floor_lamp
+    - light.henrys_room_table_lamp
+    - light.williams_room_floor_lamp
+    - light.williams_room_table_lamp
+  sequence:
+  - service: scene.create
+    data:
+      scene_id: snapshot_zone_pulse
+      snapshot_entities: '{{ sengled_entities|list }}'
+  - service: light.turn_on
+    target:
+      entity_id: '{{ sengled_entities|list }}'
+    data:
+      brightness: '{{ light_brightness|int }}'
+      transition: 1
+      color_name: '{{ states(''input_text.zone_pulse_color'') }}'
+  - repeat:
+      while:
+      - condition: template
+        value_template: '{{ repeat.index < light_cycles|int }}'
+      sequence:
+      - delay:
+          seconds: 2
+      - service: light.toggle
+        target:
+          entity_id: '{{ sengled_entities|list }}'
+        data:
+          brightness: '{{ light_brightness|int }}'
+          transition: 1
+          color_name: '{{ states(''input_text.zone_pulse_color'') }}'
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 15
+      milliseconds: 0
+  - service: scene.turn_on
+    target:
+      entity_id: scene.snapshot_zone_pulse
