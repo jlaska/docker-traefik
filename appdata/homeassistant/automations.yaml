@@ -182,7 +182,7 @@
       time_limit_before: input_datetime.time_of_day_automation_stop
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
       motion_sensor: binary_sensor.laundry_room_motion
-      illuminance_sensor: sensor.master_bedroom_motion_hue_illuminance
+      illuminance_sensor: sensor.master_bedroom_motion_aqara_illuminance
 - id: '1617925080161'
   alias: Master Bathroom Light - Activity
   description: ''
@@ -195,7 +195,7 @@
       time_limit_before: input_datetime.time_of_day_automation_stop
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
       motion_sensor: binary_sensor.master_bathroom_motion
-      illuminance_sensor: sensor.master_bedroom_motion_hue_illuminance
+      illuminance_sensor: sensor.master_bedroom_motion_aqara_illuminance
 - id: '1617970121884'
   alias: Garage Light - Activity
   description: ''
@@ -864,7 +864,7 @@
       target_entity: light.dining_room_light_level
       turn_off_blocker_entity: light.entryway_hall_light
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
-      illuminance_sensor: sensor.kitchen_motion_illuminance
+      illuminance_sensor: sensor.dining_room_motion_hue_illuminance
       motion_sensor: binary_sensor.dining_room_motion_any
       illuminance_cutoff: input_number.illumination_low_cutoff_value
 - id: '1619530751693'
@@ -1184,13 +1184,13 @@
   description: Turn off lights and fan when no occupancy detected
   trigger:
   - platform: state
-    entity_id: binary_sensor.master_bedroom_motion_any
     to: 'off'
     for:
       hours: 0
       minutes: 30
       seconds: 0
       milliseconds: 0
+    entity_id: binary_sensor.master_bedroom_motion_aqara_occupancy
   condition:
   - condition: state
     entity_id: sun.sun
@@ -1613,21 +1613,13 @@
   description: Turn on/off fan automatically based on temperature and time of day
   trigger:
   - platform: state
-    entity_id: binary_sensor.master_bedroom_motion_hue_occupancy
     to: 'on'
     for:
       hours: 0
-      minutes: 0
-      seconds: 10
-      milliseconds: 0
-  - platform: state
-    entity_id: binary_sensor.master_bedroom_motion_aqara_occupancy
-    to: 'on'
-    for:
-      hours: 0
-      minutes: 2
+      minutes: 1
       seconds: 0
       milliseconds: 0
+    entity_id: binary_sensor.master_bedroom_motion_aqara_occupancy
   condition:
   - condition: state
     entity_id: sun.sun
@@ -1637,14 +1629,9 @@
       minutes: 0
       seconds: 0
       milliseconds: 0
-  - condition: or
-    conditions:
-    - condition: numeric_state
-      above: '74.0'
-      entity_id: sensor.master_bedroom_motion_hue_temperature
-    - condition: numeric_state
-      above: '77.0'
-      entity_id: sensor.master_bathroom_temperature
+  - condition: numeric_state
+    above: '77.0'
+    entity_id: sensor.master_bathroom_temperature
   - condition: time
     weekday:
     - mon
