@@ -6,14 +6,7 @@
     entity_id: sun.sun
     attribute: elevation
     below: '12.5'
-  - platform: numeric_state
-    below: '50'
-    for: 0:05:00
-    entity_id: sensor.kitchen_motion_illuminance
-  condition:
-  - condition: time
-    after: input_datetime.time_when_lights_can_come_on_if_dark_inside
-    before: input_datetime.time_of_day_automation_stop
+  condition: []
   action:
   - scene: scene.sunset
   - service: frontend.set_theme
@@ -821,9 +814,13 @@
       entity_id: binary_sensor.garage_door_contact_ias_zone
       domain: binary_sensor
   action:
-  - service: notify.notify
+  - service: notify.mobile_app_james_iphone
     data:
-      title: Garage Doorr Open
+      title: Garage Door Open
+      message: The garage door is still open after sunset
+  - service: tts.google_translate_say
+    data:
+      entity_id: media_player.all_speakers
       message: The garage door is open after sunset
   mode: single
 - id: '1619438138688'
