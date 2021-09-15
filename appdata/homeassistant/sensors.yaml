@@ -71,6 +71,11 @@
           Unknown
         {% endif %}
 
+    dining_room_motion_hue_temperature_adjusted:
+      friendly_name: "Dining Romo Motion Hue Temperature (adjusted)"
+      icon_template: hass:thermometer
+      value_template: "{{ states('sensor.dining_room_motion_hue_temperature')|float + 3.0 }}"
+
 # Create time sensors
 - platform: time_date
   display_options:
