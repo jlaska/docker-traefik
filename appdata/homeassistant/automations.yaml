@@ -1483,8 +1483,7 @@
       filename: /config/www/snapshot.{{ trigger.entity_id }}.jpg
   - service: notify.mobile_app_james_iphone
     data:
-      title: '{{ state_attr(trigger.to_state.entity_id, ''event_object'')|capitalize
-        }} Detected'
+      title: '{{ trigger.to_state.attributes.event_object|capitalize }} Detected'
       message: '{{ state_attr(trigger.to_state.entity_id, ''friendly_name'') }}'
       data:
         tag: person_detected
