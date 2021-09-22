@@ -93,3 +93,9 @@
 - platform: switch
   name: Kids Bathroom Shower Light
   entity_id: switch.kids_bathroom_fan_switch
+- platform: switch
+  name: Stairway Light
+  entity_id: switch.stairway_light_switch
+- platform: switch
+  name: Upstairs Hallway Light
+  entity_id: switch.upstairs_hallway_light_switch
