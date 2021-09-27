@@ -30,6 +30,8 @@ ge_switch_led_light:
     - 5
     - 7
     - 6
+    - 56
+    - 55
   fields:
     node_value:
       description: The config value used (0=on_without_power, 1==on_with_power, 2==always_off,
@@ -241,7 +243,7 @@ zone_geofence_light_pulse:
         value_template: '{{ repeat.index < light_cycles|int / 2 }}'
       sequence:
       - delay:
-          seconds: '{{ light_period|int / 2 }}'
+          seconds: 2
       - service: light.toggle
         target:
           entity_id: '{{ sengled_entities|list }}'
@@ -252,7 +254,7 @@ zone_geofence_light_pulse:
   - delay:
       hours: 0
       minutes: 0
-      seconds: 15
+      seconds: 20
       milliseconds: 0
   - service: scene.turn_on
     target:
