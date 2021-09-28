@@ -24,6 +24,10 @@
     entity_id: sun.sun
     attribute: elevation
     above: '-34.0'
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    above: '-18.0'
   condition: []
   action:
   - scene: scene.dawn
@@ -658,9 +662,11 @@
     data:
       brightness_pct: 100
   - wait_for_trigger:
-    - platform: state
+    - platform: device
+      device_id: 44be43b11976ca9c53539e52847d7cb5
+      domain: vacuum
       entity_id: vacuum.roomba
-      to: docked
+      type: docked
       for:
         hours: 0
         minutes: 0
@@ -1575,3 +1581,27 @@
       trigger_zone: '{{ trigger.zone.entity_id }}'
       trigger_person: '{{ trigger.entity_id }}'
   mode: restart
+- id: '1632007420377'
+  alias: Welcome Back (after dark)
+  description: Restart sunset scene if someone returns home after dark.
+  trigger:
+  - platform: zone
+    entity_id:
+    - person.james_laska
+    - person.shannon_laska
+    zone: zone.home
+    event: enter
+  condition:
+  - alias: After sunset
+    condition: sun
+    after: sunset
+  - alias: Before kids lights out
+    condition: time
+    before: input_datetime.lights_out_kids
+  - alias: Sunset automation triggered within the last 3 hours
+    condition: template
+    value_template: '{{ utcnow() - state_attr(''automation.sunset'', ''last_triggered'')
+      < timedelta(hours=3) }}'
+  action:
+  - scene: scene.sunset
+  mode: single
