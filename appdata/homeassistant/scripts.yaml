@@ -235,12 +235,12 @@ zone_geofence_light_pulse:
       entity_id: '{{ sengled_entities|list }}'
     data:
       brightness: '{{ light_brightness|int }}'
-      transition: 1
+      transition: 4
       color_name: '{{ states(''input_text.zone_pulse_color'') }}'
   - repeat:
       while:
       - condition: template
-        value_template: '{{ repeat.index < light_cycles|int / 2 }}'
+        value_template: '{{ False and repeat.index < light_cycles|int }}'
       sequence:
       - delay:
           seconds: 2
@@ -259,6 +259,8 @@ zone_geofence_light_pulse:
   - service: scene.turn_on
     target:
       entity_id: scene.snapshot_zone_pulse
+    data:
+      transition: 4
 sengled_light_pulse_test:
   alias: Sengled Light Pulse Test
   mode: restart
@@ -284,12 +286,12 @@ sengled_light_pulse_test:
       entity_id: '{{ sengled_entities|list }}'
     data:
       brightness: '{{ light_brightness|int }}'
-      transition: 1
+      transition: 4
       color_name: '{{ states(''input_text.zone_pulse_color'') }}'
   - repeat:
       while:
       - condition: template
-        value_template: '{{ repeat.index < light_cycles|int }}'
+        value_template: '{{ False or repeat.index < light_cycles|int }}'
       sequence:
       - delay:
           seconds: 2
@@ -303,8 +305,10 @@ sengled_light_pulse_test:
   - delay:
       hours: 0
       minutes: 0
-      seconds: 15
+      seconds: 30
       milliseconds: 0
   - service: scene.turn_on
     target:
       entity_id: scene.snapshot_zone_pulse
+    data:
+      transition: 4
