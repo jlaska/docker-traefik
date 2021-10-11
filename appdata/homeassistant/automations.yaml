@@ -23,12 +23,16 @@
   - platform: numeric_state
     entity_id: sun.sun
     attribute: elevation
-    above: '-34.0'
+    above: '-40.0'
   - platform: numeric_state
     entity_id: sun.sun
     attribute: elevation
     above: '-18.0'
-  condition: []
+  condition:
+  - alias: Only trigger dawn once a morning
+    condition: template
+    value_template: '{{ utcnow() - state_attr(''automation.exterior_lights_turn_off'',
+      ''last_triggered'') > timedelta(hours=6) }}'
   action:
   - scene: scene.dawn
   mode: single
@@ -576,12 +580,20 @@
     entity_id: sun.sun
     attribute: elevation
     above: '4.0'
-  - condition: time
-    before: input_datetime.time_of_day_automation_stop
   - condition: state
     entity_id: binary_sensor.motion_williams_protect
     state: 'off'
-    for: 00:20:00
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
+      milliseconds: 0
+  - condition: time
+    before: input_datetime.time_of_day_automation_stop
+  - alias: Assert sunset was not already triggered today
+    condition: template
+    value_template: '{{ as_timestamp(state_attr(''automation.sunset'', ''last_triggered''))|timestamp_custom(''%-d'')
+      != as_timestamp(now())|timestamp_custom(''%-d'')}}'
   action:
   - service: light.turn_off
     data: {}
@@ -626,6 +638,10 @@
       minutes: 20
       seconds: 0
       milliseconds: 0
+  - alias: Assert sunset was not already triggered today
+    condition: template
+    value_template: '{{ as_timestamp(state_attr(''automation.sunset'', ''last_triggered''))|timestamp_custom(''%-d'')
+      != as_timestamp(now())|timestamp_custom(''%-d'')}}'
   action:
   - service: light.turn_off
     target:
@@ -1028,6 +1044,10 @@
   - condition: state
     entity_id: calendar.jlaska_redhat_com
     state: 'off'
+  - alias: Assert sunset was not already triggered today
+    condition: template
+    value_template: '{{ as_timestamp(state_attr(''automation.sunset'', ''last_triggered''))|timestamp_custom(''%-d'')
+      != as_timestamp(now())|timestamp_custom(''%-d'')}}'
   action:
   - service: light.turn_off
     data: {}
@@ -1084,6 +1104,10 @@
       device_id: 3de25e8eccf6f04e11789d3a46c461af
       entity_id: switch.guest_bathroom_light_switch
       domain: switch
+  - alias: Assert sunset was not already triggered today
+    condition: template
+    value_template: '{{ as_timestamp(state_attr(''automation.sunset'', ''last_triggered''))|timestamp_custom(''%-d'')
+      != as_timestamp(now())|timestamp_custom(''%-d'')}}'
   action:
   - service: light.turn_off
     data: {}
