@@ -562,9 +562,18 @@
     entity_id: vacuum.roomba
     type: cleaning
   condition:
-  - condition: state
-    entity_id: sun.sun
-    state: below_horizon
+  - alias: Is it dark in the area?
+    condition: or
+    conditions:
+    - condition: numeric_state
+      entity_id: sensor.dining_room_motion_hue_illuminance
+      below: input_number.illumination_low_cutoff_value
+    - condition: numeric_state
+      entity_id: sensor.kitchen_motion_illuminance
+      below: input_number.illumination_low_cutoff_value
+    - condition: state
+      entity_id: sun.sun
+      state: below_horizon
   action:
   - scene: scene.robot_start
   - condition: numeric_state
