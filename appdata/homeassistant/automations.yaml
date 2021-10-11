@@ -282,6 +282,7 @@
         data:
           color_temp: 330
           brightness_pct: 100
+          transition: 1
         target:
           entity_id: light.williams_room_lamps_zha_group_0x0003
       remote_button_hold_press:
@@ -1337,6 +1338,7 @@
         data:
           color_temp: 325
           brightness_pct: 100
+          transition: 1
         target:
           entity_id: light.henrys_room_lamps_zha_group_0x0002
       remote_button_double_press:
