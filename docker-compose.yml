@@ -64,16 +64,52 @@ services:
       timeout: 10s
       retries: 4
 
+  zwavejs2mqtt:
+    container_name: zwavejs2mqtt
+    image: zwavejs/zwavejs2mqtt:latest
+    restart: unless-stopped
+    tty: true
+    stop_signal: SIGINT
+    environment:
+        # - SESSION_SECRET=mysupersecretkey
+      - TZ=$TZ
+    devices:
+      - '/dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300387-if00-port0:/dev/zwave'
+    volumes:
+      - $DOCKERDIR/zwavejs2mqtt:/usr/src/app/store
+    networks:
+      - traefik
+    ports:
+      - "$ZWAVEJS_WEB_PORT:8091/tcp"
+      - "$ZWAVEJS_WS_PORT:3000"
+    labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
+      ## Traefik
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.zwavejs2mqtt-rtr.entrypoints: https
+      traefik.http.routers.zwavejs2mqtt-rtr.rule: Host(`zwavejs2mqtt.$DOMAINNAME`) || Host(`zwavejs.$DOMAINNAME`)
+      traefik.http.routers.zwavejs2mqtt-rtr.tls.certresolver: dns-cloudflare
+      traefik.http.routers.zwavejs2mqtt-rtr.middlewares: chain-oauth@file
+      traefik.http.routers.zwavejs2mqtt-rtr.service: zwavejs2mqtt-svc
+      traefik.http.services.zwavejs2mqtt-svc.loadbalancer.server.port: $ZWAVEJS_WEB_PORT
+    healthcheck:
+      test: ["CMD-SHELL", "wget -S -O - --header 'Accept: text/plain' http://localhost:$ZWAVEJS_WEB_PORT/health/zwave"]
+      interval: 120s
+      timeout: 10s
+      retries: 4
+
   homeassistant:
     image: homeassistant/home-assistant:stable
     container_name: home-assistant
     restart: unless-stopped
+    depends_on:
+      - zwavejs2mqtt
     volumes:
       - $DOCKERDIR/homeassistant:/config
     devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0
-      - /dev/ttyUSB1:/dev/ttyUSB1
-      # - /dev/ttyACM0:/dev/ttyACM0
+      - '/dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300387-if01-port0:/dev/zigbee'
     network_mode: "host"
     ports:
       - "$HOMEASSISTANT_PORT:8123/tcp"
@@ -1041,8 +1077,8 @@ services:
 
   # Docker Socket Proxy - Security Enchanced Proxy for Docker Socket
   socket-proxy:
-    image: tecnativa/docker-socket-proxy
     container_name: socket-proxy
+    image: tecnativa/docker-socket-proxy
     restart: unless-stopped
     networks:
       socket_proxy:
@@ -1055,7 +1091,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     environment:
-      - LOG_LEVEL=info # debug,info,notice,warning,err,crit,alert,emerg
+      - LOG_LEVEL=warning # debug,info,notice,warning,err,crit,alert,emerg
       ## Variables match the URL prefix (i.e. AUTH blocks access to /auth/* parts of the API, etc.).
       # 0 to revoke access.
       # 1 to grant access.
