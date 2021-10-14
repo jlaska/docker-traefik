@@ -4,34 +4,47 @@ ge_switch_led_light:
   icon: hass:switch
   variables:
     node_parameter: 3
-    node_size: 1
+    entity_ids:
+    - switch.guest_bathroom_fan_switch
+    - switch.guest_bathroom_light_switch
+    - light.henrys_room_light
+    - switch.henrys_room_fan_switch
+    - switch.kids_bathroom_fan_switch
+    - switch.kids_bathroom_light_switch
+    - switch.master_bathroom_fan_switch
+    - switch.master_bathroom_shower_light_switch
+    - switch.master_bathroom_toilet_fan_switch
+    - switch.master_bathroom_toilet_light_switch
+    - switch.shannons_closet_light_switch
+    - switch.stairway_light_switch
+    - switch.upstairs_hallway_light_switch
     node_ids:
-    - 41
-    - 40
-    - 39
-    - 37
-    - 38
-    - 9
-    - 48
-    - 46
-    - 54
-    - 30
-    - 35
+    - 2
     - 3
     - 4
-    - 2
-    - 51
-    - 50
-    - 33
-    - 32
-    - 31
-    - 34
-    - 49
     - 5
-    - 7
     - 6
-    - 56
+    - 7
+    - 9
+    - 30
+    - 31
+    - 32
+    - 33
+    - 34
+    - 35
+    - 37
+    - 38
+    - 39
+    - 40
+    - 41
+    - 46
+    - 48
+    - 49
+    - 50
+    - 51
+    - 54
     - 55
+    - 56
   fields:
     node_value:
       description: The config value used (0=on_without_power, 1==on_with_power, 2==always_off,
@@ -40,15 +53,15 @@ ge_switch_led_light:
   sequence:
   - repeat:
       while:
-      - alias: Loop through zwave nodes
+      - alias: Loop through zwave nodess
         condition: template
-        value_template: '{{ repeat.index <= node_ids|length }}'
+        value_template: '{{ repeat.index <= entity_ids|length }}'
       sequence:
-      - service: zwave.set_config_parameter
+      - service: zwave_js.set_config_parameter
+        target:
+          entity_id: '{{ entity_ids[repeat.index - 1] }}'
         data:
-          node_id: '{{ node_ids[repeat.index - 1] }}'
           parameter: '{{node_parameter|int}}'
-          size: '{{node_size|int}}'
           value: '{{node_value|int}}'
 zone_geofence_notification:
   fields:

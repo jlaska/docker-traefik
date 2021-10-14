@@ -48,23 +48,21 @@
     light.guest_bathroom_light: false
     light.guest_room_fan_light: false
     light.guest_room_nightstand: false
-    light.henrys_room_light_level: false
+    light.henrys_room_light: false
     light.henrys_room_fan_light: false
     light.henrys_room_lamps_zha_group_0x0002: false
-    light.kitchen_cabinet_light_level: false
-    light.kitchen_island_light_level: false
-    light.kitchen_light_level: false
+    light.kitchen_cabinet_light: false
+    light.kitchen_island_light: false
+    light.kitchen_light: false
     light.kitchen_table_light: false
     light.living_room_fan_light: false
-    light.living_room_light_level: false
-    light.master_bedroom_light_level: false
+    light.living_room_light: false
+    light.master_bedroom_light: false
     light.master_bedroom_nightstand: false
     light.master_bedroom_fan_light: false
     light.williams_room_fan_light: false
     light.williams_room_lamps_zha_group_0x0003: false
-    light.williams_room_light_level: false
-    light.master_bathroom_light: false
-    light.master_bathroom_shower_light: false
+    light.williams_room_light: false
     light.shannon_s_closet_light: false
 - id: '1617837408158'
   name: Downstairs Activity
@@ -86,7 +84,7 @@
       brightness: 128
       color_temp: 325
       state: 'on'
-    light.kitchen_cabinet_light_level:
+    light.kitchen_cabinet_light:
       brightness: 125
       state: 'on'
 - id: '1617838113817'
@@ -96,11 +94,11 @@
     light.living_room_bookshelf: false
     light.living_room_table_lamp: false
     light.living_room_fan_light: false
-    light.living_room_light_level: false
-    light.kitchen_cabinet_light_level: false
-    light.kitchen_light_level: false
+    light.living_room_light: false
+    light.kitchen_cabinet_light: false
+    light.kitchen_light: false
     light.kitchen_table_light: false
-    light.kitchen_island_light_level: false
+    light.kitchen_island_light: false
     light.kitchen_end_table_light_zha_group_0x0004: false
     light.entryway_hall_light: false
     light.entryway_door_light: false
@@ -108,13 +106,13 @@
   name: Roomba Start
   icon: mdi:robot-vacuum
   entities:
-    light.dining_room_light_level:
+    light.dining_room_light:
       brightness: 255
       state: 'on'
-    light.living_room_light_level:
+    light.living_room_light:
       brightness: 255
       state: 'on'
-    light.kitchen_light_level:
+    light.kitchen_light:
       brightness: 255
       state: 'on'
     light.kitchen_table_light: true
@@ -122,7 +120,7 @@
   name: Piano Time
   icon: mdi:piano
   entities:
-    light.dining_room_light_level:
+    light.dining_room_light:
       brightness: 255
       state: 'on'
     light.entryway_door_light: true
@@ -144,4 +142,4 @@
     light.henrys_room_fan_light: false
     light.henrys_room_floor_lamp: false
     light.henrys_room_table_lamp: false
-    light.henrys_room_light_level: false
+    light.henrys_room_light: false

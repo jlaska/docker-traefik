@@ -1,5 +1,6 @@
 # Fix GE dimmer switch polling
-usb_path: /dev/ttyUSB0
+usb_path: /dev/zwave
+# usb_path: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300387-if00-port0
 network_key: !secret zwave_network_key
 device_config:
   light.master_bedroom_light_level:

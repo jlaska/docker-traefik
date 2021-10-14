@@ -121,29 +121,25 @@
   alias: Aeon Minimote Remote Scene Control
   description: ''
   use_blueprint:
-    path: tribixbite/zwave-minimote.yaml
+    path: freshcoast/zwave-js-aeon-labs-aeotec-minimote.yaml
     input:
-      zwave_entity: zwave.minimote
-      B1_Press:
-      - type: toggle
-        device_id: 230d38a3f58f599c6eaf0292ac3e6991
-        entity_id: light.master_bedroom_light_level
-        domain: light
-      B2_Press:
-      - type: toggle
-        device_id: 55d2ca8ea5f8c13b5d65ee7ed94216d9
-        entity_id: switch.master_bedroom_fan_light_switch
-        domain: switch
-      B3_Press:
-      - type: toggle
-        device_id: a4c9da50085db62728e73345b418ac70
-        entity_id: switch.master_bedroom_fan_switch
-        domain: switch
-      B4_Press:
-      - type: toggle
-        device_id: d00d60e89273f54f5f50f3bf404f3d8e
-        entity_id: switch.master_bedroom_nightstand_switch
-        domain: switch
+      minimote_device: 11a628abf6a5848ed505e5dd3d9cfe26
+      button_1_pressed:
+      - service: light.toggle
+        target:
+          entity_id: light.master_bedroom_light
+      button_2_pressed:
+      - service: light.toggle
+        target:
+          entity_id: light.master_bedroom_fan_light
+      button_3_pressed:
+      - service: fan.toggle
+        target:
+          entity_id: fan.master_bedroom_fan
+      button_4_pressed:
+      - service: light.toggle
+        target:
+          entity_id: light.master_bedroom_nightstand
 - id: '1617924990879'
   alias: Laundry Room Light - Activity
   description: ''
@@ -582,10 +578,10 @@
   - service: light.turn_on
     target:
       entity_id:
-      - light.living_room_light_level
-      - light.kitchen_light_level
+      - light.living_room_light
+      - light.kitchen_light
       - light.entryway_hall_light
-      - light.dining_room_light_level
+      - light.dining_room_light
     data:
       brightness_pct: 100
   - wait_for_trigger:
@@ -606,9 +602,9 @@
   - service: light.turn_off
     target:
       entity_id:
-      - light.dining_room_light_level
-      - light.living_room_light_level
-      - light.kitchen_light_level
+      - light.dining_room_light
+      - light.living_room_light
+      - light.kitchen_light
       - light.entryway_hall_light
   mode: restart
 - id: '1618877720683'
@@ -667,23 +663,23 @@
   use_blueprint:
     path: jlaska/on_off_with_motion_illuminance_timeout.yaml
     input:
-      target_entity: switch.entryway_door_light_switch
+      target_entity: light.entryway_door_light
       illuminance_cutoff: input_number.illumination_low_cutoff_value
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
       motion_sensor: binary_sensor.front_door_contact_ias_zone
-      illuminance_sensor: sensor.kitchen_motion_illuminance
+      illuminance_sensor: sensor.dining_room_motion_hue_illuminance
 - id: '1619447091981'
   alias: Dining Room - Activity
   description: ''
   use_blueprint:
     path: jlaska/on_off_with_motion_illuminance_timeout.yaml
     input:
-      target_entity: light.dining_room_light_level
       turn_off_blocker_entity: light.entryway_hall_light
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
       illuminance_sensor: sensor.dining_room_motion_hue_illuminance
       motion_sensor: binary_sensor.dining_room_motion_any
       illuminance_cutoff: input_number.illumination_low_cutoff_value
+      target_entity: light.dining_room_light
 - id: '1619530751693'
   alias: Sunrise
   description: ''
@@ -841,41 +837,34 @@
     path: SeanM/zha-aqara-wireless-mini-switch.yaml
     input:
       button_single_press:
-      - type: toggle
-        device_id: 868ea95e4d53e4452a6c7fe1239bece2
-        entity_id: switch.guest_room_nightstand_switch
-        domain: switch
+      - service: light.toggle
+        target:
+          entity_id: light.guest_room_nightstand
       button_double_press:
-      - type: toggle
-        device_id: 5fc3352b6526f25b744217275ab12df6
-        entity_id: switch.guest_room_fan_light_switch
-        domain: switch
+      - service: light.toggle
+        target:
+          entity_id: light.guest_room_fan_light
       button_long_press:
-      - type: toggle
-        device_id: 1dcf0d12de164a53d3040f7dd066e8c1
-        entity_id: switch.guest_room_fan_switch
-        domain: switch
+      - service: fan.toggle
+        target:
+          entity_id: fan.guest_room_fan
       aqara_mini_switch: 9dce489d377a856c545eb1ef5d12bc3e
 - id: '1622336796126'
   alias: Shannon’s Closet Light - Timer
   description: ''
   trigger:
-  - platform: device
-    type: turned_on
-    device_id: 6d52cd1e9cd58bccdde54252aee5458c
-    entity_id: switch.shannons_closet_light_switch
-    domain: switch
+  - platform: state
+    entity_id: light.shannon_s_closet_light
     for:
       hours: 0
-      minutes: 5
+      minutes: 10
       seconds: 0
       milliseconds: 0
   condition: []
   action:
-  - type: turn_off
-    device_id: 6d52cd1e9cd58bccdde54252aee5458c
-    entity_id: switch.shannons_closet_light_switch
-    domain: switch
+  - service: light.turn_off
+    target:
+      entity_id: light.shannon_s_closet_light
   mode: restart
 - id: '1622383389825'
   alias: Dusk (exterior)
@@ -951,26 +940,30 @@
     above: '4.0'
   - condition: or
     conditions:
-    - condition: device
-      type: is_on
-      device_id: 1dcf0d12de164a53d3040f7dd066e8c1
-      entity_id: switch.guest_room_fan_switch
-      domain: switch
-    - condition: device
-      type: is_on
-      device_id: 5fc3352b6526f25b744217275ab12df6
-      entity_id: switch.guest_room_fan_light_switch
-      domain: switch
-    - condition: device
-      type: is_on
-      device_id: 868ea95e4d53e4452a6c7fe1239bece2
-      entity_id: switch.guest_room_nightstand_switch
-      domain: switch
-    - condition: device
-      type: is_on
-      device_id: 3de25e8eccf6f04e11789d3a46c461af
-      entity_id: switch.guest_bathroom_light_switch
-      domain: switch
+    - condition: state
+      entity_id: fan.guest_room_fan
+      state: 'on'
+      for:
+        hours: 0
+        minutes: 30
+        seconds: 0
+        milliseconds: 0
+    - condition: state
+      entity_id: light.guest_room_fan_light
+      state: 'on'
+      for:
+        hours: 0
+        minutes: 30
+        seconds: 0
+        milliseconds: 0
+    - condition: state
+      entity_id: light.guest_room_nightstand
+      state: 'on'
+      for:
+        hours: 0
+        minutes: 30
+        seconds: 0
+        milliseconds: 0
   - alias: Assert sunset was not already triggered today
     condition: template
     value_template: '{{ as_timestamp(state_attr(''automation.sunset'', ''last_triggered''))|timestamp_custom(''%-d'')
@@ -985,7 +978,7 @@
   - service: fan.turn_off
     target:
       area_id: guest_room
-  mode: single
+  mode: restart
 - id: '1624222738706'
   alias: Bathroom Fan/Light Timer
   description: Turn off bathroom lights/fans after a period of time
@@ -1139,7 +1132,7 @@
       entity_id:
       - media_player.all_speakers
     data:
-      volume_level: 0.7
+      volume_level: 0.75
   - service: tts.google_translate_say
     data:
       message: The {{ state_attr(trigger.to_state.entity_id, 'friendly_name')}} has
@@ -1229,66 +1222,7 @@
   - service: notify.persistent_notification
     data:
       message: Home Assistant {{ state_attr('binary_sensor.updater', 'newest_version')
-        }} is available.
-  mode: single
-- id: '1629751377188'
-  alias: Notify if device unavailable or dead
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - zwave.holiday_light_switch
-    - zwave.jasco_products_12727_in_wall_smart_switch_toggle
-    - zwave.jasco_products_12727_in_wall_smart_switch_toggle_2
-    - zwave.jasco_products_12727_in_wall_smart_switch_toggle_3
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_10
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_11
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_12
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_13
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_14
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_15
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_16
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_18
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_19
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_2
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_20
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_3
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_5
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_6
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_7
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_8
-    - zwave.jasco_products_14292_in_wall_smart_toggle_switch_9
-    - zwave.jasco_products_14295_in_wall_smart_toggle_dimmer
-    - zwave.jasco_products_14295_in_wall_smart_toggle_dimmer_2
-    - zwave.jasco_products_14295_in_wall_smart_toggle_dimmer_3
-    - zwave.jasco_products_14295_in_wall_smart_toggle_dimmer_4
-    - zwave.jasco_products_14295_in_wall_smart_toggle_dimmer_5
-    - zwave.jasco_products_14295_in_wall_smart_toggle_dimmer_6
-    - zwave.jasco_products_14295_in_wall_smart_toggle_dimmer_7
-    - zwave.jasco_products_unknown_type_4944_id_3237
-    - zwave.jasco_products_unknown_type_4952_id_3137
-    - zwave.jasco_products_unknown_type_4952_id_3137_10
-    - zwave.jasco_products_unknown_type_4952_id_3137_11
-    - zwave.jasco_products_unknown_type_4952_id_3137_12
-    - zwave.jasco_products_unknown_type_4952_id_3137_13
-    - zwave.jasco_products_unknown_type_4952_id_3137_14
-    - zwave.jasco_products_unknown_type_4952_id_3137_15
-    - zwave.jasco_products_unknown_type_4952_id_3137_2
-    - zwave.jasco_products_unknown_type_4952_id_3137_3
-    - zwave.jasco_products_unknown_type_4952_id_3137_4
-    - zwave.jasco_products_unknown_type_4952_id_3137_5
-    - zwave.jasco_products_unknown_type_4952_id_3137_6
-    - zwave.jasco_products_unknown_type_4952_id_3137_7
-    - zwave.jasco_products_unknown_type_4952_id_3137_8
-    - zwave.jasco_products_unknown_type_4952_id_3137_9
-    - zwave.master_bedroom_nightstand_4
-    - zwave.minimote
-    - zwave.powder_room_fan_4
-    - zwave.z_wave_sigma_designs_uzb_z_wave_usb_adapter
-    to: dead, unavailable
-  condition: []
-  action:
+        }} is available ([release notes](state_attr('binary_sensor.updater', 'release_notes')))
   - service: notify.mobile_app_james_iphone
     data:
       title: A device is unavailable
@@ -1353,10 +1287,12 @@
       remote_button_double_press:
       - service: light.toggle
         target:
-          entity_id: light.henrys_room_light_level
+          entity_id: light.henrys_room_light
+        data:
+          brightness_pct: 100
       - service: light.turn_off
         target:
-          entity_id: light.henrys_room_fan_light
+          entity_id: light.henry_s_room_fan_light
       remote_button_hold_press:
       - service: fan.toggle
         target:

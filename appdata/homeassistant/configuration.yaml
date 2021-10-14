@@ -40,7 +40,7 @@ light: !include lights.yaml
 fan: !include fans.yaml
 template: !include templates.yaml
 
-zwave: !include zwave.yaml
+# zwave: !include zwave.yaml
 zha: !include zha.yaml
 
 # Google Nest Integration
