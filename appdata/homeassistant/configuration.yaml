@@ -39,9 +39,9 @@ binary_sensor: !include binary_sensors.yaml
 light: !include lights.yaml
 fan: !include fans.yaml
 template: !include templates.yaml
-
 # zwave: !include zwave.yaml
 zha: !include zha.yaml
+homekit: !include homekit.yaml
 
 # Google Nest Integration
 nest:
@@ -67,15 +67,6 @@ camera:
   - platform: generic
     name: US Continent
     still_image_url: !secret weather_noaa_us
-
-homekit:
-  - filter:
-      include_domains:
-        - light
-        - fan
-      include_entity_globs:
-        - switch.*_on_off
-        - binary_sensor.*_ias_zone
 
 google:
   client_id: !secret google_calendar_client_id

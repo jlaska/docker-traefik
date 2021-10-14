@@ -45,6 +45,7 @@ appdata/homeassistant/*
 !appdata/homeassistant/templates.yaml
 !appdata/homeassistant/zha.yaml
 !appdata/homeassistant/zwave.yaml
+!appdata/homeassistant/homekit.yaml
 
 !scripts
 scripts/*

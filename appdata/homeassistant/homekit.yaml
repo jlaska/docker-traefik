@@ -1,0 +1,7 @@
+- filter:
+    include_domains:
+      - light
+      - fan
+    include_entity_globs:
+      - switch.*_on_off
+      - binary_sensor.*_ias_zone
