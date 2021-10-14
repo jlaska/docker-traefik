@@ -3,31 +3,31 @@ usb_path: /dev/zwave
 # usb_path: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300387-if00-port0
 network_key: !secret zwave_network_key
 device_config:
-  light.master_bedroom_light_level:
+  light.master_bedroom_light:
     refresh_value: true
     polling_intensity: 1
     delay: 4
-  light.dining_room_light_level:
+  light.dining_room_light:
     refresh_value: true
     polling_intensity: 1
     delay: 4
-  light.kitchen_cabinet_light_level:
+  light.kitchen_cabinet_light:
     refresh_value: true
     polling_intensity: 1
     delay: 4
-  light.kitchen_island_light_level:
+  light.kitchen_island_light:
     refresh_value: true
     polling_intensity: 1
     delay: 4
-  light.kitchen_light_level:
+  light.kitchen_light:
     refresh_value: true
     polling_intensity: 1
     delay: 4
-  light.living_room_light_level:
+  light.living_room_light:
     refresh_value: true
     polling_intensity: 1
     delay: 4
-  light.williams_room_light_level:
+  light.williams_room_light:
     refresh_value: true
     polling_intensity: 1
     delay: 4
