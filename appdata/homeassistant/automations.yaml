@@ -252,20 +252,17 @@
     input:
       samsung_smartthings_button: 5a1b20b6fb2d9b92ec368d8bf89e08de
       remote_button_short_press:
-      - type: toggle
-        device_id: e6c2123ca96cbf9681412299ebc01004
-        entity_id: switch.master_bathroom_light_switch
-        domain: switch
+      - service: light.toggle
+        target:
+          entity_id: light.master_bathroom_light
       remote_button_double_press:
-      - type: toggle
-        device_id: 4968b4add250a9be2b4da84fa905267d
-        entity_id: switch.master_bathroom_shower_light_switch
-        domain: switch
+      - service: light.toggle
+        target:
+          entity_id: light.master_bathroom_shower_light
       remote_button_hold_press:
-      - type: toggle
-        device_id: 2389efdc42680b58791a0fc50fb48be6
-        entity_id: switch.master_bathroom_fan_switch
-        domain: switch
+      - service: fan.toggle
+        target:
+          entity_id: fan.master_bathroom_fan
 - id: '1618002599661'
   alias: William's Room Button
   description: ''
@@ -286,37 +283,27 @@
         target:
           entity_id: fan.williams_room_fan
       remote_button_double_press:
-      - type: turn_off
-        device_id: a169086b6034eae6ddba79635befc90b
-        entity_id: switch.williams_room_fan_light_switch
-        domain: switch
+      - service: light.turn_off
+        target:
+          entity_id: light.william_s_room_fan_light
       - service: light.toggle
         target:
-          entity_id: light.williams_room_light_level
+          entity_id: light.williams_room_light
+        data:
+          brightness_pct: 100
 - id: '1618048885985'
   alias: Spot Lights When Door Opens
   description: ''
   trigger:
-  - type: opened
-    platform: device
-    device_id: 720f3a84bef7a7dd93aa773ab4767c2a
-    entity_id: binary_sensor.back_door_contact_ias_zone
-    domain: binary_sensor
-  - type: opened
-    platform: device
-    device_id: 6a4f4eccc9f68877d56de9d1750e2a78
-    entity_id: binary_sensor.front_door_contact_ias_zone
-    domain: binary_sensor
-  - platform: device
-    device_id: aca1fd076bac705db6d381d678fe5487
-    domain: cover
-    entity_id: cover.garage_door_opener
-    type: opened
-  - type: opened
-    platform: device
-    device_id: 37469d7629aa92d508d96a4d1139ac15
-    entity_id: binary_sensor.garage_door_contact_ias_zone
-    domain: binary_sensor
+  - platform: state
+    entity_id:
+    - binary_sensor.back_door_contact_ias_zone
+    - binary_sensor.front_door_contact_ias_zone
+    - binary_sensor.garage_door_contact_ias_zone
+    - cover.garage_door_opener
+    to:
+    - opening
+    - 'on'
   condition:
   - condition: state
     entity_id: sun.sun
@@ -716,61 +703,49 @@
   alias: Notify If Any Door Left Open
   description: ''
   trigger:
-  - type: opened
-    platform: device
-    device_id: a0351c213a881cdba22e93648849f2d1
+  - platform: state
     entity_id: binary_sensor.attic_door_contact_ias_zone
-    domain: binary_sensor
+    to: 'on'
     for:
       hours: 0
       minutes: 5
       seconds: 0
       milliseconds: 0
-  - type: opened
-    platform: device
-    device_id: 720f3a84bef7a7dd93aa773ab4767c2a
+  - platform: state
     entity_id: binary_sensor.back_door_contact_ias_zone
-    domain: binary_sensor
+    to: 'on'
     for:
       hours: 0
       minutes: 5
       seconds: 0
       milliseconds: 0
-  - type: opened
-    platform: device
-    device_id: 6a4f4eccc9f68877d56de9d1750e2a78
+  - platform: state
     entity_id: binary_sensor.front_door_contact_ias_zone
-    domain: binary_sensor
+    to: 'on'
     for:
       hours: 0
       minutes: 5
       seconds: 0
       milliseconds: 0
-  - type: opened
-    platform: device
-    device_id: 1f8145dafc16535dd280537d4b322811
+  - platform: state
     entity_id: binary_sensor.garage_freezer_contact_on_off
-    domain: binary_sensor
+    to: 'on'
     for:
       hours: 0
       minutes: 5
       seconds: 0
       milliseconds: 0
-  - type: opened
-    platform: device
-    device_id: 692324b1806aa6182682c9a0e7947140
+  - platform: state
     entity_id: binary_sensor.kitchen_refrigerator_contact_on_off
-    domain: binary_sensor
+    to: 'on'
     for:
       hours: 0
       minutes: 5
       seconds: 0
       milliseconds: 0
-  - type: opened
-    platform: device
-    device_id: c2bd0018417d9382001ed77c17372f2d
+  - platform: state
     entity_id: binary_sensor.mudroom_door_contact_ias_zone
-    domain: binary_sensor
+    to: 'on'
     for:
       hours: 0
       minutes: 5
@@ -1199,6 +1174,8 @@
       data:
         tag: person_detected
         entity_id: camera.front_door_protect
+        push:
+          category: camera
         image: /local/snapshot.{{ trigger.entity_id }}.jpg
         __video: /local/recording.{{ trigger.entity_id }}.mp4
         actions:
@@ -1221,13 +1198,17 @@
         }} is available.
   - service: notify.persistent_notification
     data:
+      title: Home Assistant Update Available
       message: Home Assistant {{ state_attr('binary_sensor.updater', 'newest_version')
         }} is available ([release notes](state_attr('binary_sensor.updater', 'release_notes')))
   - service: notify.mobile_app_james_iphone
     data:
-      title: A device is unavailable
-      message: '{{ state_attr(trigger.to_state.entity_id, ''friendly_name'') }} is
-        reporting as {{ trigger.to_state.state }}'
+      title: Home Assistant Update Available
+      message: Home Assistant {{ state_attr('binary_sensor.updater', 'newest_version')
+        }} is available
+      data:
+        tag: home_assistant_update
+        url: '{{ state_attr(''binary_sensor.updater'', ''release_notes'') }}'
   mode: single
 - id: '1629811616934'
   alias: Master Bedroom Ceiling Fan
@@ -1310,7 +1291,7 @@
     for:
       hours: 0
       minutes: 0
-      seconds: 5
+      seconds: 1
       milliseconds: 0
     id: piano_on
   condition: []
@@ -1403,7 +1384,14 @@
     event: leave
   condition: []
   action:
-  - service: script.zone_geofence_handler
+  - alias: Pulse lights
+    service: script.zone_geofence_light_pulse
+    data:
+      trigger_event: '{{ trigger.event }}'
+      trigger_zone: '{{ trigger.zone.entity_id }}'
+      trigger_person: '{{ trigger.entity_id }}'
+  - alias: Send notifications
+    service: script.zone_geofence_notification
     data:
       trigger_event: '{{ trigger.event }}'
       trigger_zone: '{{ trigger.zone.entity_id }}'
@@ -1420,9 +1408,6 @@
     zone: zone.home
     event: enter
   condition:
-  - alias: After sunset
-    condition: sun
-    after: sunset
   - alias: Before kids lights out
     condition: time
     before: input_datetime.lights_out_kids
@@ -1433,3 +1418,97 @@
   action:
   - scene: scene.sunset
   mode: single
+- id: '1633606017424'
+  alias: Exterior Door Opens When Dark
+  description: Turn on lights if exterior door opens at night
+  trigger:
+  - type: opened
+    platform: device
+    device_id: 6a4f4eccc9f68877d56de9d1750e2a78
+    entity_id: binary_sensor.front_door_contact_ias_zone
+    domain: binary_sensor
+    id: front_door
+  - type: opened
+    platform: device
+    device_id: 720f3a84bef7a7dd93aa773ab4767c2a
+    entity_id: binary_sensor.back_door_contact_ias_zone
+    domain: binary_sensor
+    id: back_door
+  - type: opened
+    platform: device
+    device_id: 37469d7629aa92d508d96a4d1139ac15
+    entity_id: binary_sensor.garage_door_contact_ias_zone
+    domain: binary_sensor
+    id: garage_door
+  - platform: device
+    device_id: aca1fd076bac705db6d381d678fe5487
+    domain: cover
+    entity_id: cover.garage_door_opener
+    type: opened
+    id: garage_door
+  condition:
+  - condition: state
+    entity_id: sun.sun
+    state: below_horizon
+  action:
+  - service: light.turn_on
+    target:
+      entity_id:
+      - light.back_spot_light
+      - light.front_spot_light
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: front_door
+      sequence:
+      - service: light.turn_on
+        target:
+          entity_id:
+          - light.front_door_light
+          - light.entryway_door_light
+    - conditions:
+      - condition: trigger
+        id: back_door
+      sequence:
+      - service: light.turn_on
+        target:
+          entity_id:
+          - light.back_door_light
+          - light.sunroom_fan_light
+    default:
+    - service: light.turn_on
+      target:
+        entity_id:
+        - light.back_spot_light
+        - light.front_spot_light
+  - delay:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - service: light.turn_off
+    target:
+      entity_id:
+      - light.back_spot_light
+      - light.front_spot_light
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: front_door
+      sequence:
+      - service: light.turn_off
+        target:
+          entity_id:
+          - light.front_door_light
+          - light.entryway_door_light
+    - conditions:
+      - condition: trigger
+        id: back_door
+      sequence:
+      - service: light.turn_off
+        target:
+          entity_id:
+          - light.back_door_light
+          - light.sunroom_fan_light
+  mode: parallel
+  max: 4
