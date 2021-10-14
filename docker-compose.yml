@@ -565,7 +565,7 @@ services:
 
   # Reverse Proxy Service
   traefik:
-    image: traefik:v2.3
+    image: traefik:v2.5
     container_name: traefik
     entrypoint:
       - /entrypoint.sh
