@@ -653,7 +653,9 @@
       target_entity: light.entryway_door_light
       illuminance_cutoff: input_number.illumination_low_cutoff_value
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
-      motion_sensor: binary_sensor.front_door_contact_ias_zone
+      motion_sensor:
+      - binary_sensor.front_door_contact_ias_zone
+      - binary_sensor.doorbell_front_door_protect
       illuminance_sensor: sensor.dining_room_motion_hue_illuminance
 - id: '1619447091981'
   alias: Dining Room - Activity
