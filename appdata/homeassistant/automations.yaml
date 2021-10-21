@@ -651,7 +651,7 @@
     path: jlaska/on_off_with_motion_illuminance_timeout.yaml
     input:
       target_entity: light.entryway_door_light
-      illuminance_cutoff: input_number.illumination_low_cutoff_value
+      illuminance_cutoff: input_number.illumination_very_low_cutoff_value
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
       motion_sensor:
       - binary_sensor.front_door_contact_ias_zone
@@ -667,7 +667,7 @@
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
       illuminance_sensor: sensor.dining_room_motion_hue_illuminance
       motion_sensor: binary_sensor.dining_room_motion_any
-      illuminance_cutoff: input_number.illumination_low_cutoff_value
+      illuminance_cutoff: input_number.illumination_very_low_cutoff_value
       target_entity: light.dining_room_light
 - id: '1619530751693'
   alias: Sunrise
@@ -1514,3 +1514,16 @@
           - light.sunroom_fan_light
   mode: parallel
   max: 4
+- id: '1634814893252'
+  alias: Front Door - Exterior Activity
+  description: ''
+  use_blueprint:
+    path: jlaska/on_off_with_motion_illuminance_timeout.yaml
+    input:
+      illuminance_cutoff: input_number.illumination_very_low_cutoff_value
+      no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
+      motion_sensor: binary_sensor.front_door_contact_ias_zone,binary_sensor.doorbell_front_door_protect,binary_sensor.motion_front_door_protect_person
+      illuminance_sensor: sensor.dining_room_motion_hue_illuminance
+      target_entity: light.front_door_light
+      blocker_entity: light.garage_exterior_light
+      turn_off_blocker_entity: light.garage_exterior_light
