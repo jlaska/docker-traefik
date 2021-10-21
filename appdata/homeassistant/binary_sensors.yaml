@@ -88,3 +88,9 @@
       unique_id: binary_sensor.laundry_room_dryer
       value_template: >-
         {{ is_state('binary_sensor.laundry_room_vibration_ias_zone', 'on') or (is_state('binary_sensor.laundry_room_vibration_ias_zone', 'off') and utcnow() - states.binary_sensor.laundry_room_vibration_ias_zone.last_changed < timedelta(minutes=5)) }}
+    motion_front_door_protect_person:
+      friendly_name: "Motion Front Door Protect Person"
+      device_class: motion
+      unique_id: binary_sensor.motion_front_door_protect_person
+      value_template: >-
+        {{ is_state('binary_sensor.motion_front_door_protect', 'on') and state_attr('binary_sensor.motion_front_door_protect', 'event_object').lower() == 'person' }}
