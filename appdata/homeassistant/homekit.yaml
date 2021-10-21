@@ -5,3 +5,7 @@
     include_entity_globs:
       - switch.*_on_off
       - binary_sensor.*_ias_zone
+      - binary_sensor.*_on_off
+    exclude_entity_globs:
+      - light.living_room_bookshelf_*
+      - light.kitchen_end_table_light_*_level_light_color_on_off
