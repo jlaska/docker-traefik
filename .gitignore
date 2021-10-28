@@ -48,6 +48,10 @@ appdata/homeassistant/*
 !appdata/homeassistant/zha.yaml
 !appdata/homeassistant/zwave.yaml
 
+!appdata/prometheus
+appdata/prometheus/*
+!appdata/prometheus/prometheus.yml
+
 !scripts
 scripts/*
 !scripts/systemd

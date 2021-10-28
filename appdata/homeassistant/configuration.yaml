@@ -72,3 +72,6 @@ google:
   client_id: !secret google_calendar_client_id
   client_secret: !secret google_calendar_client_secret
   calendar_access: read_only
+
+downloader:
+  download_dir: downloads
