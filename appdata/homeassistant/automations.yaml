@@ -586,11 +586,11 @@
     state: 'off'
   - service: light.turn_off
     target:
-      entity_id:
-      - light.dining_room_light
-      - light.living_room_light
-      - light.kitchen_light
-      - light.entryway_hall_light
+      area_id:
+      - entryway
+      - dining_room
+      - kitchen
+      - living_room
   mode: restart
 - id: '1618877720683'
   alias: Notify Garage Door Open at Sunset
