@@ -935,24 +935,16 @@ services:
     image: telegraf:latest
     container_name: telegraf
     restart: unless-stopped
-    environment:
-      - HOST_PROC=/rootfs/proc
-      - HOST_SYS=/rootfs/sys
-      - HOST_ETC=/rootfs/etc
     security_opt:
       - no-new-privileges:true
     depends_on:
       - influxdb
     networks:
-      socket_proxy:
       metrics:
     extra_hosts:
       - "powerwall:$POWERWALL_IP"
     volumes:
       - "$DOCKERDIR/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro"
-      - "/proc:/rootfs/proc:ro"
-      - "/sys:/rootfs/sys:ro"
-      - "/etc:/rootfs/etc:ro"
     labels:
       # Auto-update
       com.centurylinklabs.watchtower.enable: true
@@ -1016,8 +1008,11 @@ services:
       - "$DOCKERDIR/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
     networks:
       traefik:
+      metrics:
     ports:
       - "$PROMETHEUS_PORT:9090"
+    extra_hosts:
+      - "host.docker.internal:$SERVER_IP"
     labels:
       # Auto-update
       com.centurylinklabs.watchtower.enable: true
@@ -1035,6 +1030,17 @@ services:
       interval: 60s
       timeout: 5s
       retries: 4
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    command:
+      - '--path.rootfs=/host'
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - '/:/host:ro,rslave'
 
   # Update cloudflare IP if/when the IP changes
   cloudflare-ddns:
