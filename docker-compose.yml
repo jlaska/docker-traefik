@@ -974,7 +974,7 @@ services:
     volumes:
       - $DOCKERDIR/grafana:/var/lib/grafana
     environment:
-      GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel,natel-plotly-panel,blackmirror1-singlestat-math-panel,btplc-trend-box-panel,marcuscalidus-svg-panel,michaeldmoore-multistat-panel,yesoreyeram-boomtable-panel,ryantxu-ajax-panel,grafana-influxdb-flux-datasource,fetzerch-sunandmoon-datasource,andig-darksky-datasource,simpod-json-datasource"
+      GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel,natel-discrete-panel,natel-plotly-panel,blackmirror1-singlestat-math-panel,btplc-trend-box-panel,marcuscalidus-svg-panel,michaeldmoore-multistat-panel,yesoreyeram-boomtable-panel,ryantxu-ajax-panel,grafana-influxdb-flux-datasource,fetzerch-sunandmoon-datasource,andig-darksky-datasource,simpod-json-datasource"
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
     labels:
@@ -1041,6 +1041,8 @@ services:
     restart: unless-stopped
     volumes:
       - '/:/host:ro,rslave'
+    labels:
+      com.centurylinklabs.watchtower.enable: true
 
   # Update cloudflare IP if/when the IP changes
   cloudflare-ddns:
@@ -1151,26 +1153,34 @@ services:
       traefik.http.routers.whoami-rtr.service: whoami-svc
       traefik.http.services.whoami-svc.loadbalancer.server.port: 80
 
-  # Unifi poller for influxdb+grafana dashboards
+  # Unifi poller for prometheus+grafana dashboards
   unifi-poller:
     image: golift/unifi-poller:latest
-    container_name: unifi-poller
+    container_name: unpoller
     restart: unless-stopped
     depends_on:
-      - influxdb
       - unifi-controller
     networks:
       metrics:
+    ports:
+      - "$UNPOLLER_PORT:9130"
     environment:
-      - UP_INFLUXDB_URL=http://influxdb:${INFLUXDB_PORT}
-      - UP_INFLUXDB_DB=${INFLUXDB_DB}
-      # - UP_INFLUXDB_USER=${INFLUXDB_ADMIN_USER}
-      # - UP_INFLUXDB_PASS=${INFLUXDB_ADMIN_PASSWORD}
-      - UP_UNIFI_DEFAULT_URL=${UNIFI_URL}
-      - UP_UNIFI_DEFAULT_USER=${UNIFI_USER}
-      - UP_UNIFI_DEFAULT_PASS=${UNIFI_PASS}
+      - UP_INFLUXDB_DISABLE=true
       - UP_POLLER_DEBUG=${POLLER_DEBUG}
-      - UP_UNIFI_DEFAULT_SAVE_DPI=${POLLER_SAVE_DPI}
+      - UP_UNIFI_DYNAMIC=false
+      - UP_PROMETHEUS_HTTP_LISTEN=0.0.0.0:9130
+      - UP_PROMETHEUS_NAMESPACE=unifipoller
+      - UP_UNIFI_CONTROLLER_0_SAVE_ALARMS=true
+      - UP_UNIFI_CONTROLLER_0_SAVE_ANOMALIES=true
+      - UP_UNIFI_CONTROLLER_0_SAVE_DPI=${POLLER_SAVE_DPI}
+      - UP_UNIFI_CONTROLLER_0_SAVE_EVENTS=true
+      - UP_UNIFI_CONTROLLER_0_SAVE_IDS=true
+      - UP_UNIFI_CONTROLLER_0_SAVE_SITES=true
+      - UP_UNIFI_CONTROLLER_0_URL=${UNIFI_URL}
+      - UP_UNIFI_CONTROLLER_0_USER=${UNIFI_USER}
+      - UP_UNIFI_CONTROLLER_0_PASS=${UNIFI_PASS}
+    labels:
+      com.centurylinklabs.watchtower.enable: true
 
   # Custom HTTP error handling
   error-handler:
