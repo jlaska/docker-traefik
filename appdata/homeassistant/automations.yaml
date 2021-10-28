@@ -572,15 +572,13 @@
     data:
       brightness_pct: 100
   - wait_for_trigger:
-    - platform: device
-      device_id: 44be43b11976ca9c53539e52847d7cb5
-      domain: vacuum
+    - platform: state
       entity_id: vacuum.roomba
-      type: docked
+      to: docked
       for:
-        hours: 0
+        hours: 1
         minutes: 0
-        seconds: 5
+        seconds: 0
         milliseconds: 0
     continue_on_timeout: false
   - condition: state
