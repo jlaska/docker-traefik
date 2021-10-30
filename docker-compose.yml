@@ -1035,7 +1035,7 @@ services:
     image: quay.io/prometheus/node-exporter:latest
     container_name: node_exporter
     command:
-      - '--path.rootfs=/host'
+      - '--path.rootfs=/host --collector.systemd --collector.processes'
     network_mode: host
     pid: host
     restart: unless-stopped
