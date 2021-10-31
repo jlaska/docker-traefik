@@ -12,8 +12,8 @@
     light.living_room_table_lamp:
       min_mireds: 111
       max_mireds: 400
-      brightness: 128
-      color_temp: 301
+      brightness: 255
+      color_temp: 300
       state: 'on'
     light.guest_room_nightstand: true
     light.henrys_room_floor_lamp:
