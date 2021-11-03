@@ -1396,7 +1396,7 @@
       trigger_event: '{{ trigger.event }}'
       trigger_zone: '{{ trigger.zone.entity_id }}'
       trigger_person: '{{ trigger.entity_id }}'
-  mode: restart
+  mode: single
 - id: '1632007420377'
   alias: Welcome Back (after dark)
   description: Restart sunset scene if someone returns home after dark.
