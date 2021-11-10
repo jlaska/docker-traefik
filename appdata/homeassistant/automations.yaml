@@ -664,9 +664,9 @@
       turn_off_blocker_entity: light.entryway_hall_light
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
       illuminance_sensor: sensor.dining_room_motion_hue_illuminance
-      motion_sensor: binary_sensor.dining_room_motion_any
       illuminance_cutoff: input_number.illumination_very_low_cutoff_value
       target_entity: light.dining_room_light
+      motion_sensor: binary_sensor.dining_room_motion_hue_occupancy,binary_sensor.dining_room_motion_ias_zone
 - id: '1619530751693'
   alias: Sunrise
   description: ''
