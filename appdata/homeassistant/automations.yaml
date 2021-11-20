@@ -615,7 +615,7 @@
     data:
       title: Garage Door Open
       message: The garage door is still open after sunset
-  - service: tts.google_translate_say
+  - service: script.announce
     data:
       entity_id: media_player.all_speakers
       message: The garage door is open after sunset
@@ -725,13 +725,7 @@
       title: The {{ state_attr(trigger.entity_id, 'friendly_name') }} is open
       message: Please close the {{ state_attr(trigger.entity_id, 'friendly_name')
         }}
-  - service: media_player.volume_set
-    target:
-      entity_id:
-      - media_player.all_speakers
-    data:
-      volume_level: 0.75
-  - service: tts.google_translate_say
+  - service: script.announce
     data:
       entity_id: media_player.all_speakers
       message: The {{ state_attr(trigger.entity_id, 'friendly_name')|replace(' Contact','')
@@ -1056,26 +1050,20 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: binary_sensor.laundry_room_washing_machine
-    to: 'on'
-    for: 00:05:00
-    from: 'off'
-  - platform: state
-    entity_id: binary_sensor.laundry_room_dryer
-    from: 'off'
-    to: 'on'
-    for: 00:10:00
+    to: Finished
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+    entity_id:
+    - sensor.ms963932g_laundry_machine_state
+    - sensor.vs553419c_laundry_machine_state
   condition: []
   action:
-  - wait_template: '{{ is_state(trigger.entity_id, ''off'') }}'
-    timeout: '1:00:00'
-  - service: media_player.volume_set
-    target:
-      entity_id:
-      - media_player.all_speakers
-    data:
-      volume_level: 0.75
-  - service: tts.google_translate_say
+  - wait_template: '{{ is_state(trigger.entity_id, ''Off'') }}'
+    timeout: 0:02:00
+  - service: script.announce
     data:
       message: The {{ state_attr(trigger.to_state.entity_id, 'friendly_name')}} has
         finished

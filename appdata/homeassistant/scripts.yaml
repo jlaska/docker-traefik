@@ -325,3 +325,42 @@ sengled_light_pulse_test:
       entity_id: scene.snapshot_zone_pulse
     data:
       transition: 4
+announce:
+  alias: Announce
+  sequence:
+  - alias: Set volume
+    choose:
+    - conditions:
+      - condition: template
+        value_template: '{% set current_time = now().strftime("%H:%M:%S") -%}
+
+          {{ current_time }}
+
+          {{ current_time < states(''input_datetime.lights_out_kids'') }}
+
+          '
+      sequence:
+      - service: media_player.volume_set
+        target:
+          entity_id: '{{ entity_id }}'
+        data:
+          volume_level: 70
+    default:
+    - service: media_player.volume_set
+      target:
+        entity_id: media_player.all_speakers
+      data:
+        volume_level: 40
+  - alias: Announce
+    service: tts.google_translate_say
+    data:
+      message: '{{ message }}'
+  fields:
+    message:
+      description: Message to announce
+      required: true
+    entity_id:
+      description: Entity id
+      default: media_player.all_speakers
+  mode: restart
+  icon: mdi:bullhorn-outline
