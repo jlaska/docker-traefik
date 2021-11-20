@@ -296,14 +296,8 @@
   description: ''
   trigger:
   - platform: state
-    entity_id:
-    - binary_sensor.back_door_contact_ias_zone
-    - binary_sensor.front_door_contact_ias_zone
-    - binary_sensor.garage_door_contact_ias_zone
-    - cover.garage_door_opener
-    to:
-    - opening
-    - 'on'
+    entity_id: binary_sensor.back_door_contact_ias_zone,binary_sensor.front_door_contact_ias_zone,binary_sensor.garage_door_contact_ias_zone,cover.garage_door_opener
+    to: opening,on
   condition:
   - condition: state
     entity_id: sun.sun
@@ -314,6 +308,11 @@
       entity_id:
       - light.back_spot_light
       - light.front_spot_light
+  - wait_for_trigger:
+    - platform: state
+      entity_id: binary_sensor.back_door_contact_ias_zone,binary_sensor.front_door_contact_ias_zone,binary_sensor.garage_door_contact_ias_zone,cover.garage_door_opener
+      to: closed,off
+    continue_on_timeout: false
   - delay:
       hours: 0
       minutes: 5
@@ -704,47 +703,15 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: binary_sensor.attic_door_contact_ias_zone
-    to: 'on'
-    for:
-      hours: 0
-      minutes: 5
-      seconds: 0
-      milliseconds: 0
-  - platform: state
-    entity_id: binary_sensor.back_door_contact_ias_zone
-    to: 'on'
-    for:
-      hours: 0
-      minutes: 5
-      seconds: 0
-      milliseconds: 0
-  - platform: state
-    entity_id: binary_sensor.front_door_contact_ias_zone
-    to: 'on'
-    for:
-      hours: 0
-      minutes: 5
-      seconds: 0
-      milliseconds: 0
-  - platform: state
-    entity_id: binary_sensor.garage_freezer_contact_on_off
-    to: 'on'
-    for:
-      hours: 0
-      minutes: 5
-      seconds: 0
-      milliseconds: 0
-  - platform: state
-    entity_id: binary_sensor.kitchen_refrigerator_contact_on_off
-    to: 'on'
-    for:
-      hours: 0
-      minutes: 5
-      seconds: 0
-      milliseconds: 0
-  - platform: state
-    entity_id: binary_sensor.mudroom_door_contact_ias_zone
+    entity_id:
+    - binary_sensor.ms963932g_laundry_door
+    - binary_sensor.vs553419c_laundry_door
+    - binary_sensor.attic_door_contact_ias_zone
+    - binary_sensor.back_door_contact_ias_zone
+    - binary_sensor.front_door_contact_ias_zone
+    - binary_sensor.garage_freezer_contact_on_off
+    - binary_sensor.kitchen_refrigerator_contact_on_off
+    - binary_sensor.mudroom_door_contact_ias_zone
     to: 'on'
     for:
       hours: 0
