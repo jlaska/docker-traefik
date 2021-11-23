@@ -293,11 +293,17 @@
           brightness_pct: 100
 - id: '1618048885985'
   alias: Spot Lights When Door Opens
-  description: ''
+  description: Turn on spot lights when exterior door opens at night
   trigger:
   - platform: state
-    entity_id: binary_sensor.back_door_contact_ias_zone,binary_sensor.front_door_contact_ias_zone,binary_sensor.garage_door_contact_ias_zone,cover.garage_door_opener
-    to: opening,on
+    entity_id:
+    - binary_sensor.back_door_contact_ias_zone
+    - binary_sensor.front_door_contact_ias_zone
+    - binary_sensor.garage_door_contact_ias_zone
+    - cover.garage_door_opener
+    to:
+    - opening
+    - 'on'
   condition:
   - condition: state
     entity_id: sun.sun
@@ -308,11 +314,8 @@
       entity_id:
       - light.back_spot_light
       - light.front_spot_light
-  - wait_for_trigger:
-    - platform: state
-      entity_id: binary_sensor.back_door_contact_ias_zone,binary_sensor.front_door_contact_ias_zone,binary_sensor.garage_door_contact_ias_zone,cover.garage_door_opener
-      to: closed,off
-    continue_on_timeout: false
+  - wait_template: >-
+      {{ is_state(trigger.entity_id, 'off') }}
   - delay:
       hours: 0
       minutes: 5
@@ -1053,8 +1056,8 @@
     to: Finished
     for:
       hours: 0
-      minutes: 1
-      seconds: 0
+      minutes: 0
+      seconds: 5
       milliseconds: 0
     entity_id:
     - sensor.ms963932g_laundry_machine_state

@@ -334,8 +334,6 @@ announce:
       - condition: template
         value_template: '{% set current_time = now().strftime("%H:%M:%S") -%}
 
-          {{ current_time }}
-
           {{ current_time < states(''input_datetime.lights_out_kids'') }}
 
           '
@@ -344,15 +342,17 @@ announce:
         target:
           entity_id: '{{ entity_id }}'
         data:
-          volume_level: 70
+          volume_level: 0.7
     default:
     - service: media_player.volume_set
       target:
-        entity_id: media_player.all_speakers
+        entity_id: '{{ entity_id }}'
       data:
-        volume_level: 40
+        volume_level: 0.3
   - alias: Announce
     service: tts.google_translate_say
+    target:
+      entity_id: '{{ entity_id }}'
     data:
       message: '{{ message }}'
   fields:
