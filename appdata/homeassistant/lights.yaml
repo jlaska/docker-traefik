@@ -52,9 +52,6 @@
   name: Kids Bathroom Light
   entity_id: switch.kids_bathroom_light_switch
 - platform: switch
-  name: Kitchen Table Light
-  entity_id: switch.kitchen_table_light_switch
-- platform: switch
   name: Laundry Room Light
   entity_id: switch.laundry_room_light_switch
 - platform: switch

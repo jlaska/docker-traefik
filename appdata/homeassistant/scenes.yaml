@@ -115,7 +115,9 @@
     light.kitchen_light:
       brightness: 255
       state: 'on'
-    light.kitchen_table_light: true
+    light.kitchen_table_light:
+      brightness: 255
+      state: 'on'
 - id: '1619302411141'
   name: Piano Time
   icon: mdi:piano
