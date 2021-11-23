@@ -1068,8 +1068,10 @@
     timeout: 0:02:00
   - service: script.announce
     data:
-      message: The {{ state_attr(trigger.to_state.entity_id, 'friendly_name')}} has
-        finished
+      message: The {{ trigger.to_state.entity_id == 'sensor.vs553419c_laundry_machine_state'
+        and states('sensor.vs553419c_laundry_cycle') or states('sensor.ms963932g_laundry_cycle')
+        }} cycle of  the {{ state_attr(trigger.to_state.entity_id, 'friendly_name')|replace('State','')
+        }} has finished
       entity_id: media_player.all_speakers
   mode: parallel
   max: 2
