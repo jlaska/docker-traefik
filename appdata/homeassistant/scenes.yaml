@@ -87,6 +87,8 @@
     light.kitchen_cabinet_light:
       brightness: 125
       state: 'on'
+    switch.kitchen_plug_ge_on_off: true
+    switch.williams_room_plug_ge_on_off: true
 - id: '1617838113817'
   name: Downstairs Inactivity
   icon: mdi:motion-sensor-off
@@ -102,6 +104,8 @@
     light.kitchen_end_table_light_zha_group_0x0004: false
     light.entryway_hall_light: false
     light.entryway_door_light: false
+    switch.kitchen_plug_ge_on_off: false
+    switch.williams_room_plug_ge_on_off: false
 - id: '1618704370608'
   name: Roomba Start
   icon: mdi:robot-vacuum

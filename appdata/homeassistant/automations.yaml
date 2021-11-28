@@ -314,8 +314,7 @@
       entity_id:
       - light.back_spot_light
       - light.front_spot_light
-  - wait_template: >-
-      {{ is_state(trigger.entity_id, 'off') }}
+  - wait_template: '{{ is_state(trigger.entity_id, ''off'') }}'
   - delay:
       hours: 0
       minutes: 5
@@ -419,6 +418,12 @@
       area_id:
       - living_room
       - sunroom
+  - service: switch.turn_off
+    target:
+      entity_id:
+      - switch.kitchen_plug_ge_on_off
+      - switch.williams_room_plug_ge_on_off
+      - switch.holiday_light_switch
   mode: single
 - id: '1618103078420'
   alias: Watching A Movie
