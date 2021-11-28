@@ -12,6 +12,11 @@ http:
         average: 100
         burst: 50
 
+    middlewares-https-redirectscheme:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
     middlewares-secure-headers:
       headers:
         accessControlAllowMethods:
@@ -21,7 +26,7 @@ http:
         accessControlMaxAge: 100
         hostsProxyHeaders:
           - "X-Forwarded-Host"
-        sslRedirect: true
+        # sslRedirect: true #replaced with middlewares-https-redirectscheme for v2.5.x
         stsSeconds: 63072000
         stsIncludeSubdomains: true
         stsPreload: true
@@ -36,7 +41,8 @@ http:
         # Setting contentSecurityPolicy is more secure but it can break things. Proper auth will reduce the risk.
         # the below line also breaks some apps due to 'none' - sonarr, radarr, etc.
         # contentSecurityPolicy: "frame-ancestors '*.example.com:*';object-src 'none';script-src 'none';"
-        featurePolicy: "camera 'none'; geolocation 'none'; microphone 'none'; payment 'none'; usb 'none'; vr 'none';"
+        # featurePolicy: "camera 'none'; geolocation 'none'; microphone 'none'; payment 'none'; usb 'none'; vr 'none';"
+        permissionsPolicy: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), vr=()"
         customResponseHeaders:
           X-Robots-Tag: "none,noarchive,nosnippet,notranslate,noimageindex,"
           server: ""

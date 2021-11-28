@@ -4,6 +4,7 @@ http:
       chain:
         middlewares:
           - middlewares-rate-limit
+          - middlewares-https-redirectscheme
           - middlewares-secure-headers
           # - middlewares-error-handler
 
@@ -11,6 +12,7 @@ http:
       chain:
         middlewares:
           - middlewares-rate-limit
+          - middlewares-https-redirectscheme
           - middlewares-secure-headers
           - middlewares-oauth
           # - middlewares-error-handler
