@@ -100,12 +100,61 @@ services:
       timeout: 10s
       retries: 4
 
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto:latest
+    restart: unless-stopped
+    volumes:
+      - $DOCKERDIR/mosquitto:/mosquitto
+    ports:
+      - "$MOSQUITTO_HTTP_PORT:1883" #http
+      - "9001:9001" #websockets
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+
+  zigbee2mqtt:
+    container_name: zigbee2mqtt
+    image: koenkk/zigbee2mqtt
+    restart: unless-stopped
+    depends_on:
+      - mosquitto
+    devices:
+      - '/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyUSB0'
+    networks:
+      - traefik
+    extra_hosts:
+      - "host.docker.internal:$SERVER_IP"
+    ports:
+      - "$ZIGBEE2MQTT_WEB_PORT:8080/tcp"
+    volumes:
+      - $DOCKERDIR/zigbee2mqtt:/app/data
+      - /run/udev:/run/udev:ro
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+    labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
+      ## Traefik
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.zigbee2mqtt-rtr.entrypoints: https
+      traefik.http.routers.zigbee2mqtt-rtr.rule: Host(`zigbee2mqtt.$DOMAINNAME`)
+      traefik.http.routers.zigbee2mqtt-rtr.tls.certresolver: dns-cloudflare
+      traefik.http.routers.zigbee2mqtt-rtr.middlewares: chain-oauth@file
+      traefik.http.routers.zigbee2mqtt-rtr.service: zigbee2mqtt-svc
+      traefik.http.services.zigbee2mqtt-svc.loadbalancer.server.port: 8080
+
   homeassistant:
     image: homeassistant/home-assistant:stable
     container_name: home-assistant
     restart: unless-stopped
     depends_on:
       - zwavejs2mqtt
+      - zigbee2mqtt
     volumes:
       - $DOCKERDIR/homeassistant:/config
     devices:
@@ -803,7 +852,7 @@ services:
       - $DOCKERDIR/docker-gc/docker-gc-exclude:/etc/docker-gc-exclude
     environment:
       CRON: 0 0 * * *
-      FORCE_IMAGE_REMOVAL: 0
+      FORCE_IMAGE_REMOVAL: 1
       FORCE_CONTAINER_REMOVAL: 0
       GRACE_PERIOD_SECONDS: 604800
       DRY_RUN: 0
