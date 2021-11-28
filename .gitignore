@@ -52,6 +52,10 @@ appdata/homeassistant/*
 appdata/prometheus/*
 !appdata/prometheus/prometheus.yml
 
+!appdata/zigbee2mqtt
+appdata/zigbee2mqtt/*
+appdata/zigbee2mqtt/configuration.yaml
+
 !scripts
 scripts/*
 !scripts/systemd
