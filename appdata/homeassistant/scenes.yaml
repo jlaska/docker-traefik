@@ -138,6 +138,7 @@
     light.garage_exterior_light: true
     light.front_door_light: true
     light.back_door_light: true
+    light.holiday_lights: true
     light.front_spot_light: false
     light.back_spot_light: false
 - id: '1626997515367'
