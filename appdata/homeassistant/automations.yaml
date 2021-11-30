@@ -1055,7 +1055,7 @@
       no_motion_wait: input_number.time_automation_waits_to_turn_off_after_no_motion_medium
 - id: '1625665304293'
   alias: Laundry Cycle Finished
-  description: ''
+  description: 'Notify when a laundry cycle has finished'
   trigger:
   - platform: state
     to: Finished
@@ -1065,8 +1065,8 @@
       seconds: 5
       milliseconds: 0
     entity_id:
-    - sensor.ms963932g_laundry_machine_state
-    - sensor.vs553419c_laundry_machine_state
+      - sensor.ms963932g_laundry_machine_state
+      - sensor.vs553419c_laundry_machine_state
   condition: []
   action:
   - wait_template: '{{ is_state(trigger.entity_id, ''Off'') }}'
@@ -1075,7 +1075,7 @@
     data:
       message: The {{ trigger.to_state.entity_id == 'sensor.vs553419c_laundry_machine_state'
         and states('sensor.vs553419c_laundry_cycle') or states('sensor.ms963932g_laundry_cycle')
-        }} cycle of  the {{ state_attr(trigger.to_state.entity_id, 'friendly_name')|replace('State','')
+        }} cycle of the {{ state_attr(trigger.to_state.entity_id, 'friendly_name')|replace('State','')|replace('VS553419C','')|replace('MS963932G','')
         }} has finished
       entity_id: media_player.all_speakers
   mode: parallel
