@@ -1490,3 +1490,26 @@
       target_entity: light.front_door_light
       blocker_entity: light.garage_exterior_light
       turn_off_blocker_entity: light.garage_exterior_light
+- id: '1638199338566'
+  alias: Master Bedroom Button
+  description: Aqara Wireless Switch (single, double, hold)
+  use_blueprint:
+    path: Drafted/aqara-buttons-all-in-one-zigbee2mqtt.yaml
+    input:
+      action_sensor: sensor.master_bedroom_button_action
+      single_action:
+      - service: light.toggle
+        target:
+          entity_id: light.master_bedroom_nightstand
+      double_action:
+      - service: light.toggle
+        target:
+          entity_id: light.master_bedroom_light
+      - service: light.turn_off
+        target:
+          entity_id: light.master_bedroom_fan_light
+      hold_action: []
+      release_action:
+      - service: fan.toggle
+        target:
+          entity_id: fan.master_bedroom_fan
