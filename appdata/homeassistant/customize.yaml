@@ -40,3 +40,5 @@ binary_sensor.kitchen_refrigerator_contact_on_off:
   device_class: door
 binary_sensor.garage_freezer_contact_on_off:
   device_class: door
+sensor.laundry_room_vibration_sensor_strength:
+  state_class: measurement
