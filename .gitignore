@@ -47,6 +47,12 @@ appdata/homeassistant/*
 !appdata/homeassistant/templates.yaml
 !appdata/homeassistant/zha.yaml
 !appdata/homeassistant/zwave.yaml
+!appdata/homeassistant/blueprints
+appdata/homeassistant/blueprints/*
+!appdata/homeassistant/blueprints/automation
+appdata/homeassistant/blueprints/automation/*
+!appdata/homeassistant/blueprints/automation/jlaska
+!appdata/homeassistant/blueprints/automation/jlaska/*
 
 !appdata/prometheus
 appdata/prometheus/*
