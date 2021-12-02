@@ -1,0 +1,70 @@
+blueprint:
+  name: Generic Button Blueprint 
+  description: 'Automate button press events for zha/zigbee2mqtt button sensors.
+  
+  Supports single, double, hold and release actions.
+  '
+  domain: automation
+  input:
+    mqtt_sensor:
+      name: MQTT Sensor
+      description: The MQTT entity (domain:sensor) to use
+      default:
+      selector:
+        entity:
+          domain: sensor
+          integration: mqtt
+    zha_sensor:
+      name: ZHA Button
+      description: The ZHA device (model:button) to use
+      default:
+      selector:
+        device:
+          integration: zha
+          model: button
+    single_action:
+      name: Single button press
+      description: Action to run on single button press
+      default: []
+      selector:
+        action: {}
+    double_action:
+      name: Double button press
+      description: Action to run on double button press
+      default: []
+      selector:
+        action: {}
+    hold_action:
+      name: Button hold
+      description: Action to run on hold
+      default: []
+      selector:
+        action: {}
+    release_action:
+      name: Button release
+      description: Action to run on release
+      default: []
+      selector:
+        action: {}
+  source_url: https://github.com/jlaska/docker-traefik/blob/master/appdata/homeassistant/blueprints/automation/jlaska/generic_button.yaml                     
+mode: parallel
+max_exceeded: silent
+trigger:
+- platform: event
+  event_type: zha_event
+  event_data:
+    device_id: !input 'zha_sensor'
+- platform: state          
+  entity_id: !input 'mqtt_sensor'
+action:
+- variables:
+    command: '{{ (trigger.platform == ''event'' and trigger.event.data.args.press_type) or (trigger.platform == ''state'' and trigger.to_state.state) }}'
+- choose:
+  - conditions: '{{ command == ''single'' }}'
+    sequence: !input 'single_action'
+  - conditions: '{{ command == ''double'' }}'
+    sequence: !input 'double_action'
+  - conditions: '{{ command == ''hold'' }}'
+    sequence: !input 'hold_action'
+  - conditions: '{{ command == ''release'' }}'
+    sequence: !input 'release_action'

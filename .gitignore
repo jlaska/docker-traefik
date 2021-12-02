@@ -52,7 +52,7 @@ appdata/homeassistant/blueprints/*
 !appdata/homeassistant/blueprints/automation
 appdata/homeassistant/blueprints/automation/*
 !appdata/homeassistant/blueprints/automation/jlaska
-!appdata/homeassistant/blueprints/automation/jlaska/*
+!appdata/homeassistant/blueprints/automation/jlaska/*.yaml
 
 !appdata/prometheus
 appdata/prometheus/*
