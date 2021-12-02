@@ -152,7 +152,7 @@
       time_limit_before: input_datetime.time_of_day_automation_stop
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
       motion_sensor: binary_sensor.laundry_room_motion
-      illuminance_sensor: sensor.master_bedroom_motion_aqara_illuminance
+      illuminance_sensor: sensor.master_bedroom_motion_illuminance_lux
 - id: '1617925080161'
   alias: Master Bathroom Light - Activity
   description: ''
@@ -165,7 +165,7 @@
       time_limit_before: input_datetime.time_of_day_automation_stop
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
       motion_sensor: binary_sensor.master_bathroom_motion
-      illuminance_sensor: sensor.master_bedroom_motion_aqara_illuminance
+      illuminance_sensor: sensor.master_bedroom_motion_illuminance_lux
 - id: '1617970121884'
   alias: Garage Light - Activity
   description: ''
@@ -248,18 +248,19 @@
   alias: Master Bathroom Button
   description: Toggle lights based on button presses
   use_blueprint:
-    path: johnny5w/zha-samsung-smartthings-button.yaml
+    path: jlaska/generic_button.yaml
     input:
-      samsung_smartthings_button: 5a1b20b6fb2d9b92ec368d8bf89e08de
-      remote_button_short_press:
+      mqtt_sensor: sensor.master_bathroom_button_action
+      zha_sensor:
+      single_action:
       - service: light.toggle
         target:
           entity_id: light.master_bathroom_light
-      remote_button_double_press:
+      double_action:
       - service: light.toggle
         target:
           entity_id: light.master_bathroom_shower_light
-      remote_button_hold_press:
+      hold_action:
       - service: fan.toggle
         target:
           entity_id: fan.master_bathroom_fan
@@ -778,21 +779,22 @@
   alias: Guest Room Button
   description: ''
   use_blueprint:
-    path: SeanM/zha-aqara-wireless-mini-switch.yaml
+    path: jlaska/generic_button.yaml
     input:
-      button_single_press:
+      mqtt_sensor: sensor.guest_room_button_action
+      zha_sensor:
+      single_action:
       - service: light.toggle
         target:
           entity_id: light.guest_room_nightstand
-      button_double_press:
+      double_action:
       - service: light.toggle
         target:
           entity_id: light.guest_room_fan_light
-      button_long_press:
+      hold_action:
       - service: fan.toggle
         target:
           entity_id: fan.guest_room_fan
-      aqara_mini_switch: 9dce489d377a856c545eb1ef5d12bc3e
 - id: '1622336796126'
   alias: Shannon’s Closet Light - Timer
   description: ''
@@ -833,7 +835,7 @@
       minutes: 30
       seconds: 0
       milliseconds: 0
-    entity_id: binary_sensor.master_bedroom_motion_aqara_occupancy
+    entity_id: binary_sensor.master_bedroom_motion_occupancy
   condition:
   - condition: state
     entity_id: sun.sun
@@ -1055,7 +1057,7 @@
       no_motion_wait: input_number.time_automation_waits_to_turn_off_after_no_motion_medium
 - id: '1625665304293'
   alias: Laundry Cycle Finished
-  description: 'Notify when a laundry cycle has finished'
+  description: Notify when a laundry cycle has finished
   trigger:
   - platform: state
     to: Finished
@@ -1065,8 +1067,8 @@
       seconds: 5
       milliseconds: 0
     entity_id:
-      - sensor.ms963932g_laundry_machine_state
-      - sensor.vs553419c_laundry_machine_state
+    - sensor.ms963932g_laundry_machine_state
+    - sensor.vs553419c_laundry_machine_state
   condition: []
   action:
   - wait_template: '{{ is_state(trigger.entity_id, ''Off'') }}'
@@ -1186,7 +1188,7 @@
       minutes: 1
       seconds: 0
       milliseconds: 0
-    entity_id: binary_sensor.master_bedroom_motion_aqara_occupancy
+    entity_id: binary_sensor.master_bedroom_motion_occupancy
   condition:
   - condition: state
     entity_id: sun.sun
@@ -1494,9 +1496,10 @@
   alias: Master Bedroom Button
   description: Aqara Wireless Switch (single, double, hold)
   use_blueprint:
-    path: Drafted/aqara-buttons-all-in-one-zigbee2mqtt.yaml
+    path: jlaska/generic_button.yaml
     input:
-      action_sensor: sensor.master_bedroom_button_action
+      mqtt_sensor: sensor.master_bedroom_button_action
+      zha_sensor:
       single_action:
       - service: light.toggle
         target:
