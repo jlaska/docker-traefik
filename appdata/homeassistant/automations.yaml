@@ -362,8 +362,12 @@
     entity_id: remote.hubname
     domain: remote
   - service: light.turn_off
-    data: {}
-    entity_id: all
+    target:
+      entity_id: "{% set exclude_light = [\n    'light.back_door_light',\n    'light.front_door_light',\n\
+        \    'light.garage_exterior_light',\n    'light.holiday_lights',\n    'light.back_spot_light',\n\
+        \    'light.front_spot_light'\n   ] %}\n{%- for device in states.light|selectattr('state','in','on')|rejectattr('entity_id','in',exclude_light)\
+        \ -%}\n  {{device.entity_id }}\n  {%- if not loop.last %},{% endif %}\n{%-\
+        \ endfor  %}\n"
   - service: fan.turn_off
     target:
       entity_id: all
