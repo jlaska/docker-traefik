@@ -722,8 +722,8 @@
     - binary_sensor.attic_door_contact_ias_zone
     - binary_sensor.back_door_contact_ias_zone
     - binary_sensor.front_door_contact_ias_zone
-    - binary_sensor.garage_freezer_contact_on_off
-    - binary_sensor.kitchen_refrigerator_contact_on_off
+    - binary_sensor.garage_freezer_door_contact
+    - binary_sensor.kitchen_refrigerator_door_contact
     - binary_sensor.mudroom_door_contact_ias_zone
     to: 'on'
     for:
