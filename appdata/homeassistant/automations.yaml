@@ -756,8 +756,8 @@
       time_limit_before: input_datetime.goodnight_start_time
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
       target_entity: light.guest_bathroom_light
-      motion_sensor: binary_sensor.guest_bathroom_motion_on_off
-      illuminance_sensor: sensor.guest_bathroom_motion_illuminance
+      motion_sensor: binary_sensor.guest_bathroom_motion_occupancy
+      illuminance_sensor: sensor.guest_bathroom_motion_illuminance_lux
 - id: '1622206147425'
   alias: Notify When Solaredge Offline
   description: ''
