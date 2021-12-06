@@ -84,12 +84,12 @@
   - type: motion
     platform: device
     device_id: 2a5f8fecdec09e90b7bf94fc70d519c8
-    entity_id: binary_sensor.kitchen_motion_on_off
+    entity_id: binary_sensor.kitchen_motion_occupancy
     domain: binary_sensor
   condition:
   - condition: numeric_state
     below: input_number.illumination_medium_cutoff_value
-    entity_id: sensor.kitchen_motion_illuminance
+    entity_id: sensor.kitchen_motion_illuminance_lux
   - condition: or
     conditions:
     - condition: state
@@ -235,7 +235,7 @@
   trigger:
   - platform: numeric_state
     for: 00:20:00
-    entity_id: sensor.kitchen_motion_illuminance
+    entity_id: sensor.kitchen_motion_illuminance_lux
     above: input_number.illumination_medium_cutoff_value
   condition:
   - condition: time
@@ -564,7 +564,7 @@
       entity_id: sensor.dining_room_motion_hue_illuminance
       below: input_number.illumination_low_cutoff_value
     - condition: numeric_state
-      entity_id: sensor.kitchen_motion_illuminance
+      entity_id: sensor.kitchen_motion_illuminance_lux
       below: input_number.illumination_low_cutoff_value
     - condition: state
       entity_id: sun.sun
@@ -572,7 +572,7 @@
   action:
   - scene: scene.robot_start
   - condition: numeric_state
-    entity_id: sensor.kitchen_motion_illuminance
+    entity_id: sensor.kitchen_motion_illuminance_lux
     below: '80'
   - service: light.turn_on
     target:
@@ -651,7 +651,7 @@
     input:
       illuminance_cutoff: input_number.illumination_low_cutoff_value
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
-      illuminance_sensor: sensor.kitchen_motion_illuminance
+      illuminance_sensor: sensor.kitchen_motion_illuminance_lux
       motion_sensor: binary_sensor.back_door_contact_ias_zone
       target_entity: light.sunroom_fan_light
 - id: '1619441985700'
@@ -709,8 +709,8 @@
       time_limit_after: input_datetime.time_of_day_automation_start
       time_limit_before: input_datetime.time_of_day_automation_stop
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
-      motion_sensor: binary_sensor.kids_bathroom_motion
-      illuminance_sensor: sensor.kids_bathroom_illuminance
+      motion_sensor: binary_sensor.kids_bathroom_motion_occupancy
+      illuminance_sensor: sensor.kids_bathroom_motion_illuminance_lux
 - id: '1620651897512'
   alias: Notify If Any Door Left Open
   description: ''
