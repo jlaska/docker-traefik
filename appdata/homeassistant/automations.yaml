@@ -717,7 +717,6 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.ms963932g_laundry_door
     - binary_sensor.vs553419c_laundry_door
     - binary_sensor.attic_door_contact_ias_zone
     - binary_sensor.back_door_contact_ias_zone
