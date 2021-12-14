@@ -729,7 +729,6 @@
       hours: 0
       minutes: 5
       seconds: 0
-      milliseconds: 0
   condition: []
   action:
   - service: notify.notify
@@ -737,11 +736,25 @@
       title: The {{ state_attr(trigger.entity_id, 'friendly_name') }} is open
       message: Please close the {{ state_attr(trigger.entity_id, 'friendly_name')
         }}
+      data:
+        group: notify-door-open
+        tag: notify-door-open-{{ trigger.entity_id }}
   - service: script.announce
     data:
       entity_id: media_player.all_speakers
       message: The {{ state_attr(trigger.entity_id, 'friendly_name')|replace(' Contact','')
         }} is open
+  - wait_template: '{{ is_state(trigger.entity_id, ''off'') }}'
+    timeout: 0:15:00
+  - service: notify.notify
+    data:
+      message: clear_notification
+      data:
+        tag: notify-door-open-{{ trigger.entity_id }}
+  - service: script.announce
+    data:
+      entity_id: media_player.all_speakers
+      message: Thank you
   mode: parallel
   max: 6
 - id: '1622157422281'
