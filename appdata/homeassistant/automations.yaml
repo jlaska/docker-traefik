@@ -315,7 +315,7 @@
       entity_id:
       - light.back_spot_light
       - light.front_spot_light
-  - wait_template: '{{ is_state(trigger.entity_id, ''off'') }}'
+  - wait_template: '{{ states(trigger.entity_id) in [''off'', ''closed''] }}'
   - delay:
       hours: 0
       minutes: 5
