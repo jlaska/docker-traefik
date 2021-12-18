@@ -1529,3 +1529,22 @@
       - service: fan.toggle
         target:
           entity_id: fan.master_bedroom_fan
+- id: '1639618452473'
+  alias: GE Switch Double Taps
+  description: ''
+  use_blueprint:
+    path: kpine/ge_double.yaml
+    input:
+      device: 98c706574bccaab03950f857a02451d9
+      double_tap_on:
+      - service: light.turn_on
+        target:
+          area_id:
+          - master_bathroom
+          - master_closet
+      double_tap_off:
+      - service: light.turn_off
+        target:
+          area_id:
+          - master_closet
+          - master_bathroom
