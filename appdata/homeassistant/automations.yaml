@@ -268,30 +268,28 @@
   alias: William's Room Button
   description: ''
   use_blueprint:
-    path: johnny5w/zha-samsung-smartthings-button.yaml
+    path: jlaska/generic_button.yaml
     input:
-      samsung_smartthings_button: 0b741d174283f2992ca4b64d9c1c8ff8
-      remote_button_short_press:
+      mqtt_sensor: sensor.william_s_room_button_action
+      single_action:
       - service: light.toggle
-        data:
-          color_temp: 330
-          brightness_pct: 100
-          transition: 1
         target:
           entity_id: light.williams_room_lamps_zha_group_0x0003
-      remote_button_hold_press:
-      - service: fan.toggle
-        target:
-          entity_id: fan.williams_room_fan
-      remote_button_double_press:
-      - service: light.turn_off
-        target:
-          entity_id: light.william_s_room_fan_light
+        data:
+          transition: 1
+          color_temp: 330
+          brightness: 255
+      double_action:
       - service: light.toggle
         target:
           entity_id: light.williams_room_light
-        data:
-          brightness_pct: 100
+      - service: light.turn_off
+        target:
+          entity_id: light.william_s_room_fan_light
+      hold_action:
+      - service: fan.toggle
+        target:
+          entity_id: fan.williams_room_fan
 - id: '1618048885985'
   alias: Spot Lights When Door Opens
   description: Turn on spot lights when exterior door opens at night
@@ -1237,27 +1235,26 @@
   alias: Henry’s Room Button
   description: 'Toggle devices based on button presses '
   use_blueprint:
-    path: johnny5w/zha-samsung-smartthings-button.yaml
+    path: jlaska/generic_button.yaml
     input:
-      samsung_smartthings_button: 7f88427974214e8526fc827070a0a795
-      remote_button_short_press:
+      mqtt_sensor: sensor.henry_s_room_button_action
+      single_action:
       - service: light.toggle
-        data:
-          color_temp: 325
-          brightness_pct: 100
-          transition: 1
         target:
           entity_id: light.henrys_room_lamps_zha_group_0x0002
-      remote_button_double_press:
+        data:
+          transition: 1
+          brightness: 255
+          color_temp: 330
+      double_action:
       - service: light.toggle
         target:
           entity_id: light.henrys_room_light
-        data:
-          brightness_pct: 100
       - service: light.turn_off
         target:
           entity_id: light.henry_s_room_fan_light
-      remote_button_hold_press:
+      release_action: []
+      hold_action:
       - service: fan.toggle
         target:
           entity_id: fan.henrys_room_fan
