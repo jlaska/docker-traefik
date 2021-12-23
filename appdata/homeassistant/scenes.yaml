@@ -45,7 +45,6 @@
   name: Kids Bedtime
   icon: mdi:bed
   entities:
-    light.guest_bathroom_light: false
     light.guest_room_fan_light: false
     light.guest_room_nightstand: false
     light.henrys_room_light: false
