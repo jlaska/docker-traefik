@@ -1530,7 +1530,7 @@
         target:
           entity_id: fan.master_bedroom_fan
 - id: '1639618452473'
-  alias: GE Switch Double Taps
+  alias: Master Bathroom Light Double Tap
   description: ''
   use_blueprint:
     path: kpine/ge_double.yaml
@@ -1548,3 +1548,55 @@
           area_id:
           - master_closet
           - master_bathroom
+- id: '1639944886830'
+  alias: Williams Room Light Double Tap
+  description: ''
+  use_blueprint:
+    path: kpine/ge_double.yaml
+    input:
+      device: e886cf686b24935ac3ba4ef19ce35dd9
+      double_tap_on:
+      - service: light.turn_on
+        target:
+          area_id: william_s_room
+        data:
+          color_temp: 330
+          brightness: 255
+      double_tap_off:
+      - service: light.turn_off
+        target:
+          area_id: william_s_room
+- id: '1639947431355'
+  alias: Henrys Room Light Double Tap
+  description: ''
+  use_blueprint:
+    path: kpine/ge_double.yaml
+    input:
+      device: c1607f9a9b672e2ea111d8c56fb3901e
+      double_tap_on:
+      - service: light.turn_on
+        target:
+          area_id: henry_s_room
+        data:
+          color_temp: 330
+          brightness: 255
+      double_tap_off:
+      - service: light.turn_off
+        target:
+          area_id: henry_s_room
+- id: '1640023160697'
+  alias: Front Door - Bell
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.doorbell_front_door_protect
+    to: 'on'
+  condition: []
+  action:
+  - service: media_player.play_media
+    target:
+      entity_id: media_player.front_door_protect_speaker
+    data:
+      media_content_type: music
+      media_content_id: https://quicksounds.com/uploads/tracks/1759518219_656234714_1828201613.mp3
+  mode: single
