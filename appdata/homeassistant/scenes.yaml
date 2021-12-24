@@ -63,6 +63,8 @@
     light.williams_room_lamps_zha_group_0x0003: false
     light.williams_room_light: false
     light.shannon_s_closet_light: false
+    light.upstairs_hallway_light: false
+    light.stairway_light: false
 - id: '1617837408158'
   name: Downstairs Activity
   icon: mdi:motion-sensor
