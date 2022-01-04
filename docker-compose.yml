@@ -165,8 +165,8 @@ services:
     devices:
       - '/dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300387-if01-port0:/dev/zigbee'
     network_mode: "host"
-    ports:
-      - "$HOMEASSISTANT_PORT:8123/tcp"
+    # ports:
+      # - "$HOMEASSISTANT_PORT:8123/tcp"
     environment:
       - TZ=$TZ
     labels:
@@ -1306,6 +1306,9 @@ secrets:
 networks:
   default:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/24
   traefik:
     name: traefik
     driver: bridge
