@@ -80,4 +80,6 @@
       device_class: motion
       unique_id: binary_sensor.motion_front_door_protect_person
       value_template: >-
-        {{ is_state('binary_sensor.motion_front_door_protect', 'on') and state_attr('binary_sensor.motion_front_door_protect', 'event_object').lower() == 'person' }}
+        {{ is_state('binary_sensor.motion_front_door_protect', 'on')
+           and state_attr('binary_sensor.motion_front_door_protect', 'event_object') != None
+           and is_state_attr('binary_sensor.motion_front_door_protect', 'event_object', 'person') }}
