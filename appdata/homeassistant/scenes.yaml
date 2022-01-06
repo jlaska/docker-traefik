@@ -32,6 +32,9 @@
       state: 'on'
       brightness: 255
       color_temp: 330
+    light.dining_room_light:
+      brightness: 255
+      state: 'on'
 - id: '1617753584822'
   name: Dawn
   icon: mdi:weather-sunset-up
