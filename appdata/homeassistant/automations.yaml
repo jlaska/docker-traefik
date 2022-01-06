@@ -1600,3 +1600,22 @@
       media_content_type: music
       media_content_id: https://quicksounds.com/uploads/tracks/1759518219_656234714_1828201613.mp3
   mode: single
+- id: '1641050133796'
+  alias: Entryway Hall Light Switch Double Tap
+  description: ''
+  use_blueprint:
+    path: kpine/ge_double.yaml
+    input:
+      device: 2ac64cb1a200b66dbf268c0d475ed532
+      double_tap_on:
+      - service: light.turn_on
+        target:
+          area_id:
+          - entryway
+          - dining_room
+      double_tap_off:
+      - service: light.turn_off
+        target:
+          area_id:
+          - dining_room
+          - entryway
