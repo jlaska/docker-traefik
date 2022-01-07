@@ -54,23 +54,68 @@ nest:
 
 # Use camera plugin for forcast/doplar images
 camera:
-  - platform: generic
-    still_image_url: !secret weather_doplar_url
-    name: Weather Doplar Radar
-  - platform: generic
-    still_image_url: !secret weather_forecast_url
-    name: Weather 7 Day Forecast
-  - platform: generic
-    name: US Atlantic Coast
-    still_image_url: !secret weather_noaa_us_east_coast
-  - platform: generic
-    name: US Southeast
-    still_image_url: !secret weather_noaa_us_southeast
-  - platform: generic
-    name: US Continent
-    still_image_url: !secret weather_noaa_us
+  - platform: local_file
+    name: Weather Local Doplar
+    file_path: /config/www/camera.weather_local_doplar
+  - platform: local_file
+    name: Weather Local Forecast
+    file_path: /config/www/camera.weather_local_forecast
+  - platform: local_file
+    name: Weather NOAA US East Coast
+    file_path: /config/www/camera.weather_noaa_us_east_coast
+  - platform: local_file
+    name: Weather NOAA US Southeast
+    file_path: /config/www/camera.weather_noaa_us_southeast
+  - platform: local_file
+    name: Weather NOAA US Continent
+    file_path: /config/www/camera.weather_noaa_us_continent
 
 google:
   client_id: !secret google_calendar_client_id
   client_secret: !secret google_calendar_client_secret
   calendar_access: read_only
+
+downloader:
+  download_dir: www
+
+input_text:
+  url_weather_noaa_us_continent:
+    name: url_weather_noaa_us_continent
+    initial: !secret weather_noaa_us_url
+    icon: "mdi:link"
+    pattern: "^https?://\\w.*"
+    max: 255
+    min: 10
+    mode: text
+  url_weather_noaa_us_southeast:
+    name: url_weather_noaa_us_southeast
+    initial: !secret weather_noaa_us_southeast_url
+    icon: "mdi:link"
+    pattern: "^https?://\\w.*"
+    max: 255
+    min: 10
+    mode: text
+  url_weather_noaa_us_east_coast:
+    name: url_weather_noaa_us_east_coast
+    initial: !secret weather_noaa_us_east_coast_url
+    icon: "mdi:link"
+    pattern: "^https?://\\w.*"
+    max: 255
+    min: 10
+    mode: text
+  url_weather_local_doplar:
+    name: url_weather_local_doplar
+    initial: !secret weather_local_doplar_url
+    icon: "mdi:link"
+    pattern: "^https?://\\w.*"
+    max: 255
+    min: 10
+    mode: text
+  url_weather_local_forecast:
+    name: url_weather_local_forecast
+    initial: !secret weather_local_forecast_url
+    icon: "mdi:link"
+    pattern: "^https?://\\w.*"
+    max: 255
+    min: 10
+    mode: text

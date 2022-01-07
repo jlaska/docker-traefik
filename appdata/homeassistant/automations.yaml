@@ -1619,3 +1619,39 @@
           area_id:
           - dining_room
           - entryway
+- id: '1641313962210'
+  alias: Weather Image Downloader
+  description: ''
+  trigger:
+  - platform: time_pattern
+    hours: /1
+  condition: []
+  action:
+  - repeat:
+      while:
+      - alias: Loop images to download
+        condition: template
+        value_template: '{{ repeat.index <= images|length }}'
+      sequence:
+      - service: downloader.download_file
+        data:
+          url: '{{ images[repeat.index - 1][''url''] }}'
+          filename: '{{ images[repeat.index - 1][''entity_id''] }}'
+          overwrite: true
+      - service: local_file.update_file_path
+        data:
+          entity_id: '{{ images[repeat.index - 1][''entity_id''] }}'
+          file_path: /config/www/{{ images[repeat.index - 1]['entity_id'] }}
+  mode: single
+  variables:
+    images:
+    - url: '{{ states(''input_text.url_weather_local_doplar'') }}'
+      entity_id: camera.weather_local_doplar
+    - url: '{{ states(''input_text.url_weather_local_forecast'') }}'
+      entity_id: camera.weather_local_forecast
+    - url: '{{ states(''input_text.url_weather_noaa_us_east_coast'') }}'
+      entity_id: camera.weather_noaa_us_east_coast
+    - url: '{{ states(''input_text.url_weather_noaa_us_southeast'') }}'
+      entity_id: camera.weather_noaa_us_southeast
+    - url: '{{ states(''input_text.url_weather_noaa_us_continent'') }}'
+      entity_id: camera.weather_noaa_us_continent
