@@ -1658,3 +1658,26 @@
       entity_id: camera.weather_noaa_us_southeast
     - url: '{{ states(''input_text.url_weather_noaa_us_continent'') }}'
       entity_id: camera.weather_noaa_us_continent
+- id: '1641679968022'
+  alias: Powder Room Activity
+  description: ''
+  use_blueprint:
+    path: jlaska/on_off_with_motion_illuminance_timeout.yaml
+    input:
+      motion_sensor: binary_sensor.powder_room_motion_occupancy
+      target_entity: light.powder_room_light
+      no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
+- id: '1641844323492'
+  alias: Front Door Protect - Person Notification
+  description: ''
+  use_blueprint:
+    path: briis/push_notification_smart_event.yaml
+    input:
+      smart_entity: sensor.front_door_protect_detected_object
+      send_mobile: true
+      notify_target_app: mobile_app_james_iphone
+      cooldown: 120
+      base_image_url: https://homeassistant.jlaska.com
+      lovelace_view: /lovelace-testing/cameras
+      silence_timer: 15
+      objects: person
