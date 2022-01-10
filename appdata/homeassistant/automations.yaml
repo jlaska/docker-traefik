@@ -54,17 +54,17 @@
   - type: motion
     platform: device
     device_id: 4730e6c001209ad6704136353b3ff8f1
-    entity_id: binary_sensor.living_room_motion_ias_zone
+    entity_id: binary_sensor.living_room_motion_occupancy
     domain: binary_sensor
   - type: motion
     platform: device
     device_id: 62f4e5988da089c749d84a512c932b90
-    entity_id: binary_sensor.sunroom_motion_ias_zone
+    entity_id: binary_sensor.sunroom_motion_occupancy
     domain: binary_sensor
   - type: motion
     platform: device
     device_id: 8a6d52690d1c3c0121c9cf7e526a31a6
-    entity_id: binary_sensor.motion_sunroom_protect
+    entity_id: binary_sensor.sunroom_protect_motion
     domain: binary_sensor
     for:
       hours: 0
@@ -74,12 +74,12 @@
   - type: motion
     platform: device
     device_id: 1d4f49c0e8e1bb39d711f96f5f8b8472
-    entity_id: binary_sensor.dining_room_motion_ias_zone
+    entity_id: binary_sensor.dining_room_motion_occupancy
     domain: binary_sensor
   - type: motion
     platform: device
     device_id: 0064f401138da744f8facb92fea365cc
-    entity_id: binary_sensor.mudroom_motion_ias_zone
+    entity_id: binary_sensor.mudroom_motion_occupancy
     domain: binary_sensor
   - type: motion
     platform: device
@@ -151,7 +151,7 @@
       time_limit_after: input_datetime.time_of_day_automation_start
       time_limit_before: input_datetime.time_of_day_automation_stop
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
-      motion_sensor: binary_sensor.laundry_room_motion
+      motion_sensor: binary_sensor.laundry_room_motion_occupancy
       illuminance_sensor: sensor.master_bedroom_motion_illuminance_lux
 - id: '1617925080161'
   alias: Master Bathroom Light - Activity
@@ -164,7 +164,7 @@
       time_limit_after: input_datetime.time_of_day_automation_start
       time_limit_before: input_datetime.time_of_day_automation_stop
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
-      motion_sensor: binary_sensor.master_bathroom_motion
+      motion_sensor: binary_sensor.master_bathroom_motion_occupancy
       illuminance_sensor: sensor.master_bedroom_motion_illuminance_lux
 - id: '1617970121884'
   alias: Garage Light - Activity
@@ -173,22 +173,22 @@
   - type: motion
     platform: device
     device_id: db0494415da5d2811883cf44f60faf94
-    entity_id: binary_sensor.garage_motion_ias_zone
+    entity_id: binary_sensor.garage_motion_occupancy
     domain: binary_sensor
   - type: opened
     platform: device
     device_id: 37469d7629aa92d508d96a4d1139ac15
-    entity_id: binary_sensor.garage_door_contact_ias_zone
+    entity_id: binary_sensor.garage_door_contact
     domain: binary_sensor
   - type: opened
     platform: device
     device_id: c2bd0018417d9382001ed77c17372f2d
-    entity_id: binary_sensor.mudroom_door_contact_ias_zone
+    entity_id: binary_sensor.mudroom_door_contact
     domain: binary_sensor
   - type: motion
     platform: device
     device_id: d417ae82a38795b7659c9e75ef829ede
-    entity_id: binary_sensor.motion_garage_protect
+    entity_id: binary_sensor.garage_protect_motion
     domain: binary_sensor
     for:
       hours: 0
@@ -215,7 +215,7 @@
       minutes: "{{\n  states('input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion')|int(0)\n\
         }}"
   - wait_template: "{{ is_state('binary_sensor.garage_motion_any', 'off')\n   and\
-      \ is_state('binary_sensor.garage_door_contact_ias_zone', 'off')\n   and is_state('binary_sensor.mudroom_door_contact_ias_zone',\
+      \ is_state('binary_sensor.garage_door_contact', 'off')\n   and is_state('binary_sensor.mudroom_door_contact',\
       \ 'off') \n}} "
     continue_on_timeout: false
   - service: light.turn_off
@@ -296,9 +296,9 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.back_door_contact_ias_zone
-    - binary_sensor.front_door_contact_ias_zone
-    - binary_sensor.garage_door_contact_ias_zone
+    - binary_sensor.back_door_contact
+    - binary_sensor.front_door_contact
+    - binary_sensor.garage_door_contact
     - cover.garage_door_opener
     to:
     - opening
@@ -457,7 +457,7 @@
   - type: no_motion
     platform: device
     device_id: cc8cea0e1b73302c304724df2e6a3ff5
-    entity_id: binary_sensor.motion_williams_protect
+    entity_id: binary_sensor.williams_protect_motion
     domain: binary_sensor
     for:
       hours: 0
@@ -476,7 +476,7 @@
     attribute: elevation
     above: '4.0'
   - condition: state
-    entity_id: binary_sensor.motion_williams_protect
+    entity_id: binary_sensor.williams_protect_motion
     state: 'off'
     for:
       hours: 0
@@ -505,7 +505,7 @@
   - type: no_motion
     platform: device
     device_id: 63cae940cd0fb6c810fd9accdd273f4b
-    entity_id: binary_sensor.motion_henrys_protect
+    entity_id: binary_sensor.henrys_protect_motion
     domain: binary_sensor
     for:
       hours: 0
@@ -526,7 +526,7 @@
   - condition: time
     before: input_datetime.time_of_day_automation_stop
   - condition: state
-    entity_id: binary_sensor.motion_henrys_protect
+    entity_id: binary_sensor.henrys_protect_motion
     state: 'off'
     for:
       hours: 0
@@ -559,7 +559,7 @@
     condition: or
     conditions:
     - condition: numeric_state
-      entity_id: sensor.dining_room_motion_hue_illuminance
+      entity_id: binary_sensor.dining_room_motion_occupancy
       below: input_number.illumination_low_cutoff_value
     - condition: numeric_state
       entity_id: sensor.kitchen_motion_illuminance_lux
@@ -619,7 +619,7 @@
     - type: is_open
       condition: device
       device_id: 37469d7629aa92d508d96a4d1139ac15
-      entity_id: binary_sensor.garage_door_contact_ias_zone
+      entity_id: binary_sensor.garage_door_contact
       domain: binary_sensor
   action:
   - service: notify.mobile_app_james_iphone
@@ -640,7 +640,7 @@
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
       target_entity: light.mudroom_light
       turn_off_blocker_entity: light.garage_light
-      motion_sensor: binary_sensor.mudroom_motion_ias_zone
+      motion_sensor: binary_sensor.mudroom_motion_occupancy
 - id: '1619438720780'
   alias: Back Door - Activity
   description: ''
@@ -650,7 +650,7 @@
       illuminance_cutoff: input_number.illumination_low_cutoff_value
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
       illuminance_sensor: sensor.kitchen_motion_illuminance_lux
-      motion_sensor: binary_sensor.back_door_contact_ias_zone
+      motion_sensor: binary_sensor.back_door_contact
       target_entity: light.sunroom_fan_light
 - id: '1619441985700'
   alias: Front Door - Activity
@@ -662,9 +662,9 @@
       illuminance_cutoff: input_number.illumination_very_low_cutoff_value
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
       motion_sensor:
-      - binary_sensor.front_door_contact_ias_zone
-      - binary_sensor.doorbell_front_door_protect
-      illuminance_sensor: sensor.dining_room_motion_hue_illuminance
+      - binary_sensor.front_door_contact
+      - binary_sensor.front_door_protect_doorbell
+      illuminance_sensor: sensor.dining_room_motion_illuminance_lux
 - id: '1619447091981'
   alias: Dining Room - Activity
   description: ''
@@ -672,11 +672,11 @@
     path: jlaska/on_off_with_motion_illuminance_timeout.yaml
     input:
       turn_off_blocker_entity: light.entryway_hall_light
-      no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
-      illuminance_sensor: sensor.dining_room_motion_hue_illuminance
       illuminance_cutoff: input_number.illumination_very_low_cutoff_value
       target_entity: light.dining_room_light
-      motion_sensor: binary_sensor.dining_room_motion_hue_occupancy,binary_sensor.dining_room_motion_ias_zone
+      motion_sensor: binary_sensor.dining_room_motion_occupancy
+      illuminance_sensor: sensor.dining_room_motion_illuminance_lux
+      no_motion_wait: input_number.time_automation_waits_to_turn_off_after_no_motion_medium
 - id: '1619530751693'
   alias: Sunrise
   description: ''
@@ -716,12 +716,12 @@
   - platform: state
     entity_id:
     - binary_sensor.vs553419c_laundry_door
-    - binary_sensor.attic_door_contact_ias_zone
-    - binary_sensor.back_door_contact_ias_zone
-    - binary_sensor.front_door_contact_ias_zone
+    - binary_sensor.attic_door_contact
+    - binary_sensor.back_door_contact
+    - binary_sensor.front_door_contact
     - binary_sensor.garage_freezer_door_contact
     - binary_sensor.kitchen_refrigerator_door_contact
-    - binary_sensor.mudroom_door_contact_ias_zone
+    - binary_sensor.mudroom_door_contact
     to: 'on'
     for:
       hours: 0
@@ -1064,7 +1064,7 @@
   use_blueprint:
     path: jlaska/on_off_with_motion_illuminance_timeout.yaml
     input:
-      motion_sensor: binary_sensor.master_bathroom_motion
+      motion_sensor: binary_sensor.master_bathroom_motion_occupancy
       target_entity: light.master_bathroom_shower_light
       time_limit_after: input_datetime.time_of_day_shower_automation_start
       time_limit_before: input_datetime.time_of_day_automation_stop
@@ -1100,11 +1100,9 @@
   alias: Leak Detected
   description: ''
   trigger:
-  - type: moist
-    platform: device
-    device_id: c67de1a0a4a1cdcc6b89e18a1479cfa3
-    entity_id: binary_sensor.laundry_room_leak_ias_zone
-    domain: binary_sensor
+  - platform: state
+    entity_id: binary_sensor.laundry_room_leak_water_leak
+    to: 'on'
   condition: []
   action:
   - service: notify.mobile_app_james_iphone
@@ -1122,30 +1120,34 @@
     device_id: b9bea195719b7e53a8ae66a04660c655
     entity_id: switch.laundry_washer_plug_centralite_on_off
     domain: switch
+  - service: tts.google_translate_say
+    data:
+      entity_id: media_player.all_speakers
+      message: A leak was detected in the laundry room
   mode: single
 - id: '1628526357140'
   alias: Notify When Person Detected
   description: Notify when everyone is away and a person is detected
   trigger:
   - platform: state
-    entity_id: binary_sensor.motion_front_door_protect
+    entity_id: binary_sensor.front_door_protect_motion
     attribute: event_object
     to: person
   condition:
   - condition: template
     value_template: '{{ utcnow() - state_attr(''automation.person_notification_when_away'',
-      ''last_triggered'') > timedelta(minutes=1) }}'
+      ''last_triggered'') > timedelta(minutes=5) }}'
   action:
   - service: camera.record
     target:
-      entity_id: camera.front_door_protect
+      entity_id: camera.front_door_protect_high
     data:
       lookback: 10
       duration: 15
       filename: /config/www/recording.{{ trigger.entity_id }}.mp4
   - service: camera.snapshot
     target:
-      entity_id: camera.front_door_protect
+      entity_id: camera.front_door_protect_high
     data:
       filename: /config/www/snapshot.{{ trigger.entity_id }}.jpg
   - service: notify.mobile_app_james_iphone
@@ -1154,10 +1156,11 @@
       message: '{{ state_attr(trigger.to_state.entity_id, ''friendly_name'') }}'
       data:
         tag: person_detected
-        entity_id: camera.front_door_protect
+        entity_id: camera.front_door_protect_high
         push:
           category: camera
-        image: /local/snapshot.{{ trigger.entity_id }}.jpg
+        image: '{{ trigger.to_state.attributes.event_thumbnail }}'
+        __image: /local/snapshot.{{ trigger.entity_id }}.jpg
         __video: /local/recording.{{ trigger.entity_id }}.mp4
         actions:
         - action: LIVE
@@ -1214,7 +1217,7 @@
       milliseconds: 0
   - condition: numeric_state
     above: '77.0'
-    entity_id: sensor.master_bathroom_temperature
+    entity_id: sensor.master_bathroom_weather_temperature
   - condition: time
     weekday:
     - mon
@@ -1405,19 +1408,19 @@
   - type: opened
     platform: device
     device_id: 6a4f4eccc9f68877d56de9d1750e2a78
-    entity_id: binary_sensor.front_door_contact_ias_zone
+    entity_id: binary_sensor.front_door_contact
     domain: binary_sensor
     id: front_door
   - type: opened
     platform: device
     device_id: 720f3a84bef7a7dd93aa773ab4767c2a
-    entity_id: binary_sensor.back_door_contact_ias_zone
+    entity_id: binary_sensor.back_door_contact
     domain: binary_sensor
     id: back_door
   - type: opened
     platform: device
     device_id: 37469d7629aa92d508d96a4d1139ac15
-    entity_id: binary_sensor.garage_door_contact_ias_zone
+    entity_id: binary_sensor.garage_door_contact
     domain: binary_sensor
     id: garage_door
   - platform: device
@@ -1500,8 +1503,8 @@
     input:
       illuminance_cutoff: input_number.illumination_very_low_cutoff_value
       no_motion_wait: input_number.time_in_minutes_automation_waits_to_turn_off_after_no_motion
-      motion_sensor: binary_sensor.front_door_contact_ias_zone,binary_sensor.doorbell_front_door_protect,binary_sensor.motion_front_door_protect_person
-      illuminance_sensor: sensor.dining_room_motion_hue_illuminance
+      motion_sensor: binary_sensor.front_door_contact,binary_sensor.front_door_protect_doorbell,binary_sensor.front_door_protect_person
+      illuminance_sensor: sensor.dining_room_motion_illuminance_lux
       target_entity: light.front_door_light
       blocker_entity: light.garage_exterior_light
       turn_off_blocker_entity: light.garage_exterior_light
@@ -1589,7 +1592,7 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: binary_sensor.doorbell_front_door_protect
+    entity_id: binary_sensor.front_door_protect_doorbell
     to: 'on'
   condition: []
   action:
