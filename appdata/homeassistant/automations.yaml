@@ -1678,6 +1678,6 @@
       notify_target_app: mobile_app_james_iphone
       cooldown: 120
       base_image_url: https://homeassistant.jlaska.com
-      lovelace_view: /lovelace-testing/cameras
+      lovelace_view: /lovelace-cameras/front-door-protect
       silence_timer: 15
       objects: person
