@@ -6,17 +6,20 @@
 # Create humidistat sensors (https://github.com/basschipper/homeassistant-generic-hygrostat)
 - platform: generic_hygrostat
   name: Master Bathroom Hygrostat
+  unique_id: master_bathroom_hygrostat
   sensor: sensor.master_bathroom_weather_humidity
   max_on_time: 2700 # Optional safety max on time in seconds. Default = 7200 seconds
 
 - platform: generic_hygrostat
   name: Guest Bathroom Hygrostat
+  unique_id: guest_bathroom_hygrostat
   sensor: sensor.guest_bathroom_weather_humidity
   max_on_time: 2700
   delta_trigger: 6
 
 - platform: generic_hygrostat
   name: Kids Bathroom Hygrostat
+  unique_id: kids_bathroom_hygrostat
   sensor: sensor.kids_bathroom_weather_humidity
   max_on_time: 2700
 
