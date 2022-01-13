@@ -153,7 +153,7 @@ services:
       timeout: 10s
       retries: 4
 
-  homeassistant:
+  home-assistant:
     image: homeassistant/home-assistant:stable
     container_name: home-assistant
     restart: unless-stopped
@@ -161,7 +161,7 @@ services:
       - zwavejs2mqtt
       - zigbee2mqtt
     volumes:
-      - $DOCKERDIR/homeassistant:/config
+      - $DOCKERDIR/home-assistant:/config
     devices:
       - '/dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300387-if01-port0:/dev/zigbee'
     network_mode: "host"
