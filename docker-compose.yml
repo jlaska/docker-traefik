@@ -891,6 +891,76 @@ services:
       - $RSYNC_SRC:/rsync_src
       - $RSYNC_DST:/rsync_dst
 
+  calibre:
+    image: lscr.io/linuxserver/calibre
+    container_name: calibre
+    restart: unless-stopped
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+      # - PASSWORD= #optional
+      # - CLI_ARGS= #optional
+    volumes:
+      - $DOCKERDIR/calibre:/config
+      - $MEDIADIR/Books:/books
+    networks:
+      - traefik
+    ports:
+      - "$CALIBRE_GUI_PORT:8080/tcp"
+      # - "$CALIBRE_SERVER_PORT:8081/tcp"
+    labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
+      ## Traefik
+      traefik.enable: true
+      traefik.docker.network: traefik
+      # Application
+      traefik.http.routers.calibre-rtr.entrypoints: https
+      traefik.http.routers.calibre-rtr.rule: Host(`calibre.$DOMAINNAME`)
+      traefik.http.routers.calibre-rtr.tls.certresolver: dns-cloudflare
+      traefik.http.routers.calibre-rtr.middlewares: chain-oauth@file
+      traefik.http.routers.calibre-rtr.service: calibre-svc
+      traefik.http.services.calibre-svc.loadbalancer.server.port: 8080
+      # Server (disabled)
+      # traefik.http.routers.calibre-server-rtr.entrypoints: https
+      # traefik.http.routers.calibre-server-rtr.rule: Host(`calibre-server.$DOMAINNAME`)
+      # traefik.http.routers.calibre-server-rtr.tls.certresolver: dns-cloudflare
+      # traefik.http.routers.calibre-server-rtr.middlewares: chain-oauth@file
+      # traefik.http.routers.calibre-server-rtr.service: calibre-server-svc
+      # traefik.http.services.calibre-server-svc.loadbalancer.server.port: 8081
+
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web
+    container_name: calibre-web
+    restart: unless-stopped
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+      - DOCKER_MODS=linuxserver/calibre-web:calibre #optional
+      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    volumes:
+      - $DOCKERDIR/calibre-web:/config
+      - $DOCKERDIR/calibre:/library
+      - $MEDIADIR/Books:/books
+    networks:
+      - traefik
+    ports:
+      - "$CALIBRE_WEB_PORT:8083/tcp"
+    labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
+      ## Traefik
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.calibre-web-rtr.entrypoints: https
+      traefik.http.routers.calibre-web-rtr.rule: Host(`calibre-web.$DOMAINNAME`)
+      traefik.http.routers.calibre-web-rtr.tls.certresolver: dns-cloudflare
+      traefik.http.routers.calibre-web-rtr.middlewares: chain-oauth@file
+      traefik.http.routers.calibre-web-rtr.service: calibre-web-svc
+      traefik.http.services.calibre-web-svc.loadbalancer.server.port: 8083
+
   readarr:
     container_name: readarr
     image: hotio/readarr:nightly
@@ -906,7 +976,7 @@ services:
       - READARR_APIKEY_FILE=/run/secrets/readarr_apikey
     volumes:
       - $DOCKERDIR/readarr:/config
-      - $MEDIADIR/Books:/media
+      - $MEDIADIR/Books:/books
       - $MEDIADIR/Audiobooks:/audiobooks
       - $MEDIADIR/Downloads:/downloads
     networks:
