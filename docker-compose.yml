@@ -1001,36 +1001,36 @@ services:
       timeout: 10s
       retries: 4
 
-  lazylibrarian:
-    image: ghcr.io/linuxserver/lazylibrarian
-    container_name: lazylibrarian
-    environment:
-      - PUID=$PUID
-      - PGID=$PGID
-      - TZ=$TZ
-      - DOCKER_MODS=linuxserver/calibre-web:calibre|linuxserver/mods:lazylibrarian-ffmpeg #optional
-    volumes:
-      - $DOCKERDIR/lazylibrarian:/config
-      - $MEDIADIR/Audiobooks:/audiobooks
-      - $MEDIADIR/Books:/books
-      - $MEDIADIR/Downloads:/downloads
-    labels:
-      ## Auto-update
-      com.centurylinklabs.watchtower.enable: true
-      ## Traefik
-      traefik.enable: true
-      traefik.docker.network: traefik
-      traefik.http.routers.lazylibrarian-rtr.entrypoints: https
-      traefik.http.routers.lazylibrarian-rtr.rule: Host(`lazylibrarian.$DOMAINNAME`)
-      traefik.http.routers.lazylibrarian-rtr.tls.certresolver: dns-cloudflare
-      traefik.http.routers.lazylibrarian-rtr.middlewares: chain-oauth@file
-      traefik.http.routers.lazylibrarian-rtr.service: lazylibrarian-svc
-      traefik.http.services.lazylibrarian-svc.loadbalancer.server.port: $LAZYLIBRARIAN_PORT
-    networks:
-      - traefik
-    ports:
-      - "$LAZYLIBRARIAN_PORT:5299/tcp"
-    restart: unless-stopped
+#  lazylibrarian:
+#    image: ghcr.io/linuxserver/lazylibrarian
+#    container_name: lazylibrarian
+#    environment:
+#      - PUID=$PUID
+#      - PGID=$PGID
+#      - TZ=$TZ
+#      - DOCKER_MODS=linuxserver/calibre-web:calibre|linuxserver/mods:lazylibrarian-ffmpeg #optional
+#    volumes:
+#      - $DOCKERDIR/lazylibrarian:/config
+#      - $MEDIADIR/Audiobooks:/audiobooks
+#      - $MEDIADIR/Books:/books
+#      - $MEDIADIR/Downloads:/downloads
+#    labels:
+#      ## Auto-update
+#      com.centurylinklabs.watchtower.enable: true
+#      ## Traefik
+#      traefik.enable: true
+#      traefik.docker.network: traefik
+#      traefik.http.routers.lazylibrarian-rtr.entrypoints: https
+#      traefik.http.routers.lazylibrarian-rtr.rule: Host(`lazylibrarian.$DOMAINNAME`)
+#      traefik.http.routers.lazylibrarian-rtr.tls.certresolver: dns-cloudflare
+#      traefik.http.routers.lazylibrarian-rtr.middlewares: chain-oauth@file
+#      traefik.http.routers.lazylibrarian-rtr.service: lazylibrarian-svc
+#      traefik.http.services.lazylibrarian-svc.loadbalancer.server.port: $LAZYLIBRARIAN_PORT
+#    networks:
+#      - traefik
+#    ports:
+#      - "$LAZYLIBRARIAN_PORT:5299/tcp"
+#    restart: unless-stopped
 
   # InfluxDB - Database for sensor data
   influxdb:
