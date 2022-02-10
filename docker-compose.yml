@@ -490,10 +490,9 @@ services:
       retries: 4
 
   # Password Management Service
-  bitwarden:
-    # image: bitwardenrs/server:1.18.0
-    image: bitwardenrs/server:latest
-    container_name: bitwarden
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
     restart: unless-stopped
     environment:
       - ADMIN_TOKEN_FILE=/run/secrets/bitwarden_admin_token
