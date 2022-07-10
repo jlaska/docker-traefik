@@ -562,7 +562,7 @@ services:
 
   # Backup service for bitwarden
   bitwarden_backup:
-    image: bruceforce/bw_backup:latest
+    image: bruceforce/vaultwarden-backup
     container_name: bitwarden_backup
     restart: unless-stopped
     entrypoint:
@@ -570,15 +570,23 @@ services:
     network_mode: none
     volumes:
       - $DOCKERDIR/bitwarden:/data
+      - $DOCKERDIR/bitwarden_backup:/backup
     environment:
-      - DB_FILE=/data/db.sqlite3
-      - CRON_TIME=0 4 * * *
+      - TZ=$TZ
       - UID=$PUID
       - GID=$PGID
-      - BACKUP_FILE=/data/db_backup/backup.sqlite3
-      - BACKUP_FILE_PERMISSIONS=700
-      - TIMESTAMP=false
-      - LOGFILE=/app/log/backup.log
+      - CRON_TIME=0 4 * * *
+      - TIMESTAMP=true
+      - DELETE_AFTER=6
+      - LOG_LEVEL=WARNING
+      - LOG_DIR=/backup/logs
+      - LOG_DIR_PERMISSIONS=755
+      - BACKUP_DIR=/backup
+      - BACKUP_DIR_PERMISSIONS=700
+      - BACKUP_ADD_DATABASE=true
+      - BACKUP_ADD_CONFIG_JSON=true
+      - BACKUP_ADD_ATTACHMENTS=true
+      - BACKUP_ADD_RSA_KEY=true
       # - CRONFILE=/etc/crontabs/root
     healthcheck:
       test: ["CMD-SHELL", "stat $${DB_FILE} $${BACKUP_FILE}"]
@@ -872,7 +880,13 @@ services:
       TZ: $TZ
       WATCHTOWER_SCHEDULE: 0 0 2 * * *
       WATCHTOWER_LABEL_ENABLE: 1
+      WATCHTOWER_DEBUG: 'true'
+      WATCHTOWER_NOTIFICATIONS: 'shoutrrr'
+      # WATCHTOWER_NOTIFICATION_URL: '/run/secrets/watchtower_notification_url'
+      WATCHTOWER_NOTIFICATION_URL: 'pushover://shoutrrr:a5tcpmh331zusywa113oskwjsg9r84@uymzfhqxh2da4hkm753ys7hpjq7kye/?devices=iPhone13'
       DOCKER_HOST: tcp://socket-proxy:$SOCKET_PROXY_PORT
+    secrets:
+      - watchtower_notification_url
     networks:
       - socket_proxy
 
@@ -1370,6 +1384,8 @@ secrets:
     file: $SECRETSDIR/bitwarden_smtp_username
   bitwarden_smtp_password:
     file: $SECRETSDIR/bitwarden_smtp_password
+  watchtower_notification_url:
+    file: $SECRETSDIR/watchtower_notification_url
 
 ########################### NETWORKS
 networks:
