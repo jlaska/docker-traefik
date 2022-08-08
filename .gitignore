@@ -39,6 +39,7 @@ appdata/home-assistant/*
 !appdata/home-assistant/configuration.yaml
 !appdata/home-assistant/customize.yaml
 !appdata/home-assistant/fans.yaml
+!appdata/home-assistant/groups.yaml
 !appdata/home-assistant/homekit.yaml
 !appdata/home-assistant/lights.yaml
 !appdata/home-assistant/scenes.yaml
