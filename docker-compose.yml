@@ -578,7 +578,7 @@ services:
       - CRON_TIME=0 4 * * *
       - TIMESTAMP=true
       - DELETE_AFTER=6
-      - LOG_LEVEL=WARNING
+      - LOG_LEVEL=DEBUG
       - LOG_DIR=/backup/logs
       - LOG_DIR_PERMISSIONS=755
       - BACKUP_DIR=/backup
@@ -589,7 +589,7 @@ services:
       - BACKUP_ADD_RSA_KEY=true
       # - CRONFILE=/etc/crontabs/root
     healthcheck:
-      test: ["CMD-SHELL", "stat $${DB_FILE} $${BACKUP_FILE}"]
+      test: ["CMD-SHELL", "stat $${VW_DATABASE_URL} $${BACKUP_DIR}/$$(date +'%Y-%m-%d')-*db.sqlite3"]
       interval: 120s
       timeout: 5s
       retries: 4
@@ -883,7 +883,7 @@ services:
       WATCHTOWER_DEBUG: 'true'
       WATCHTOWER_NOTIFICATIONS: 'shoutrrr'
       # WATCHTOWER_NOTIFICATION_URL: '/run/secrets/watchtower_notification_url'
-      WATCHTOWER_NOTIFICATION_URL: 'pushover://shoutrrr:a5tcpmh331zusywa113oskwjsg9r84@uymzfhqxh2da4hkm753ys7hpjq7kye/?devices=iPhone13'
+      WATCHTOWER_NOTIFICATION_URL: $WATCHTOWER_NOTIFICATION_URL
       DOCKER_HOST: tcp://socket-proxy:$SOCKET_PROXY_PORT
     secrets:
       - watchtower_notification_url
