@@ -162,8 +162,10 @@ services:
       - zigbee2mqtt
     volumes:
       - $DOCKERDIR/home-assistant:/config
+      # - /run/dbus:/run/dbus:ro # enable bluetooth
     devices:
       - '/dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300387-if01-port0:/dev/zigbee'
+      # - '/sys/class/bluetooth/hci0/device:/dev/bluetooth'
     network_mode: "host"
     # ports:
       # - "$HOMEASSISTANT_PORT:8123/tcp"
