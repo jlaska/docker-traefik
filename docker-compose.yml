@@ -70,6 +70,8 @@ services:
     restart: unless-stopped
     tty: true
     stop_signal: SIGINT
+    depends_on:
+      - mosquitto # I don't think this is true
     environment:
         # - SESSION_SECRET=mysupersecretkey
       - TZ=$TZ
@@ -152,6 +154,54 @@ services:
       interval: 120s
       timeout: 10s
       retries: 4
+
+  scrypted:
+    image: koush/scrypted
+    container_name: scrypted
+    restart: unless-stopped
+    network_mode: host
+    # networks:
+    #   - traefik
+    # ports:
+    #   - "$SCRYPTED_PORT:10443/tcp"
+    environment:
+      TZ: $TZ
+      PUID: $PUID
+      PGID: $PGID
+      # - SCRYPTED_WEBHOOK_UPDATE_AUTHORIZATION=Bearer SET_THIS_TO_SOME_RANDOM_TEXT
+      # - SCRYPTED_WEBHOOK_UPDATE=http://localhost:10444/v1/update
+    # uncomment this and a line below as needed.
+    # devices:
+    # zwave usb serial device
+    #   - /dev/ttyACM0:/dev/ttyACM0
+    # all usb devices, such as coral tpu
+    #   - /dev/bus/usb:/dev/bus/usb
+    volumes:
+      - $DOCKERDIR/scrypted:/server/volume
+    # logging is noisy and will unnecessarily wear on flash storage.
+    # scrypted has per device in memory logging that is preferred.
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "10"
+    labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
+      ## Traefik
+      # traefik.enable: true
+      # traefik.docker.network: traefik
+      # traefik.http.routers.scrypted-rtr.entrypoints: https
+      # traefik.http.routers.scrypted-rtr.rule: Host(`scrypted.$DOMAINNAME`)
+      # traefik.http.routers.scrypted-rtr.tls.certresolver: dns-cloudflare
+      # traefik.http.routers.scrypted-rtr.middlewares: chain-oauth@file
+      # traefik.http.routers.scrypted-rtr.service: scrypted-svc
+      # traefik.http.services.scrypted-svc.loadbalancer.server.port: $SCRYPTED_PORT
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-k", "-L", "https://localhost:$SCRYPTED_PORT/"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
 
   home-assistant:
     image: homeassistant/home-assistant:stable
@@ -731,6 +781,7 @@ services:
       HOMEASSISTANT_PORT: $HOMEASSISTANT_PORT
       HOMEBRIDGE_IP: $HOMEBRIDGE_IP
       HOMEBRIDGE_PORT: $HOMEBRIDGE_PORT
+      SCRYPTED_PORT: $SCRYPTED_PORT
     labels:
       # Auto-update
       com.centurylinklabs.watchtower.enable: false
@@ -1393,6 +1444,9 @@ secrets:
 networks:
   default:
     driver: bridge
+    # https://mlohr.com/docker-mtu/
+    # driver_opts:
+    #   com.docker.network.driver.mtu: 1454
     ipam:
       config:
         - subnet: 172.18.0.0/24
