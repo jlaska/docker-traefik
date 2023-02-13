@@ -1,5 +1,33 @@
 http:
+  middlewares:
+    add-protect:
+      addPrefix:
+        prefix: "/protect"
+    add-network:
+      addPrefix:
+        prefix: "/network"
+
   routers:
+    unifi-protect-rtr:
+      entryPoints:
+        - https
+      middlewares:
+        - chain-oauth@file
+      service: unifi-cloudkey-svc
+      rule: 'Host(`protect.{{env "DOMAINNAME"}}`)'
+      tls:
+        certresolver: dns-cloudflare
+
+    unifi-network-rtr:
+      entryPoints:
+        - https
+      middlewares:
+        - chain-oauth@file
+      service: unifi-cloudkey-svc
+      rule: 'Host(`network.{{env "DOMAINNAME"}}`)'
+      tls:
+        certresolver: dns-cloudflare
+
     unifi-cloudkey-rtr:
       entryPoints:
         - https
@@ -14,4 +42,4 @@ http:
     unifi-cloudkey-svc:
       loadBalancer:
         servers:
-          - url: 'https://{{env "CLOUDKEY_IP"}}'
+          - url: 'https://{{env "CKG2_IP"}}'

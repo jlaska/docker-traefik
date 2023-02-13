@@ -769,7 +769,7 @@ services:
       CF_DNS_API_TOKEN_FILE: /run/secrets/cloudflare_dns_api_key
       DOMAINNAME: $DOMAINNAME
       SERVER_IP: $SERVER_IP
-      CLOUDKEY_IP: $CLOUDKEY_IP
+      CKG2_IP: $CKG2_IP
       PRINTER_IP: $PRINTER_IP
       HDHOMERUN_IP: $HDHOMERUN_IP
       SYNOLOGY_IP: $SYNOLOGY_IP
