@@ -377,6 +377,44 @@ services:
       retries: 4
 
   # Usenet download service
+  sabnzbd:
+    container_name: sabnzbd
+    image: lscr.io/linuxserver/sabnzbd:latest
+    restart: unless-stopped
+    secrets:
+      - sabnzbd_password
+    environment:
+      - PGID=$PGID
+      - PUID=$PUID
+      - TZ=$TZ
+      - FILE__PASSWORD=/run/secrets/sabnzbd_password
+    volumes:
+      - $DOCKERDIR/sabnzbd:/config
+      - $MEDIADIR/Downloads/completed:/downloads
+      - $MEDIADIR/Downloads/incomplete:/incomplete-downloads
+    networks:
+      - traefik
+    ports:
+      - "$SABNZBD_PORT:8080/tcp"
+    labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
+      ## Traefik
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.sabnzbd-rtr.entrypoints: https
+      traefik.http.routers.sabnzbd-rtr.rule: Host(`sabnzbd.$DOMAINNAME`)
+      traefik.http.routers.sabnzbd-rtr.tls.certresolver: dns-cloudflare
+      traefik.http.routers.sabnzbd-rtr.middlewares: chain-oauth@file
+      traefik.http.routers.sabnzbd-rtr.service: sabnzbd-svc
+      traefik.http.services.sabnzbd-svc.loadbalancer.server.port: 8080
+    healthcheck:
+      test: ["CMD", "curl", "-slf", "http://localhost:8080/api?output=json&mode=version"]
+      interval: 120s
+      timeout: 10s
+      retries: 4
+
+  # Usenet download service
   nzbget:
     container_name: nzbget
     entrypoint:
@@ -406,10 +444,10 @@ services:
       - "$NZBGET_PORT:6789/tcp"
     restart: unless-stopped
     volumes:
-      - $MEDIADIR/Downloads:/downloads
+      - $MEDIADIR/Downloads/completed:/downloads
       - $DOCKERDIR/nzbget:/config
     healthcheck:
-      test: ["CMD", "curl", "-slf", "http://localhost:$NZBGET_PORT/jsonrpc/status"]
+      test: ["CMD", "curl", "-slf", "http://localhost:6789/jsonrpc/status"]
       interval: 120s
       timeout: 10s
       retries: 4
@@ -433,7 +471,7 @@ services:
       - RADARR_APIKEY_FILE=/run/secrets/radarr_apikey
     volumes:
       - $DOCKERDIR/radarr:/config
-      - $MEDIADIR/Downloads:/downloads
+      - $MEDIADIR/Downloads/completed:/downloads
       - $MEDIADIR/Movies:/movies
     networks:
       - traefik
@@ -479,9 +517,9 @@ services:
     ports:
       - "$SONARR_PORT:8989/tcp"
     volumes:
-      - '$MEDIADIR//TV Shows:/tv'
       - $DOCKERDIR/sonarr:/config
-      - $MEDIADIR/Downloads:/downloads
+      - $MEDIADIR/Downloads/completed:/downloads
+      - '$MEDIADIR/TV Shows:/tv'
     labels:
       ## Auto-update
       com.centurylinklabs.watchtower.enable: true
@@ -516,7 +554,7 @@ services:
       LIDARR_APIKEY_FILE: /run/secrets/lidarr_apikey
     volumes:
       - $DOCKERDIR/lidarr:/config
-      - $MEDIADIR/Downloads:/downloads
+      - $MEDIADIR/Downloads/completed:/downloads
       - $MEDIADIR/Music:/music
       - "/etc/localtime:/etc/localtime:ro"
     networks:
@@ -993,7 +1031,7 @@ services:
       - $DOCKERDIR/readarr:/config
       - $MEDIADIR/Books:/books
       - $MEDIADIR/Audiobooks:/audiobooks
-      - $MEDIADIR/Downloads:/downloads
+      - $MEDIADIR/Downloads/completed:/downloads
     networks:
       - traefik
     ports:
@@ -1127,9 +1165,9 @@ services:
       traefik.http.routers.grafana-rtr.tls.certresolver: dns-cloudflare
       traefik.http.routers.grafana-rtr.middlewares: chain-oauth@file
       traefik.http.routers.grafana-rtr.service: grafana-svc
-      traefik.http.services.grafana-svc.loadbalancer.server.port: $GRAFANA_PORT
+      traefik.http.services.grafana-svc.loadbalancer.server.port: 3000
     healthcheck:
-      test: ["CMD", "wget", "-Sq", "-O-", "http://localhost:$GRAFANA_PORT/api/health"]
+      test: ["CMD", "wget", "-Sq", "-O-", "http://localhost:3000/api/health"]
       interval: 120s
       timeout: 5s
       retries: 4
@@ -1362,6 +1400,8 @@ secrets:
     file: $SECRETSDIR/bitwarden_admin_token
   radarr_apikey:
     file: $SECRETSDIR/radarr_apikey
+  sabnzbd_password:
+    file: $SECRETSDIR/sabnzbd_password
   sonarr_apikey:
     file: $SECRETSDIR/sonarr_apikey
   lidarr_apikey:
