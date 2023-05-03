@@ -64,6 +64,47 @@ services:
       timeout: 10s
       retries: 4
 
+  esphome:
+    container_name: esphome
+    image: ghcr.io/esphome/esphome:stable
+    restart: unless-stopped
+    volumes:
+      - $DOCKERDIR/esphome:/config
+      - "/etc/localtime:/etc/localtime:ro"
+    privileged: true
+    environment:
+      TZ: $TZ
+      PUID: $PUID
+      PGID: $PGID
+      # ESPHOME_DASHBOARD_USE_PING: "true"
+    network_mode: host
+#    networks:
+#      - traefik
+#    ports:
+#      - "6052:6052/tcp"
+    labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
+      ## Traefik (moved to rules file)
+      # traefik.enable: true
+      # traefik.docker.network: traefik
+      # traefik.http.routers.esphome-rtr.entrypoints: https
+      # traefik.http.routers.esphome-rtr.rule: Host(`esphome.$DOMAINNAME`)
+      # traefik.http.routers.esphome-rtr.tls.certresolver: dns-cloudflare
+      # traefik.http.routers.esphome-rtr.middlewares: chain-oauth@file
+      # traefik.http.routers.esphome-rtr.service: esphome-svc
+      # traefik.http.services.esphome-svc.loadbalancer.server.port: 6052
+
+#  mdns_reflector:
+#    container_name: mdns_reflector
+#    image: docker.io/yuxzhu/mdns-reflector:latest
+#    command: mdns-reflector -fnl info -- eno1 br-59962d08e1b2
+#    network_mode: host
+#    restart: unless-stopped
+#    # privileged: true
+#    environment:
+#      TZ: $TZ
+
   zwavejs2mqtt:
     container_name: zwavejs2mqtt
     image: zwavejs/zwavejs2mqtt:latest
@@ -820,6 +861,7 @@ services:
       HOMEBRIDGE_IP: $HOMEBRIDGE_IP
       HOMEBRIDGE_PORT: $HOMEBRIDGE_PORT
       SCRYPTED_PORT: $SCRYPTED_PORT
+      ESPHOME_PORT: $ESPHOME_PORT
     labels:
       # Auto-update
       com.centurylinklabs.watchtower.enable: false
@@ -1258,7 +1300,17 @@ services:
     labels:
       # Add hosts specified in rules here to force cf-companion to create the CNAMEs
       # Since cf-companion creates CNAMEs based on host rules, this a workaround for non-docker/external apps
-      - "traefik.http.routers.cloudflare-companion-rtr.rule=Host(`cockpit.$DOMAINNAME`) || Host(`homebridge.$DOMAINNAME`) || Host(`powerwall.$DOMAINNAME`) || Host(`printer.$DOMAINNAME`) || Host(`synology.$DOMAINNAME`) || Host(`cloudkey.$DOMAINNAME`) || Host(`usg.$DOMAINNAME`) || Host(`homeassistant.$DOMAINNAME`) || Host(`hdhomerun.$DOMAINNAME`)"
+      - "traefik.http.routers.cloudflare-companion-rtr.rule=Host(`cockpit.$DOMAINNAME`)
+          || Host(`homebridge.$DOMAINNAME`)
+          || Host(`powerwall.$DOMAINNAME`)
+          || Host(`printer.$DOMAINNAME`)
+          || Host(`synology.$DOMAINNAME`)
+          || Host(`cloudkey.$DOMAINNAME`)
+          || Host(`usg.$DOMAINNAME`)
+          || Host(`homeassistant.$DOMAINNAME`)
+          || Host(`scrypted.$DOMAINNAME`)
+          || Host(`esphome.$DOMAINNAME`)
+          || Host(`hdhomerun.$DOMAINNAME`)"
 
   # Docker Socket Proxy - Security Enchanced Proxy for Docker Socket
   socket-proxy:
