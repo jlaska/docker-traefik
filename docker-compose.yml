@@ -229,7 +229,7 @@ services:
     labels:
       ## Auto-update
       com.centurylinklabs.watchtower.enable: true
-      ## Traefik
+      ## Traefik (moved to rules file)
       # traefik.enable: true
       # traefik.docker.network: traefik
       # traefik.http.routers.scrypted-rtr.entrypoints: https
@@ -265,7 +265,7 @@ services:
     labels:
       ## Auto-update
       com.centurylinklabs.watchtower.enable: true
-      ## Traefik
+      ## Traefik (moved to rules file)
       # traefik.enable: true
       # traefik.docker.network: traefik
       # traefik.http.routers.homeassistant-rtr.entrypoints: https
@@ -310,7 +310,7 @@ services:
     restart: unless-stopped
     dns:
       - 127.0.0.1
-      - 1.1.1.1
+      - 1.1.1.3
     secrets:
       - pihole_password
     cap_add:
@@ -341,7 +341,7 @@ services:
       - DNSMASQ_USER=root
       - VERSION=v4.4
       - "DNS1=172.20.0.3#5053"
-      - "DNS2=1.1.1.1"
+      - "DNS2=1.1.1.3"
     volumes:
       - $DOCKERDIR/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
       - $DOCKERDIR/pihole/etc-pihole:/etc/pihole
