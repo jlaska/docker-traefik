@@ -1,4 +1,47 @@
-version: "3.5"
+version: "3.9"
+
+########################### NETWORKS
+networks:
+  default:
+    driver: bridge
+    # https://mlohr.com/docker-mtu/
+    # driver_opts:
+    #   com.docker.network.driver.mtu: 1454
+    ipam:
+      config:
+        - subnet: 172.18.0.0/24
+  traefik:
+    name: traefik
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.19.0.0/24
+  pihole:
+    name: pihole
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+  metrics:
+    name: metrics
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24
+  socket_proxy:
+    name: socket_proxy
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/24
+
+########################### EXTENSION FIELDS
+# Common environment values
+x-environment: &default-tz-puid-pgid
+  TZ: $TZ
+  PUID: $PUID
+  PGID: $PGID
+
 services:
   # Homepage/bookmark service
   heimdall:
@@ -8,9 +51,7 @@ services:
     entrypoint:
       - /init
     environment:
-      - PUID=$PUID
-      - PGID=$PGID
-      - TZ=$TZ
+      <<: *default-tz-puid-pgid
       - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       - S6_BEHAVIOUR_IF_STAGE2_FAILS=2
     networks:
@@ -44,9 +85,7 @@ services:
     entrypoint:
       - /init
     environment:
-      - TZ=$TZ
-      - PUID=$PUID
-      - PGID=$PGID
+      <<: *default-tz-puid-pgid
       - PACKAGES=ffmpeg,ffmpeg-libs,libpcap-dev
       - HOMEBRIDGE_INSECURE=1
       - HOMEBRIDGE_DEBUG=0
@@ -73,10 +112,7 @@ services:
       - "/etc/localtime:/etc/localtime:ro"
     privileged: true
     environment:
-      TZ: $TZ
-      PUID: $PUID
-      PGID: $PGID
-      # ESPHOME_DASHBOARD_USE_PING: "true"
+      <<: *default-tz-puid-pgid
     network_mode: host
 #    networks:
 #      - traefik
@@ -103,7 +139,7 @@ services:
 #    restart: unless-stopped
 #    # privileged: true
 #    environment:
-#      TZ: $TZ
+#     <<: *default-tz-puid-pgid
 
   zwavejs2mqtt:
     container_name: zwavejs2mqtt
@@ -114,8 +150,7 @@ services:
     depends_on:
       - mosquitto # I don't think this is true
     environment:
-        # - SESSION_SECRET=mysupersecretkey
-      - TZ=$TZ
+      <<: *default-tz-puid-pgid
     devices:
       - '/dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300387-if00-port0:/dev/zwave'
     volumes:
@@ -153,9 +188,7 @@ services:
       - "$MOSQUITTO_HTTP_PORT:1883" #http
       - "9001:9001" #websockets
     environment:
-      - TZ=$TZ
-      - PUID=$PUID
-      - PGID=$PGID
+      <<: *default-tz-puid-pgid
 
   zigbee2mqtt:
     container_name: zigbee2mqtt
@@ -175,9 +208,7 @@ services:
       - $DOCKERDIR/zigbee2mqtt:/app/data
       - /run/udev:/run/udev:ro
     environment:
-      - TZ=$TZ
-      - PUID=$PUID
-      - PGID=$PGID
+      <<: *default-tz-puid-pgid
     labels:
       ## Auto-update
       com.centurylinklabs.watchtower.enable: true
@@ -206,11 +237,7 @@ services:
     # ports:
     #   - "$SCRYPTED_PORT:10443/tcp"
     environment:
-      TZ: $TZ
-      PUID: $PUID
-      PGID: $PGID
-      # - SCRYPTED_WEBHOOK_UPDATE_AUTHORIZATION=Bearer SET_THIS_TO_SOME_RANDOM_TEXT
-      # - SCRYPTED_WEBHOOK_UPDATE=http://localhost:10444/v1/update
+      <<: *default-tz-puid-pgid
     # uncomment this and a line below as needed.
     # devices:
     # zwave usb serial device
@@ -261,7 +288,7 @@ services:
     # ports:
       # - "$HOMEASSISTANT_PORT:8123/tcp"
     environment:
-      - TZ=$TZ
+      <<: *default-tz-puid-pgid
     labels:
       ## Auto-update
       com.centurylinklabs.watchtower.enable: true
@@ -286,9 +313,7 @@ services:
     container_name: cloudflared
     restart: unless-stopped
     environment:
-      - PUID=$PUID
-      - PGID=$PGID
-      - TZ=$TZ
+      <<: *default-tz-puid-pgid
       # Prometheus metrics host and port
       - TUNNEL_DNS_METRICS=0.0.0.0:49312
       # Listen on all interfaces
@@ -329,10 +354,10 @@ services:
       - "67:67/udp"
       - "8053:80/tcp"
     environment:
+      <<: *default-tz-puid-pgid
       - PROXY_LOCATION=pihole
       - VIRTUAL_HOST=pihole.$DOMAINNAME
       - VIRTUAL_PORT=80
-      - TZ=$TZ
       - WEBPASSWORD_FILE=/run/secrets/pihole_password
       - ServerIP=$SERVER_IP
       - PATH=/opt/pihole:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -371,7 +396,7 @@ services:
     secrets:
       - plex_apitoken
     environment:
-      - TZ=$TZ
+      <<: *default-tz-puid-pgid
       - PLEX_UID=$PUID
       - PLEX_GID=$PGID
       - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -425,9 +450,7 @@ services:
     secrets:
       - sabnzbd_password
     environment:
-      - PGID=$PGID
-      - PUID=$PUID
-      - TZ=$TZ
+      <<: *default-tz-puid-pgid
       - FILE__PASSWORD=/run/secrets/sabnzbd_password
     volumes:
       - $DOCKERDIR/sabnzbd:/config
@@ -461,9 +484,7 @@ services:
     entrypoint:
       - /init
     environment:
-      - PGID=$PGID
-      - PUID=$PUID
-      - TZ=$TZ
+      <<: *default-tz-puid-pgid
       - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       - HOME=/root
     image: linuxserver/nzbget:latest
@@ -504,9 +525,7 @@ services:
     secrets:
       - radarr_apikey
     environment:
-      - PGID=$PGID
-      - PUID=$PUID
-      - TZ=$TZ
+      <<: *default-tz-puid-pgid
       - LANGUAGE=$LANG
       - LANG=$LANG
       - RADARR_APIKEY_FILE=/run/secrets/radarr_apikey
@@ -547,9 +566,7 @@ services:
     secrets:
       - sonarr_apikey
     environment:
-      - TZ=$TZ
-      - PGID=$PGID
-      - PUID=$PUID
+      <<: *default-tz-puid-pgid
       - LANGUAGE=$LANG
       - LANG=$LANG
       - SONARR_APIKEY_FILE=/run/secrets/sonarr_apikey
@@ -589,9 +606,7 @@ services:
     secrets:
       - lidarr_apikey
     environment:
-      PUID: $PUID
-      PGID: $PGID
-      TZ: $TZ
+      <<: *default-tz-puid-pgid
       LIDARR_APIKEY_FILE: /run/secrets/lidarr_apikey
     volumes:
       - $DOCKERDIR/lidarr:/config
@@ -626,6 +641,7 @@ services:
     container_name: vaultwarden
     restart: unless-stopped
     environment:
+      <<: *default-tz-puid-pgid
       - ADMIN_TOKEN_FILE=/run/secrets/bitwarden_admin_token
       - SMTP_HOST_FILE=/run/secrets/bitwarden_smtp_host
       - SMTP_FROM_FILE=/run/secrets/bitwarden_smtp_from
@@ -703,7 +719,7 @@ services:
       - $DOCKERDIR/bitwarden:/data
       - $DOCKERDIR/bitwarden_backup:/backup
     environment:
-      - TZ=$TZ
+      <<: *default-tz-puid-pgid
       - UID=$PUID
       - GID=$PGID
       - CRON_TIME=0 4 * * *
@@ -734,7 +750,7 @@ services:
     security_opt:
       - no-new-privileges:true
     environment:
-      - TZ=$TZ
+      <<: *default-tz-puid-pgid
     networks:
       - traefik
       - socket_proxy
@@ -987,11 +1003,7 @@ services:
     container_name: calibre
     restart: unless-stopped
     environment:
-      - PUID=$PUID
-      - PGID=$PGID
-      - TZ=$TZ
-      # - PASSWORD= #optional
-      # - CLI_ARGS= #optional
+      <<: *default-tz-puid-pgid
     volumes:
       - $DOCKERDIR/calibre:/config
       - $MEDIADIR/Books:/books
@@ -1026,9 +1038,7 @@ services:
     container_name: calibre-web
     restart: unless-stopped
     environment:
-      - PUID=$PUID
-      - PGID=$PGID
-      - TZ=$TZ
+      <<: *default-tz-puid-pgid
       - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
       - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
     volumes:
@@ -1060,9 +1070,7 @@ services:
     secrets:
       - readarr_apikey
     environment:
-      - PUID=$PUID
-      - PGID=$PGID
-      - TZ=$TZ
+      <<: *default-tz-puid-pgid
       - UMASK=002
       - READARR_APIKEY_FILE=/run/secrets/readarr_apikey
     volumes:
@@ -1097,9 +1105,7 @@ services:
 #    container_name: lazylibrarian
 #    restart: unless-stopped
 #    environment:
-#      - PUID=$PUID
-#      - PGID=$PGID
-#      - TZ=$TZ
+#      <<: *default-tz-puid-pgid
 #      - DOCKER_MODS=linuxserver/calibre-web:calibre|linuxserver/mods:lazylibrarian-ffmpeg #optional
 #    volumes:
 #      - $DOCKERDIR/lazylibrarian:/config
@@ -1215,9 +1221,7 @@ services:
     container_name: prometheus
     restart: unless-stopped
     environment:
-      PUID: $PUID
-      PGID: $PGID
-      TZ: $TZ
+      <<: *default-tz-puid-pgid
     volumes:
       # - "$DOCKERDIR/prometheus:/prometheus"
       - "$DOCKERDIR/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
@@ -1473,37 +1477,3 @@ secrets:
   watchtower_notification_url:
     file: $SECRETSDIR/watchtower_notification_url
 
-########################### NETWORKS
-networks:
-  default:
-    driver: bridge
-    # https://mlohr.com/docker-mtu/
-    # driver_opts:
-    #   com.docker.network.driver.mtu: 1454
-    ipam:
-      config:
-        - subnet: 172.18.0.0/24
-  traefik:
-    name: traefik
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.19.0.0/24
-  pihole:
-    name: pihole
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/24
-  metrics:
-    name: metrics
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.21.0.0/24
-  socket_proxy:
-    name: socket_proxy
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.22.0.0/24
