@@ -911,7 +911,6 @@ services:
       - INSECURE_COOKIE=false
       - AUTH_HOST=oauth.$DOMAINNAME
       - URL_PATH=/_oauth
-      - WHITELIST=$OAUTH_EMAIL_WHITELIST
       - LIFETIME=$OAUTH_LIFETIME
       - LOG_LEVEL=info
       - LOG_FORMAT=text
