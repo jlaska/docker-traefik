@@ -69,7 +69,7 @@ services:
     image: ghcr.io/esphome/esphome:stable
     restart: unless-stopped
     volumes:
-      - $DOCKERDIR/esphome:/config
+      - $DOCKERDIR/esphome-config:/config
       - "/etc/localtime:/etc/localtime:ro"
     privileged: true
     environment:
@@ -907,9 +907,6 @@ services:
         target: /config
     environment:
       - CONFIG=/config
-      # - PROVIDERS_GOOGLE_CLIENT_ID=$PROVIDERS_GOOGLE_CLIENT_ID
-      # - PROVIDERS_GOOGLE_CLIENT_SECRET=$PROVIDERS_GOOGLE_CLIENT_SECRET
-      # - SECRET=$OAUTH_SECRET
       - COOKIE_DOMAIN=$DOMAINNAME
       - INSECURE_COOKIE=false
       - AUTH_HOST=oauth.$DOMAINNAME
