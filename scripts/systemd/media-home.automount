@@ -1,8 +1,0 @@
-[Unit]
-Description=Automount Home Directory
-
-[Automount]
-Where=/media/home
-
-[Install]
-WantedBy=multi-user.target

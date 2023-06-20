@@ -42,9 +42,3 @@ appdata/zigbee2mqtt/configuration.yaml
 
 !scripts
 scripts/*
-!scripts/systemd
-scripts/systemd/*
-!scripts/systemd/media-home.automount
-!scripts/systemd/media-home.mount
-!scripts/systemd/media-PLEX.automount
-!scripts/systemd/media-PLEX.mount
