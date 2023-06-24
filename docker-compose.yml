@@ -1430,6 +1430,32 @@ services:
       traefik.http.routers.silverbullet-rtr.service: silverbullet-svc
       traefik.http.services.silverbullet-svc.loadbalancer.server.port: 3000
 
+  # Uptime Kuma - Status Page & Monitoring Server
+  uptime-kuma:
+    image: louislam/uptime-kuma
+    container_name: uptime-kuma
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    # profiles: ["core", "all"]
+    networks:
+      - traefik
+      - socket_proxy
+    volumes:
+      - $DOCKERDIR/uptime-kuma:/app/data
+    labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
+      ## Traefik
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.uptime-kuma-rtr.entrypoints: https
+      traefik.http.routers.uptime-kuma-rtr.rule: Host(`kuma.$DOMAINNAME`)
+      traefik.http.routers.uptime-kuma-rtr.tls.certresolver: dns-cloudflare
+      traefik.http.routers.uptime-kuma-rtr.middlewares: chain-oauth@file
+      traefik.http.routers.uptime-kuma-rtr.service: uptime-kuma-svc
+      traefik.http.services.uptime-kuma-svc.loadbalancer.server.port: 3001
+
 ########################### SECRETS
 secrets:
   traefik_htpasswd:
