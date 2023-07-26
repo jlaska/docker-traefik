@@ -1407,6 +1407,30 @@ services:
       traefik.http.routers.error-handler-rtr.service: error-handler-svc
       traefik.http.services.error-handler-svc.loadbalancer.server.port: 80
 
+  # Custom HTTP error handling
+  error-pages:
+    image: tarampampam/error-pages:latest # Using the latest tag is highly discouraged. Please, use tags in X.Y.Z format
+    container_name: error-pages
+    restart: unless-stopped
+    networks:
+      traefik:
+    environment:
+      TEMPLATE_NAME: l7-dark # lost-in-space
+    labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
+      ## Traefik
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.error-pages-rtr.entrypoints: https
+      traefik.http.routers.error-pages-rtr.rule: HostRegexp(`{catchall:.*}`)
+      traefik.http.routers.error-pages-rtr.tls: true
+      traefik.http.routers.error-pages-rtr.priority: 1
+      traefik.http.routers.error-pages-rtr.tls.certresolver: dns-cloudflare
+      traefik.http.routers.error-pages-rtr.middlewares: chain-no-auth@file
+      traefik.http.routers.error-pages-rtr.service: error-handler-svc
+      traefik.http.services.error-handler-svc.loadbalancer.server.port: 8080
+
   silverbullet:
     image: zefhemel/silverbullet
     container_name: silverbullet
