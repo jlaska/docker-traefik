@@ -1,0 +1,15 @@
+# Update cloudflare IP if/when the IP changes
+cloudflare-ddns:
+  image: oznu/cloudflare-ddns
+  container_name: cloudflare-ddns
+  restart: unless-stopped
+  networks:
+    - default
+  entrypoint:
+    - /init
+  environment:
+    API_KEY_FILE: /run/secrets/cloudflare_dns_api_key
+    ZONE: $DOMAINNAME
+    PROXIED: "true"
+  secrets:
+    - cloudflare_dns_api_key

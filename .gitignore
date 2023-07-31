@@ -40,5 +40,9 @@ appdata/prometheus/*
 appdata/zigbee2mqtt/*
 appdata/zigbee2mqtt/configuration.yaml
 
+!archives
+archives/*
+!archives/cloudflare-ddns.yml
+
 !scripts
 scripts/*

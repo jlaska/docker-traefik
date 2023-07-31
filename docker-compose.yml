@@ -979,7 +979,7 @@ services:
       WATCHTOWER_DEBUG: 'true'
       WATCHTOWER_NOTIFICATIONS: 'shoutrrr'
       # WATCHTOWER_NOTIFICATION_URL: '/run/secrets/watchtower_notification_url'
-      WATCHTOWER_NOTIFICATION_URL: $WATCHTOWER_NOTIFICATION_URL
+      WATCHTOWER_NOTIFICATION_URL: $SHOUTRRR_NOTIFICATION_URL
       DOCKER_HOST: tcp://socket-proxy:$SOCKET_PROXY_PORT
     secrets:
       - watchtower_notification_url
@@ -1265,20 +1265,56 @@ services:
     labels:
       com.centurylinklabs.watchtower.enable: true
 
-  # Update cloudflare IP if/when the IP changes
-  cloudflare-ddns:
-    image: oznu/cloudflare-ddns
-    container_name: cloudflare-ddns
-    restart: unless-stopped
+  # Cloudflare DDNS - Dynamic DNS Updater
+  ddns-updater:
+    image: qmcgaw/ddns-updater
+    container_name: ddns-updater
+    restart: always
     networks:
       - default
-    entrypoint:
-      - /init
+      - traefik
+    ports:
+      - 8000:8000/tcp
+    volumes:
+      - $DOCKERDIR/ddns-updater:/updater/data # Owned by UID 1000
     environment:
-      API_KEY_FILE: /run/secrets/cloudflare_dns_api_key
-      ZONE: $DOMAINNAME
-    secrets:
-      - cloudflare_dns_api_key
+      <<: *default-tz-puid-pgid
+        # PERIOD: 1h
+        # UPDATE_COOLDOWN_PERIOD: 5m
+        # PUBLICIP_FETCHERS: all
+        # PUBLICIP_HTTP_PROVIDERS: all
+        # PUBLICIPV4_HTTP_PROVIDERS: all
+        # PUBLICIPV6_HTTP_PROVIDERS: all
+      PUBLICIP_DNS_PROVIDERS: cloudflare
+        # PUBLICIP_DNS_TIMEOUT: 3s
+        # HTTP_TIMEOUT: 10s
+        #
+      # Web UI
+      LISTENING_PORT: 8000
+      # Backup
+      BACKUP_PERIOD: 96h # 0 to disable
+      BACKUP_DIRECTORY: /updater/data/backups
+      # Other
+      LOG_LEVEL: info
+      SHOUTRRR_ADDRESSES: $SHOUTRRR_NOTIFICATION_URL
+    labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
+      ## Traefik
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.ddns-updater-rtr.entrypoints: https
+      traefik.http.routers.ddns-updater-rtr.rule: Host(`ddns-updater.$DOMAINNAME`)
+      traefik.http.routers.ddns-updater-rtr.tls.certresolver: dns-cloudflare
+      traefik.http.routers.ddns-updater-rtr.middlewares: chain-oauth@file
+      traefik.http.routers.ddns-updater-rtr.service: ddns-updater-svc
+      traefik.http.services.ddns-updater-svc.loadbalancer.server.port: 8000
+    healthcheck:
+      test: ["CMD", "/updater/app", "healthcheck"]
+      interval: 60s
+      timeout: 5s
+      retries: 2
+      start_period: 10s
 
   # Cloudflare-Companion - Automatic CNAME DNS Creation
   cloudflare-companion:
