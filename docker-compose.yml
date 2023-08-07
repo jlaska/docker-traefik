@@ -802,6 +802,38 @@ services:
       traefik.http.routers.portainer-rtr.service: portainer-svc
       traefik.http.services.portainer-svc.loadbalancer.server.port: 9000
 
+  # Dozzle - Real-time Docker Log Viewer
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    networks:
+      - traefik
+      - socket_proxy
+    ports:
+      - "$DOZZLE_PORT:8080/tcp"
+    environment:
+      <<: *default-tz-puid-pgid
+      DOZZLE_LEVEL: info
+      DOZZLE_TAILSIZE: 300
+      DOZZLE_FILTER: "status=running"
+      # DOZZLE_FILTER: "label=log_me" # limits logs displayed to containers with this label
+      DOCKER_HOST: tcp://socket-proxy:$SOCKET_PROXY_PORT
+    labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
+      ## Traefik
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.dozzle-rtr.entrypoints: https
+      traefik.http.routers.dozzle-rtr.rule: Host(`dozzle.$DOMAINNAME`)
+      traefik.http.routers.dozzle-rtr.tls.certresolver: dns-cloudflare
+      traefik.http.routers.dozzle-rtr.middlewares: chain-oauth@file # Google OAuth 2.0
+      traefik.http.routers.dozzle-rtr.service: dozzle-svc
+      traefik.http.services.dozzle-svc.loadbalancer.server.port: 8080
+
   # Reverse Proxy Service
   traefik:
     image: traefik:v2.5
