@@ -172,7 +172,9 @@ services:
 
   zwavejs2mqtt:
     container_name: zwavejs2mqtt
-    image: zwavejs/zwavejs2mqtt:latest
+    # image: zwavejs/zwavejs2mqtt:latest
+    image: zwavejs/zwave-js-ui:8.22.0
+    # image: zwavejs/zwave-js-ui:latest
     restart: unless-stopped
     tty: true
     stop_signal: SIGINT
@@ -191,7 +193,7 @@ services:
       - "$ZWAVEJS_WS_PORT:3000"
     labels:
       ## Auto-update
-      com.centurylinklabs.watchtower.enable: true
+      com.centurylinklabs.watchtower.enable: false
       ## Traefik
       traefik.enable: true
       traefik.docker.network: traefik
