@@ -1047,6 +1047,34 @@ services:
     networks:
       - socket_proxy
 
+  duplicati:
+    image: lscr.io/linuxserver/duplicati:latest
+    container_name: duplicati
+    restart: unless-stopped
+    environment:
+      <<: *default-tz-puid-pgid
+      CLI_ARGS: ''
+    volumes:
+      - $DOCKERDIR/duplicati/config:/config
+      - $DOCKERDIR/duplicati/backups:/backups
+      - $DOCKERDIR/duplicati/source:/source
+    networks:
+      - traefik
+    ports:
+      - "$DUPLICATI_PORT:8200/tcp"
+    labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
+      ## Traefik
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.duplicati-rtr.entrypoints: https
+      traefik.http.routers.duplicati-rtr.rule: Host(`duplicati.$DOMAINNAME`)
+      traefik.http.routers.duplicati-rtr.tls.certresolver: dns-cloudflare
+      traefik.http.routers.duplicati-rtr.middlewares: chain-oauth@file
+      traefik.http.routers.duplicati-rtr.service: duplicati-svc
+      traefik.http.services.duplicati-svc.loadbalancer.server.port: 8200
+
   rsync-home:
     container_name: rsync-home
     image: dkruger/rsync-cron:latest
@@ -1162,6 +1190,33 @@ services:
       interval: 120s
       timeout: 10s
       retries: 4
+
+  tubesync:
+    image: ghcr.io/meeb/tubesync:latest
+    container_name: tubesync
+    restart: unless-stopped
+    environment:
+      <<: *default-tz-puid-pgid
+    volumes:
+      - $DOCKERDIR/tubesync:/config
+      - $MEDIADIR/Downloads/completed:/downloads
+      - $MEDIADIR/YouTube:/shows
+    networks:
+      - traefik
+    ports:
+      - "$TUBESYNC_PORT:4848/tcp"
+    labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
+      ## Traefik
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.tubesync-rtr.entrypoints: https
+      traefik.http.routers.tubesync-rtr.rule: Host(`tubesync.$DOMAINNAME`)
+      traefik.http.routers.tubesync-rtr.tls.certresolver: dns-cloudflare
+      traefik.http.routers.tubesync-rtr.middlewares: chain-oauth@file
+      traefik.http.routers.tubesync-rtr.service: tubesync-svc
+      traefik.http.services.tubesync-svc.loadbalancer.server.port: 4848
 
 #  lazylibrarian:
 #    image: ghcr.io/linuxserver/lazylibrarian
