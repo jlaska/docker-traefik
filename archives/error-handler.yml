@@ -1,0 +1,22 @@
+# Custom HTTP error handling
+error-handler:
+  # image: maxisme/404:latest
+  image: guillaumebriday/traefik-custom-error-pages
+  container_name: error-handler
+  restart: unless-stopped
+  networks:
+    traefik:
+  labels:
+    ## Auto-update
+    com.centurylinklabs.watchtower.enable: true
+    ## Traefik
+    traefik.enable: true
+    traefik.docker.network: traefik
+    traefik.http.routers.error-handler-rtr.entrypoints: https
+    traefik.http.routers.error-handler-rtr.rule: HostRegexp(`{catchall:.*}`)
+    traefik.http.routers.error-handler-rtr.tls: true
+    traefik.http.routers.error-handler-rtr.priority: 1
+    traefik.http.routers.error-handler-rtr.tls.certresolver: dns-cloudflare
+    traefik.http.routers.error-handler-rtr.middlewares: chain-no-auth@file
+    traefik.http.routers.error-handler-rtr.service: error-handler-svc
+    traefik.http.services.error-handler-svc.loadbalancer.server.port: 80

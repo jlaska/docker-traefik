@@ -43,6 +43,7 @@ appdata/zigbee2mqtt/configuration.yaml
 !archives
 archives/*
 !archives/cloudflare-ddns.yml
+!archives/error-handler.yml
 
 !scripts
 scripts/*
