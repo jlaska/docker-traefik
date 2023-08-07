@@ -1,0 +1,25 @@
+# HomeKit bridge
+homebridge:
+  image: oznu/homebridge:latest
+  container_name: homebridge
+  entrypoint:
+    - /init
+  environment:
+    <<: *default-tz-puid-pgid
+    PACKAGES: "ffmpeg,ffmpeg-libs,libpcap-dev"
+    HOMEBRIDGE_INSECURE: 1
+    HOMEBRIDGE_DEBUG: 0
+    HOMEBRIDGE_CONFIG_UI: 1
+    HOMEBRIDGE_CONFIG_UI_PORT: $HOMEBRIDGE_PORT
+  hostname: $SERVER_HOSTNAME
+  network_mode: "host"
+  restart: unless-stopped
+  volumes:
+    - $DOCKERDIR/homebridge:/homebridge
+  working_dir: /homebridge
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:$HOMEBRIDGE_PORT"]
+    interval: 120s
+    timeout: 10s
+    retries: 4
+
