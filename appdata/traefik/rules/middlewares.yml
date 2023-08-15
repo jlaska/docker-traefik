@@ -53,3 +53,6 @@ http:
         trustForwardHeader: true
         authResponseHeaders:
           - "X-Forwarded-User"
+
+    middlewares-compress:
+      compress: {}
