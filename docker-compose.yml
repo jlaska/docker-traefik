@@ -90,19 +90,21 @@ services:
     networks:
       - traefik
       - socket_proxy
-    # ports:
-    #  - "$HOMEPAGE_PORT:3000"
+    ports:
+      - "$HOMEPAGE_PORT:3000"
     volumes:
       - $DOCKERDIR/homepage:/app/config
     environment:
       <<: *default-tz-puid-pgid
     labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
       traefik.enable: true
       ## HTTP Routers
       traefik.http.routers.homepage-rtr.entrypoints: https
-      traefik.http.routers.homepage-rtr.rule: Host(`$DOMAINNAME2`) || Host(`www.$DOMAINNAME2`) || Host(`homepage.$DOMAINNAME2`)
+        # traefik.http.routers.homepage-rtr.rule: Host(`$DOMAINNAME2`) || Host(`www.$DOMAINNAME2`) || Host(`homepage.$DOMAINNAME2`)
         # traefik.http.routers.homepage-rtr.rule: Host(`$DOMAINNAME2`,`www.$DOMAINNAME2`, `homepage.$DOMAINNAME2`)
-        # traefik.http.routers.homepage-rtr.rule: Host(`homepage.$DOMAINNAME1`) || Host(`homepage.$DOMAINNAME2`) || Host(`homepage.$DOMAINNAME3`)
+      traefik.http.routers.homepage-rtr.rule: Host(`homepage.$DOMAINNAME1`) || Host(`homepage.$DOMAINNAME2`) || Host(`homepage.$DOMAINNAME3`)
       traefik.http.routers.homepage-rtr.tls.certresolver: dns-cloudflare
       traefik.http.routers.homepage-rtr.middlewares: chain-oauth@file
       traefik.http.routers.homepage-rtr.service: homepage-svc
