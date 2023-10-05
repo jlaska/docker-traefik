@@ -1041,6 +1041,50 @@ services:
     networks:
       - socket_proxy
 
+  kopia:
+    image: kopia/kopia:latest
+    container_name: kopia
+    restart: unless-stopped
+    # Setup the server that provides the web gui
+    command:
+      - server
+      - start
+      - --disable-csrf-token-checks
+      - --insecure
+      - --without-password
+      - --address=0.0.0.0:51515
+        #- --server-username=USERNAME
+        #- --server-password=SECRET_PASSWORD
+    environment:
+      <<: *default-tz-puid-pgid
+      # Set repository password
+      KOPIA_PASSWORD: "SECRET"
+      USER: "User"
+    volumes:
+      # Mount local folders needed by kopia
+      - $DOCKERDIR/kopia/config:/app/config
+      - $DOCKERDIR/kopia/cache:/app/cache
+      - $DOCKERDIR/kopia/logs:/app/logs
+      # Mount local folders to snapshot
+      - $RSYNC_SRC:/data:ro
+      - $RSYNC_DST/home-kopia:/repository
+    networks:
+      - traefik
+    ports:
+      - 51515:51515
+    labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
+      ## Traefik
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.kopia-rtr.entrypoints: https
+      traefik.http.routers.kopia-rtr.rule: Host(`kopia.$DOMAINNAME`)
+      traefik.http.routers.kopia-rtr.tls.certresolver: dns-cloudflare
+      traefik.http.routers.kopia-rtr.middlewares: chain-oauth@file
+      traefik.http.routers.kopia-rtr.service: kopia-svc
+      traefik.http.services.kopia-svc.loadbalancer.server.port: 51515
+
   duplicati:
     image: lscr.io/linuxserver/duplicati:latest
     container_name: duplicati
@@ -1050,8 +1094,10 @@ services:
       CLI_ARGS: ''
     volumes:
       - $DOCKERDIR/duplicati/config:/config
-      - $DOCKERDIR/duplicati/backups:/backups
-      - $DOCKERDIR/duplicati/source:/source
+        # - $DOCKERDIR/duplicati/backups:/backups
+      - $RSYNC_DST:/backups
+        # - $DOCKERDIR/duplicati/source:/source
+      - $RSYNC_SRC:/source
     networks:
       - traefik
     ports:
@@ -1075,13 +1121,13 @@ services:
     restart: unless-stopped
     network_mode: none
     environment:
-      - 'RSYNC_OPTIONS=-avz --delete'
-      - 'RSYNC_CRONTAB=0 0 * * *'
+      - "RSYNC_OPTIONS=-avz --delete -e ssh --exclude='*/.local'"
+      - "RSYNC_CRONTAB=0 0 * * *"
       - RSYNC_UID=0
       - RSYNC_GID=0
     volumes:
       - $RSYNC_SRC:/rsync_src
-      - $RSYNC_DST:/rsync_dst
+      - $RSYNC_DST/home-rsync:/rsync_dst
 
   calibre:
     image: lscr.io/linuxserver/calibre
@@ -1193,8 +1239,8 @@ services:
       <<: *default-tz-puid-pgid
     volumes:
       - $DOCKERDIR/tubesync:/config
-      - $MEDIADIR/Downloads/completed:/downloads
-      - $MEDIADIR/YouTube:/shows
+      # - $MEDIADIR/Downloads/completed:/downloads
+      - $MEDIADIR/YouTube:/downloads
     networks:
       - traefik
     ports:
@@ -1606,6 +1652,41 @@ services:
       traefik.http.routers.uptime-kuma-rtr.middlewares: chain-oauth@file
       traefik.http.routers.uptime-kuma-rtr.service: uptime-kuma-svc
       traefik.http.services.uptime-kuma-svc.loadbalancer.server.port: 3001
+
+  librespeed:
+    image: lscr.io/linuxserver/librespeed:latest
+    container_name: librespeed
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    environment:
+      <<: *default-tz-puid-pgid
+#      CUSTOM_RESULTS: false #optional
+#      DB_TYPE: sqlite #optional
+#      DB_NAME: DB_NAME #optional
+#      DB_HOSTNAME: DB_HOSTNAME #optional
+#      DB_USERNAME: DB_USERNAME #optional
+#      DB_PASSWORD: DB_PASSWORD #optional
+#      DB_PORT: DB_PORT #optional
+#      IPINFO_APIKEY: ACCESS_TOKEN #optional
+    volumes:
+      - $DOCKERDIR/librespeed:/config
+    networks:
+      - traefik
+    ports:
+      - $LIBRESPEED_PORT:80
+    labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
+      ## Traefik
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.librespeed-rtr.entrypoints: https
+      traefik.http.routers.librespeed-rtr.rule: Host(`librespeed.$DOMAINNAME`)
+      traefik.http.routers.librespeed-rtr.tls.certresolver: dns-cloudflare
+      traefik.http.routers.librespeed-rtr.middlewares: chain-oauth@file
+      traefik.http.routers.librespeed-rtr.service: librespeed-svc
+      traefik.http.services.librespeed-svc.loadbalancer.server.port: 80
 
 ########################### SECRETS
 secrets:
