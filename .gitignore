@@ -45,6 +45,7 @@ archives/*
 !archives/cloudflare-ddns.yml
 !archives/error-handler.yml
 !archives/homebridge.yml
+!archives/nzbget.yml
 
 !scripts
 scripts/*

@@ -492,40 +492,6 @@ services:
       timeout: 10s
       retries: 4
 
-  # Usenet download service
-  nzbget:
-    container_name: nzbget
-    entrypoint:
-      - /init
-    environment:
-      <<: *default-tz-puid-pgid
-    image: linuxserver/nzbget:latest
-    labels:
-      ## Auto-update
-      com.centurylinklabs.watchtower.enable: true
-      ## Traefik
-      traefik.enable: true
-      traefik.docker.network: traefik
-      traefik.http.routers.nzbget-rtr.entrypoints: https
-      traefik.http.routers.nzbget-rtr.rule: Host(`nzbget.$DOMAINNAME`)
-      traefik.http.routers.nzbget-rtr.tls.certresolver: dns-cloudflare
-      traefik.http.routers.nzbget-rtr.middlewares: chain-oauth@file
-      traefik.http.routers.nzbget-rtr.service: nzbget-svc
-      traefik.http.services.nzbget-svc.loadbalancer.server.port: 6789
-    networks:
-      - traefik
-    ports:
-      - "$NZBGET_PORT:6789/tcp"
-    restart: unless-stopped
-    volumes:
-      - $MEDIADIR/Downloads/completed:/downloads
-      - $DOCKERDIR/nzbget:/config
-    healthcheck:
-      test: ["CMD", "curl", "-slf", "http://localhost:6789/jsonrpc/status"]
-      interval: 120s
-      timeout: 10s
-      retries: 4
-
   # Movie aggregation service
   radarr:
     container_name: radarr
