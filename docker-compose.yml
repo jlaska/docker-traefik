@@ -688,10 +688,10 @@ services:
       # UI
       traefik.http.routers.bitwarden-ui-http.entrypoints: http
       traefik.http.routers.bitwarden-ui-http.middlewares: redirect-https
-      traefik.http.routers.bitwarden-ui-http.rule: Host(`bitwarden.$DOMAINNAME`)
+      traefik.http.routers.bitwarden-ui-http.rule: Host(`bitwarden.$DOMAINNAME`, `vault.$DOMAINNAME`)
       traefik.http.routers.bitwarden-ui-http.service: bitwarden-ui-svc
       traefik.http.routers.bitwarden-ui-https.entrypoints: https
-      traefik.http.routers.bitwarden-ui-https.rule: Host(`bitwarden.$DOMAINNAME`)
+      traefik.http.routers.bitwarden-ui-https.rule: Host(`bitwarden.$DOMAINNAME`, `vault.$DOMAINNAME`)
       traefik.http.routers.bitwarden-ui-https.service: bitwarden-ui-svc
       traefik.http.routers.bitwarden-ui-https.tls.certresolver: dns-cloudflare
       traefik.http.services.bitwarden-ui-svc.loadbalancer.server.port: 80
@@ -703,9 +703,9 @@ services:
       traefik.http.routers.bitwarden-websocket-http.entrypoints: http
       traefik.http.routers.bitwarden-websocket-http.middlewares: redirect-https
       traefik.http.routers.bitwarden-websocket-http.service: bitwarden-websocket-svc
-      traefik.http.routers.bitwarden-websocket-http.rule: Host(`bitwarden.$DOMAINNAME`) && PathPrefix(`/notifications/hub`)
+      traefik.http.routers.bitwarden-websocket-http.rule: Host(`bitwarden.$DOMAINNAME`, `vault.$DOMAINNAME`) && PathPrefix(`/notifications/hub`)
       traefik.http.routers.bitwarden-websocket-https.entrypoints: https
-      traefik.http.routers.bitwarden-websocket-https.rule: Host(`bitwarden.$DOMAINNAME`) && PathPrefix(`/notifications/hub`)
+      traefik.http.routers.bitwarden-websocket-https.rule: Host(`bitwarden.$DOMAINNAME`, `vault.$DOMAINNAME`) && PathPrefix(`/notifications/hub`)
       traefik.http.routers.bitwarden-websocket-https.service: bitwarden-websocket-svc
       traefik.http.routers.bitwarden-websocket-https.tls.certresolver: dns-cloudflare
       traefik.http.services.bitwarden-websocket-svc.loadbalancer.server.port: 3012
@@ -715,7 +715,7 @@ services:
       # OAuth Bypass
       traefik.http.routers.bitwarden-rtr-bypass.entrypoints: https
       # FIXME - May also need PathPrefix(`/api/accounts/prelogin`)
-      traefik.http.routers.bitwarden-rtr-bypass.rule: "Host(`bitwarden.$DOMAINNAME`) && (HeadersRegexp(`Origin`, `^(moz|safari-web|chrome)-extension://.*`) || HeadersRegexp(`User-Agent`, `Bitwarden_Mobile.*`) || PathPrefix(`/api/sync`))"
+      traefik.http.routers.bitwarden-rtr-bypass.rule: "Host(`bitwarden.$DOMAINNAME`, `vault.$DOMAINNAME`) && (HeadersRegexp(`Origin`, `^(moz|safari-web|chrome)-extension://.*`) || HeadersRegexp(`User-Agent`, `Bitwarden_Mobile.*`) || PathPrefix(`/api/sync`))"
       traefik.http.routers.bitwarden-rtr-bypass.priority: 100
       traefik.http.routers.bitwarden-rtr-bypass.service: bitwarden-ui-svc
       traefik.http.routers.bitwarden-rtr-bypass.middlewares: chain-no-auth@file
