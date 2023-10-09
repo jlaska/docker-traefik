@@ -7,6 +7,12 @@ http:
         service: error-handler-svc@docker
         query: "/{status}.html"
 
+#    middlewares-domain-redirect:
+#      redirectRegex:
+#        regex: "^(https?://)(.*).nosparge.com/(.*)$"
+#        replacement: "${1}${2}.jlaska.com/${3}"
+#        permanent: true
+
     middlewares-rate-limit:
       rateLimit:
         average: 100
@@ -31,21 +37,14 @@ http:
         stsIncludeSubdomains: true
         stsPreload: true
         forceSTSHeader: true
-        # frameDeny: true #overwritten by customFrameOptionsValue
-        customFrameOptionsValue: 'allow-from https:{{env "DOMAINNAME"}}' #CSP takes care of this but may be needed for organizr.
+        customFrameOptionsValue: SAMEORIGIN # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
         contentTypeNosniff: true
         browserXssFilter: true
-        # sslForceHost: true # add sslHost to all of the services
-        # sslHost: "example.com"
         referrerPolicy: "same-origin"
-        # Setting contentSecurityPolicy is more secure but it can break things. Proper auth will reduce the risk.
-        # the below line also breaks some apps due to 'none' - sonarr, radarr, etc.
-        # contentSecurityPolicy: "frame-ancestors '*.example.com:*';object-src 'none';script-src 'none';"
-        # featurePolicy: "camera 'none'; geolocation 'none'; microphone 'none'; payment 'none'; usb 'none'; vr 'none';"
         permissionsPolicy: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), vr=()"
         customResponseHeaders:
-          X-Robots-Tag: "none,noarchive,nosnippet,notranslate,noimageindex,"
-          server: ""
+          X-Robots-Tag: "none,noarchive,nosnippet,notranslate,noimageindex," # disable search engines from indexing home server
+          server: "" # hide server info from visitors
 
     middlewares-oauth:
       forwardAuth:
