@@ -1,11 +1,10 @@
 http:
   middlewares:
-    add-protect:
-      addPrefix:
-        prefix: "/protect"
-    add-network:
-      addPrefix:
-        prefix: "/network"
+    unifi-redirect:
+      redirectRegex:
+        regex: '^https?:\/\/([^.]+)\.([^/]+)\/?$'
+        replacement: 'https://unifi.${2}/${1}'
+        permanent: true
 
   routers:
     unifi-protect-rtr:
@@ -13,6 +12,7 @@ http:
         - https
       middlewares:
         - chain-oauth@file
+        - unifi-redirect
       service: unifi-cloudkey-svc
       rule: 'Host(`protect.{{env "DOMAINNAME"}}`)'
       tls:
@@ -23,18 +23,19 @@ http:
         - https
       middlewares:
         - chain-oauth@file
+        - unifi-redirect
       service: unifi-cloudkey-svc
       rule: 'Host(`network.{{env "DOMAINNAME"}}`)'
       tls:
         certresolver: dns-cloudflare
 
-    unifi-cloudkey-rtr:
+    unifi-rtr:
       entryPoints:
         - https
       middlewares:
         - chain-oauth@file
       service: unifi-cloudkey-svc
-      rule: 'Host(`cloudkey.{{env "DOMAINNAME"}}`)'
+      rule: 'Host(`unifi.{{env "DOMAINNAME"}}`)'
       tls:
         certresolver: dns-cloudflare
 
