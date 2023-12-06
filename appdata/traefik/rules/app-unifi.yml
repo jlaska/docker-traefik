@@ -43,4 +43,4 @@ http:
     unifi-cloudkey-svc:
       loadBalancer:
         servers:
-          - url: 'https://{{env "CKG2_IP"}}'
+          - url: 'https://{{env "UDM_PRO_IP"}}'
