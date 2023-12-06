@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3"
 
 ########################### NETWORKS
 networks:
@@ -69,7 +69,7 @@ services:
       traefik.enable: true
       traefik.docker.network: traefik
       traefik.http.routers.heimdall-rtr.entrypoints: https
-      traefik.http.routers.heimdall-rtr.rule: Host(`www.$DOMAINNAME`) || Host(`$DOMAINNAME`)
+      traefik.http.routers.heimdall-rtr.rule: Host(`heimdall.$DOMAINNAME`)
       traefik.http.routers.heimdall-rtr.tls.certresolver: dns-cloudflare
       traefik.http.routers.heimdall-rtr.middlewares: chain-oauth@file
       traefik.http.routers.heimdall-rtr.service: heimdall-svc
@@ -82,7 +82,7 @@ services:
 
   # Homepage - Application Dashboard
   homepage:
-    image: ghcr.io/benphelps/homepage:latest
+    image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
     security_opt:
       - no-new-privileges:true
@@ -102,9 +102,7 @@ services:
       traefik.enable: true
       ## HTTP Routers
       traefik.http.routers.homepage-rtr.entrypoints: https
-        # traefik.http.routers.homepage-rtr.rule: Host(`$DOMAINNAME2`) || Host(`www.$DOMAINNAME2`) || Host(`homepage.$DOMAINNAME2`)
-        # traefik.http.routers.homepage-rtr.rule: Host(`$DOMAINNAME2`,`www.$DOMAINNAME2`, `homepage.$DOMAINNAME2`)
-      traefik.http.routers.homepage-rtr.rule: Host(`homepage.$DOMAINNAME1`) || Host(`homepage.$DOMAINNAME2`) || Host(`homepage.$DOMAINNAME3`)
+      traefik.http.routers.homepage-rtr.rule: Host(`homepage.$DOMAINNAME1`) || Host(`www.$DOMAINNAME1`) || Host(`$DOMAINNAME1`)
       traefik.http.routers.homepage-rtr.tls.certresolver: dns-cloudflare
       traefik.http.routers.homepage-rtr.middlewares: chain-oauth@file
       traefik.http.routers.homepage-rtr.service: homepage-svc
@@ -170,7 +168,7 @@ services:
       - "$ZWAVEJS_WS_PORT:3000"
     labels:
       ## Auto-update
-      com.centurylinklabs.watchtower.enable: false
+      com.centurylinklabs.watchtower.enable: true
       ## Traefik
       traefik.enable: true
       traefik.docker.network: traefik
