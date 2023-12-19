@@ -42,6 +42,7 @@ appdata/zigbee2mqtt/configuration.yaml
 
 !archives
 archives/*
+!archives/cloudflare-companion.yml
 !archives/cloudflare-ddns.yml
 !archives/error-handler.yml
 !archives/homebridge.yml

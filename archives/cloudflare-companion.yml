@@ -1,0 +1,35 @@
+# Cloudflare-Companion - Automatic CNAME DNS Creation
+cloudflare-companion:
+  image: tiredofit/traefik-cloudflare-companion:latest
+  container_name: cloudflare-companion
+  security_opt:
+    - no-new-privileges:true
+  restart: no
+  networks:
+    - socket_proxy
+  environment:
+    - TIMEZONE=$TZ
+    - TRAEFIK_VERSION=2
+    - TARGET_DOMAIN=$DOMAINNAME
+    - DOMAIN1=$DOMAINNAME
+    - DOMAIN1_ZONE_ID=$CLOUDFLARE_DOMAIN1_ZONEID
+    - DOMAIN1_PROXIED=$CLOUDFLARE_DOMAIN1_PROXIED
+    - DOMAIN2=$DOMAINNAME2
+    - DOMAIN2_ZONE_ID=$CLOUDFLARE_DOMAIN2_ZONEID
+    - DOMAIN2_PROXIED=$CLOUDFLARE_DOMAIN2_PROXIED
+    - DOCKER_HOST=tcp://socket-proxy:$SOCKET_PROXY_PORT
+  secrets:
+    - cf_token
+  labels:
+    # Add hosts specified in rules here to force cf-companion to create the CNAMEs
+    # Since cf-companion creates CNAMEs based on host rules, this a workaround for non-docker/external apps
+    - "traefik.http.routers.cloudflare-companion-rtr.rule=Host(`cockpit.$DOMAINNAME`)
+        || Host(`powerwall.$DOMAINNAME`)
+        || Host(`printer.$DOMAINNAME`)
+        || Host(`synology.$DOMAINNAME`)
+        || Host(`cloudkey.$DOMAINNAME`)
+        || Host(`usg.$DOMAINNAME`)
+        || Host(`homeassistant.$DOMAINNAME`)
+        || Host(`scrypted.$DOMAINNAME`)
+        || Host(`esphome.$DOMAINNAME`)
+        || Host(`hdhomerun.$DOMAINNAME`)"
