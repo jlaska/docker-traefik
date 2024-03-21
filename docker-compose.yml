@@ -788,17 +788,15 @@ services:
     container_name: traefik
     entrypoint:
       - /entrypoint.sh
-    command:
-      - traefik
     command: # CLI arguments
       - --global.checkNewVersion=true
       - --global.sendAnonymousUsage=false
-      - --entryPoints.http.address=:80
-      - --entryPoints.https.address=:443
+      - --entrypoints.http.address=:80
+      - --entrypoints.https.address=:443
       # Allow these IPs to set the X-Forwarded-* headers - Cloudflare IPs: https://www.cloudflare.com/ips/
       - --entrypoints.https.forwardedHeaders.trustedIPs=$CLOUDFLARE_IPS,$LOCAL_IPS
-      - --entryPoints.traefik.address=:8080
-      # - --entryPoints.ping.address=:8081
+      - --entrypoints.traefik.address=:8080
+      # - --entrypoints.ping.address=:8081
       # - --api=true
       - --api.dashboard=true
       - --api.insecure=true
@@ -818,7 +816,7 @@ services:
       - --providers.docker.endpoint=tcp://socket-proxy:$SOCKET_PROXY_PORT
       # Automatically set Host rule for services
       # - --providers.docker.defaultrule=Host(`{{ index .Labels "com.docker.compose.service" }}.$DOMAINNAME`)
-      - --providers.docker.defaultrule="Host(`{{ trimPrefix `/` .Name }}.$DOMAINNAME`)"
+      # - --providers.docker.defaultrule="Host(`{{ trimPrefix `/` .Name }}.$DOMAINNAME`)"
       - --providers.docker.exposedByDefault=false
       - --providers.docker.network=traefik
       - --providers.docker.swarmMode=false
@@ -833,26 +831,26 @@ services:
       - --entrypoints.https.http.tls.certresolver=dns-cloudflare
       - --entrypoints.https.http.tls.domains[0].main=$DOMAINNAME1
       - --entrypoints.https.http.tls.domains[0].sans=*.$DOMAINNAME1
-      - --entrypoints.https.http.tls.domains[1].main=$DOMAINNAME2 # Pulls main cert for domain
-      - --entrypoints.https.http.tls.domains[1].sans=*.$DOMAINNAME2 # Pulls wildcard cert for domain
-      - --entrypoints.https.http.tls.domains[2].main=$DOMAINNAME3 # Pulls main cert for domain
-      - --entrypoints.https.http.tls.domains[2].sans=*.$DOMAINNAME3 # Pulls wildcard cert for domain
-      # - --certificatesResolvers.dns-cloudflare.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory # LetsEncrypt Staging Server - uncomment when testing
-      - --certificatesResolvers.dns-cloudflare.acme.email=$CLOUDFLARE_EMAIL
-      - --certificatesResolvers.dns-cloudflare.acme.storage=/letsencrypt/acme.json
-      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare
-      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
-      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.delayBeforeCheck=90 # To delay DNS check and reduce LE hitrate
+      # - --entrypoints.https.http.tls.domains[1].main=$DOMAINNAME2 # Pulls main cert for domain
+      # - --entrypoints.https.http.tls.domains[1].sans=*.$DOMAINNAME2 # Pulls wildcard cert for domain
+      # - --entrypoints.https.http.tls.domains[2].main=$DOMAINNAME3 # Pulls main cert for domain
+      # - --entrypoints.https.http.tls.domains[2].sans=*.$DOMAINNAME3 # Pulls wildcard cert for domain
+      # - --certificatesresolvers.dns-cloudflare.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory # LetsEncrypt Staging Server - uncomment when testing
+      - --certificatesresolvers.dns-cloudflare.acme.email=$CLOUDFLARE_EMAIL
+      - --certificatesresolvers.dns-cloudflare.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare
+      - --certificatesresolvers.dns-cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
+      - --certificatesresolvers.dns-cloudflare.acme.dnsChallenge.delayBeforeCheck=90 # To delay DNS check and reduce LE hitrate
       # InfluxDB metrics exporter type.
       # - --metrics.influxdb=true
       # - --metrics.influxdb.address=influxdb:$INFLUXDB_PORT
       # - --metrics.influxdb.database=traefik
       # - --metrics.influxdb.pushinterval=30
       # Prometheus metrics exporter type.
-      # - --metrics.prometheus=true
+      - --metrics.prometheus=true
     networks:
       traefik:
-        ipv4_address: 172.19.0.254
+        # ipv4_address: 172.19.0.254
       socket_proxy:
     ports:
       - "443:443/tcp"
@@ -876,8 +874,8 @@ services:
       CF_DNS_API_TOKEN_FILE: /run/secrets/cloudflare_dns_api_key
       DOMAINNAME: $DOMAINNAME
       DOMAINNAME1: $DOMAINNAME1
-      DOMAINNAME2: $DOMAINNAME2
-      DOMAINNAME3: $DOMAINNAME3
+      # DOMAINNAME2: $DOMAINNAME2
+      # DOMAINNAME3: $DOMAINNAME3
       SERVER_IP: $SERVER_IP
       CKG2_IP: $CKG2_IP
       UDM_PRO_IP: $UDM_PRO_IP
@@ -904,18 +902,18 @@ services:
       # Basic auth admin password
       # traefik.http.middlewares.admin.basicauth.usersfile: /run/secrets/traefik_htpasswd
       # HTTP-to-HTTPS Redirect
-      traefik.http.routers.http-catchall.entrypoints: http
       traefik.http.routers.http-catchall.rule: HostRegexp(`{host:.+}`)
+      traefik.http.routers.http-catchall.entrypoints: http
       traefik.http.routers.http-catchall.middlewares: redirect-to-https
       traefik.http.routers.http-catchall.service: noop@internal
       traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
       # Dashboard
       traefik.http.routers.traefik-rtr.entrypoints: https
       traefik.http.routers.traefik-rtr.rule: Host(`traefik.$DOMAINNAME`)
-      # traefik.http.routers.traefik-rtr.tls: true
-      # traefik.http.routers.traefik-rtr.tls.certresolver: dns-cloudflare
-      # traefik.http.routers.traefik-rtr.tls.domains[0].main: "$DOMAINNAME1"
-      # traefik.http.routers.traefik-rtr.tls.domains[0].sans: "*.$DOMAINNAME1"
+      traefik.http.routers.traefik-rtr.tls: true
+      traefik.http.routers.traefik-rtr.tls.certresolver: dns-cloudflare
+      traefik.http.routers.traefik-rtr.tls.domains[0].main: "$DOMAINNAME1"
+      traefik.http.routers.traefik-rtr.tls.domains[0].sans: "*.$DOMAINNAME1"
       # traefik.http.routers.traefik-rtr.tls.domains[1].main: "$DOMAINNAME2" # Pulls main cert for second domain
       # traefik.http.routers.traefik-rtr.tls.domains[1].sans: "*.$DOMAINNAME2" # Pulls wildcard cert for second domain
       # traefik.http.routers.traefik-rtr.tls.domains[2].main: "$DOMAINNAME3" # Pulls main cert for second domain
