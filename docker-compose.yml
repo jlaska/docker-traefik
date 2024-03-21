@@ -1162,7 +1162,6 @@ services:
   readarr:
     container_name: readarr
     image: hotio/readarr:nightly
-    container_name: readarr
     restart: unless-stopped
     secrets:
       - readarr_apikey
@@ -1173,7 +1172,6 @@ services:
     volumes:
       - $DOCKERDIR/readarr:/config
       - $MEDIADIR/Books:/books
-      - $MEDIADIR/Audiobooks:/audiobooks
       - $MEDIADIR/Downloads/completed:/downloads
     networks:
       - traefik
@@ -1193,6 +1191,42 @@ services:
       traefik.http.services.readarr-svc.loadbalancer.server.port: 8787
     healthcheck:
       test: ["CMD-SHELL", "curl --header @$${READARR_APIKEY_FILE} http://localhost:$READARR_PORT/api/v1/system/status"]
+      interval: 120s
+      timeout: 10s
+      retries: 4
+
+  speakarr:
+    container_name: speakarr
+    image: hotio/readarr:nightly
+    restart: unless-stopped
+    secrets:
+      - speakarr_apikey
+    environment:
+      <<: *default-tz-puid-pgid
+      UMASK: 002
+      SPEAKARR_APIKEY_FILE: /run/secrets/speakarr_apikey
+    volumes:
+      - $DOCKERDIR/speakarr:/config
+      - $MEDIADIR/Audiobooks:/audiobooks
+      - $MEDIADIR/Downloads/completed:/downloads
+    networks:
+      - traefik
+    ports:
+      - "$SPEAKARR_PORT:8787/tcp"
+    labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
+      ## Traefik
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.speakarr-rtr.entrypoints: https
+      traefik.http.routers.speakarr-rtr.rule: Host(`speakarr.$DOMAINNAME`)
+      traefik.http.routers.speakarr-rtr.tls.certresolver: dns-cloudflare
+      traefik.http.routers.speakarr-rtr.middlewares: chain-oauth@file
+      traefik.http.routers.speakarr-rtr.service: speakarr-svc
+      traefik.http.services.speakarr-svc.loadbalancer.server.port: 8787
+    healthcheck:
+      test: ["CMD-SHELL", "curl --header @$${SPEAKARR_APIKEY_FILE} http://localhost:8787/api/v1/system/status"]
       interval: 120s
       timeout: 10s
       retries: 4
@@ -1227,7 +1261,7 @@ services:
 #  lazylibrarian:
 #    image: ghcr.io/linuxserver/lazylibrarian
 #    container_name: lazylibrarian
-#    restart: unless-stopped
+#    restart: no
 #    environment:
 #      <<: *default-tz-puid-pgid
 #      - DOCKER_MODS=linuxserver/calibre-web:calibre|linuxserver/mods:lazylibrarian-ffmpeg #optional
@@ -1652,6 +1686,8 @@ secrets:
     file: $SECRETSDIR/lidarr_apikey
   readarr_apikey:
     file: $SECRETSDIR/readarr_apikey
+  speakarr_apikey:
+    file: $SECRETSDIR/speakarr_apikey
   plex_apitoken:
     file: $SECRETSDIR/plex_apitoken
   healthchecks_superuser_email:
