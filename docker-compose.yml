@@ -1051,35 +1051,35 @@ services:
       traefik.http.routers.kopia-rtr.service: kopia-svc
       traefik.http.services.kopia-svc.loadbalancer.server.port: 51515
 
-  duplicati:
-    image: lscr.io/linuxserver/duplicati:latest
-    container_name: duplicati
-    restart: unless-stopped
-    environment:
-      <<: *default-tz-puid-pgid
-      CLI_ARGS: ''
-    volumes:
-      - $DOCKERDIR/duplicati/config:/config
-        # - $DOCKERDIR/duplicati/backups:/backups
-      - $RSYNC_DST:/backups
-        # - $DOCKERDIR/duplicati/source:/source
-      - $RSYNC_SRC:/source
-    networks:
-      - traefik
-    ports:
-      - "$DUPLICATI_PORT:8200/tcp"
-    labels:
-      ## Auto-update
-      com.centurylinklabs.watchtower.enable: true
-      ## Traefik
-      traefik.enable: true
-      traefik.docker.network: traefik
-      traefik.http.routers.duplicati-rtr.entrypoints: https
-      traefik.http.routers.duplicati-rtr.rule: Host(`duplicati.$DOMAINNAME`)
-      traefik.http.routers.duplicati-rtr.tls.certresolver: dns-cloudflare
-      traefik.http.routers.duplicati-rtr.middlewares: chain-oauth@file
-      traefik.http.routers.duplicati-rtr.service: duplicati-svc
-      traefik.http.services.duplicati-svc.loadbalancer.server.port: 8200
+#  duplicati:
+#    image: lscr.io/linuxserver/duplicati:latest
+#    container_name: duplicati
+#    restart: no
+#    environment:
+#      <<: *default-tz-puid-pgid
+#      CLI_ARGS: ''
+#    volumes:
+#      - $DOCKERDIR/duplicati/config:/config
+#        # - $DOCKERDIR/duplicati/backups:/backups
+#      - $RSYNC_DST:/backups
+#        # - $DOCKERDIR/duplicati/source:/source
+#      - $RSYNC_SRC:/source
+#    networks:
+#      - traefik
+#    ports:
+#      - "$DUPLICATI_PORT:8200/tcp"
+#    labels:
+#      ## Auto-update
+#      com.centurylinklabs.watchtower.enable: true
+#      ## Traefik
+#      traefik.enable: true
+#      traefik.docker.network: traefik
+#      traefik.http.routers.duplicati-rtr.entrypoints: https
+#      traefik.http.routers.duplicati-rtr.rule: Host(`duplicati.$DOMAINNAME`)
+#      traefik.http.routers.duplicati-rtr.tls.certresolver: dns-cloudflare
+#      traefik.http.routers.duplicati-rtr.middlewares: chain-oauth@file
+#      traefik.http.routers.duplicati-rtr.service: duplicati-svc
+#      traefik.http.services.duplicati-svc.loadbalancer.server.port: 8200
 
   rsync-home:
     container_name: rsync-home
@@ -1288,52 +1288,52 @@ services:
 #      traefik.http.services.lazylibrarian-svc.loadbalancer.server.port: 5299
 
   # InfluxDB - Database for sensor data
-  influxdb:
-    image: influxdb:1.8
-    container_name: influxdb
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    networks:
-      metrics:
-    ports:
-      - "$INFLUXDB_PORT:8086"
-    volumes:
-      - "$DOCKERDIR/influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro"
-      - "$DOCKERDIR/influxdb/db:/var/lib/influxdb"
-    labels:
-      # Auto-update
-      com.centurylinklabs.watchtower.enable: true
-    healthcheck:
-      test: ["CMD", "curl", "-sl", "-I", "http://localhost:$INFLUXDB_PORT/ping"]
-      interval: 120s
-      timeout: 5s
-      retries: 4
+#  influxdb:
+#    image: influxdb:1.8
+#    container_name: influxdb
+#    restart: no
+#    security_opt:
+#      - no-new-privileges:true
+#    networks:
+#      metrics:
+#    ports:
+#      - "$INFLUXDB_PORT:8086"
+#    volumes:
+#      - "$DOCKERDIR/influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro"
+#      - "$DOCKERDIR/influxdb/db:/var/lib/influxdb"
+#    labels:
+#      # Auto-update
+#      com.centurylinklabs.watchtower.enable: true
+#    healthcheck:
+#      test: ["CMD", "curl", "-sl", "-I", "http://localhost:$INFLUXDB_PORT/ping"]
+#      interval: 120s
+#      timeout: 5s
+#      retries: 4
 
-  telegraf:
-    image: telegraf:latest
-    container_name: telegraf
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    depends_on:
-      - influxdb
-    networks:
-      metrics:
-    extra_hosts:
-      - "powerwall:$POWERWALL_IP"
-    volumes:
-      - "$DOCKERDIR/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro"
-    labels:
-      # Auto-update
-      com.centurylinklabs.watchtower.enable: true
-    healthcheck:
-      # NOTE: requires outputs.health to be enabled in telegraf.conf
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
-      interval: 120s
-      timeout: 5s
-      retries: 4
-
+#  telegraf:
+#    image: telegraf:latest
+#    container_name: telegraf
+#    restart: no
+#    security_opt:
+#      - no-new-privileges:true
+#    depends_on:
+#      - influxdb
+#    networks:
+#      metrics:
+#    extra_hosts:
+#      - "powerwall:$POWERWALL_IP"
+#    volumes:
+#      - "$DOCKERDIR/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro"
+#    labels:
+#      # Auto-update
+#      com.centurylinklabs.watchtower.enable: true
+#    healthcheck:
+#      # NOTE: requires outputs.health to be enabled in telegraf.conf
+#      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+#      interval: 120s
+#      timeout: 5s
+#      retries: 4
+#
   # Grafana - Graphical data visualization for InfluxDB data
   grafana:
     image: grafana/grafana:latest
@@ -1345,7 +1345,7 @@ services:
       traefik:
       metrics:
     depends_on:
-      - influxdb
+      # - influxdb
       - prometheus
     extra_hosts:
       - "powerwall:$POWERWALL_IP"
@@ -1566,30 +1566,30 @@ services:
       traefik.http.routers.error-pages-rtr.service: error-handler-svc
       traefik.http.services.error-handler-svc.loadbalancer.server.port: 8080
 
-  silverbullet:
-    image: zefhemel/silverbullet
-    container_name: silverbullet
-    restart: unless-stopped
-    ## To enable additional options, such as BasicAuth, uncomment the following line:
-    # command: ["--user=user:pw"]
-    volumes:
-      - $DOCKERDIR/silverbullet:/space
-    networks:
-      - traefik
-    ports:
-      - "$SILVERBULLET_PORT:3000/tcp"
-    labels:
-      ## Auto-update
-      com.centurylinklabs.watchtower.enable: true
-      ## Traefik
-      traefik.enable: true
-      traefik.docker.network: traefik
-      traefik.http.routers.silverbullet-rtr.entrypoints: https
-      traefik.http.routers.silverbullet-rtr.rule: Host(`silverbullet.$DOMAINNAME`)
-      traefik.http.routers.silverbullet-rtr.tls.certresolver: dns-cloudflare
-      traefik.http.routers.silverbullet-rtr.middlewares: chain-oauth@file
-      traefik.http.routers.silverbullet-rtr.service: silverbullet-svc
-      traefik.http.services.silverbullet-svc.loadbalancer.server.port: 3000
+#  silverbullet:
+#    image: zefhemel/silverbullet
+#    container_name: silverbullet
+#    restart: 'no'
+#    ## To enable additional options, such as BasicAuth, uncomment the following line:
+#    # command: ["--user=user:pw"]
+#    volumes:
+#      - $DOCKERDIR/silverbullet:/space
+#    networks:
+#      - traefik
+#    ports:
+#      - "$SILVERBULLET_PORT:3000/tcp"
+#    labels:
+#      ## Auto-update
+#      com.centurylinklabs.watchtower.enable: true
+#      ## Traefik
+#      traefik.enable: true
+#      traefik.docker.network: traefik
+#      traefik.http.routers.silverbullet-rtr.entrypoints: https
+#      traefik.http.routers.silverbullet-rtr.rule: Host(`silverbullet.$DOMAINNAME`)
+#      traefik.http.routers.silverbullet-rtr.tls.certresolver: dns-cloudflare
+#      traefik.http.routers.silverbullet-rtr.middlewares: chain-oauth@file
+#      traefik.http.routers.silverbullet-rtr.service: silverbullet-svc
+#      traefik.http.services.silverbullet-svc.loadbalancer.server.port: 3000
 
   # Uptime Kuma - Status Page & Monitoring Server
   uptime-kuma:
