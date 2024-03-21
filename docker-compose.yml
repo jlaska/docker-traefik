@@ -141,7 +141,7 @@ services:
 #    image: docker.io/yuxzhu/mdns-reflector:latest
 #    command: mdns-reflector -fnl info -- eno1 br-59962d08e1b2
 #    network_mode: host
-#    restart: unless-stopped
+#    restart: no
 #    # privileged: true
 #    environment:
 #     <<: *default-tz-puid-pgid
@@ -188,6 +188,8 @@ services:
     container_name: mosquitto
     image: eclipse-mosquitto:latest
     restart: unless-stopped
+    networks:
+      - default
     volumes:
       - $DOCKERDIR/mosquitto:/mosquitto
     ports:
@@ -206,8 +208,6 @@ services:
       - '/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyUSB0'
     networks:
       - traefik
-    extra_hosts:
-      - "host.docker.internal:$SERVER_IP"
     ports:
       - "$ZIGBEE2MQTT_WEB_PORT:8080/tcp"
     volumes:
@@ -706,6 +706,7 @@ services:
       LOG_LEVEL: DEBUG
       LOG_DIR: /backup/logs
       LOG_DIR_PERMISSIONS: 755
+      VW_DATA_FOLDER: /data
       BACKUP_DIR: /backup
       BACKUP_DIR_PERMISSIONS: 700
       BACKUP_ADD_DATABASE: "true"
@@ -714,7 +715,7 @@ services:
       BACKUP_ADD_RSA_KEY: "true"
       # - CRONFILE=/etc/crontabs/root
     healthcheck:
-      test: ["CMD-SHELL", "stat $${VW_DATABASE_URL} $${BACKUP_DIR}/$$(date +'%Y-%m-%d')-*db.sqlite3"]
+      test: ["CMD-SHELL", "stat $${VW_DATABASE_URL} $${BACKUP_DIR}/$$(date +'%Y-%m-%d')-*backup.tar.xz"]
       interval: 120s
       timeout: 5s
       retries: 4
@@ -1390,6 +1391,7 @@ services:
       - "$PROMETHEUS_PORT:9090"
     extra_hosts:
       - "host.docker.internal:$SERVER_IP"
+      - "host.hass.internal:$SERVER_IP"
     labels:
       # Auto-update
       com.centurylinklabs.watchtower.enable: true
@@ -1532,13 +1534,16 @@ services:
     networks:
       - traefik
     labels:
+      ## Auto-update
+      com.centurylinklabs.watchtower.enable: true
       # Traefik
       traefik.enable: true
       traefik.docker.network: traefik
       traefik.http.routers.whoami-rtr.entrypoints: https
-      traefik.http.routers.whoami-rtr.rule: Host(`whoami.$DOMAINNAME`)
+      traefik.http.routers.whoami-rtr.rule: Host(`whoami.$DOMAINNAME1`)
+      traefik.http.routers.whoami-rtr.tls: true
       traefik.http.routers.whoami-rtr.tls.certresolver: dns-cloudflare
-      traefik.http.routers.whoami-rtr.middlewares: chain-oauth@file
+      traefik.http.routers.whoami-rtr.middlewares: chain-no-auth@file
       traefik.http.routers.whoami-rtr.service: whoami-svc
       traefik.http.services.whoami-svc.loadbalancer.server.port: 80
 
