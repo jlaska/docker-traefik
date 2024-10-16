@@ -1,5 +1,4 @@
-version: "3"
-
+# version: "3"
 ########################### NETWORKS
 networks:
   default:
@@ -157,8 +156,8 @@ services:
       - mosquitto # I don't think this is true
     environment:
       <<: *default-tz-puid-pgid
-    devices:
-      - '/dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300387-if00-port0:/dev/zwave'
+      # devices:
+      #   - '/dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300387-if00-port0:/dev/zwave'
     volumes:
       - $DOCKERDIR/zwavejs2mqtt:/usr/src/app/store
     networks:
@@ -208,6 +207,8 @@ services:
       - '/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyUSB0'
     networks:
       - traefik
+    extra_hosts:
+      - "host.docker.internal:$SERVER_IP"
     ports:
       - "$ZIGBEE2MQTT_WEB_PORT:8080/tcp"
     volumes:
@@ -287,8 +288,8 @@ services:
     volumes:
       - $DOCKERDIR/home-assistant:/config
       - /run/dbus:/run/dbus:ro # enable bluetooth
-    devices:
-      - '/dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300387-if01-port0:/dev/zigbee'
+      # devices:
+      # - '/dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300387-if01-port0:/dev/zigbee'
       # - '/sys/class/bluetooth/hci0/device:/dev/bluetooth'
     network_mode: "host"
     # ports:
@@ -802,16 +803,16 @@ services:
       - --api.insecure=true
       - --ping=true
       - --log=true
-      - --log.level=WARN
+      - --log.level=DEBUG
       - --log.filePath=/logs/traefik.log
-      - --log.format=common
+      - --log.format=json
       - --accessLog=true
       - --accessLog.filePath=/logs/access.log
       - --accessLog.bufferingSize=100
-      # - --accessLog.format=json
-      # - --accessLog.fields.defaultMode=keep
-      # - --accessLog.fields.headers.defaultMode=keep
-      # - --accessLog.filters.statusCodes=204-299,400-499,500-599
+      - --accessLog.format=json
+      - --accessLog.fields.defaultMode=keep
+      - --accessLog.fields.headers.defaultMode=keep
+      - --accessLog.filters.statusCodes=204-299,400-499,500-599
       - --providers.docker=true
       - --providers.docker.endpoint=tcp://socket-proxy:$SOCKET_PROXY_PORT
       # Automatically set Host rule for services
@@ -886,6 +887,8 @@ services:
       POWERWALL_IP: $POWERWALL_IP
       FLATLINE_IP: $FLATLINE_IP
       WINTERMUTE_IP: $WINTERMUTE_IP
+      ARMITAGE_IP: $ARMITAGE_IP
+      RASPBERRYPI_IP: $RASPBERRYPI_IP
       COCKPIT_PORT: $COCKPIT_PORT
       HOMEASSISTANT_IP: $HOMEASSISTANT_IP
       HOMEASSISTANT_PORT: $HOMEASSISTANT_PORT
@@ -969,7 +972,7 @@ services:
 
   # Docker-GC - Automatic Docker Garbage Collection
   # Create docker-gc-exclude file
-  dockergc:
+  docker-gc:
     image: clockworksoul/docker-gc-cron
     container_name: docker-gc
     restart: unless-stopped
@@ -1018,13 +1021,8 @@ services:
       - --insecure
       - --without-password
       - --address=0.0.0.0:51515
-        #- --server-username=USERNAME
-        #- --server-password=SECRET_PASSWORD
     environment:
       <<: *default-tz-puid-pgid
-      # Set repository password
-      KOPIA_PASSWORD: "SECRET"
-      USER: "User"
     volumes:
       # Mount local folders needed by kopia
       - $DOCKERDIR/kopia/config:/app/config
@@ -1481,10 +1479,10 @@ services:
       socket_proxy:
         ipv4_address: 172.22.0.254 # You can specify a static IP
     privileged: true
-    #ports:
-    # - "127.0.0.1:$SOCKET_PROXY_PORT:$SOCKET_PROXY_PORT" # Port $SOCKET_PROXY_PORT should only ever get exposed to the internal network. When possible use this line.
+    ports:
+      - "127.0.0.1:$SOCKET_PROXY_PORT:2375" # Port $SOCKET_PROXY_PORT should only ever get exposed to the internal network. When possible use this line.
     # I use the next line instead, as I want portainer to manage multiple docker endpoints within my home network.
-    # - "$SOCKET_PROXY_PORT:2375"
+    #  - "$SOCKET_PROXY_PORT:2375"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     environment:
@@ -1520,7 +1518,8 @@ services:
       - TASKS=1 # Portainer
       - VOLUMES=1 # Portainer
     healthcheck:
-      test: ["CMD", "wget", "-Sq", "-O-", "http://localhost:$SOCKET_PROXY_PORT/_ping"]
+      test: ["CMD", "wget", "-Sq", "-O-", "http://127.0.0.1:$SOCKET_PROXY_PORT/_ping"]
+      # test: ["CMD", "wget", "-q", "-O-", "http://localhost:$SOCKET_PROXY_PORT/version"]
       interval: 60s
       timeout: 5s
       retries: 4
